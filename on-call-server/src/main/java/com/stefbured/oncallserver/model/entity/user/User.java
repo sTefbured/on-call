@@ -1,5 +1,6 @@
 package com.stefbured.oncallserver.model.entity.user;
 
+import com.stefbured.oncallserver.model.entity.user.rights.Permission;
 import com.stefbured.oncallserver.model.entity.user.rights.Role;
 import lombok.*;
 import org.hibernate.annotations.Type;
@@ -9,6 +10,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.stefbured.oncallserver.model.entity.user.UserConstants.MAX_EMAIL_LENGTH;
 import static com.stefbured.oncallserver.model.entity.user.UserConstants.MAX_USERNAME_LENGTH;
@@ -78,5 +80,12 @@ public class User implements Serializable {
 
     public Boolean isEnabled() {
         return isEnabled;
+    }
+
+    public Set<String> getAuthorityNames() {
+        return getRoles().stream()
+                .flatMap(role -> role.getPermissions().stream())
+                .map(Permission::getAuthority)
+                .collect(Collectors.toSet());
     }
 }

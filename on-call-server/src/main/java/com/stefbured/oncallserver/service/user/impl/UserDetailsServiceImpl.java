@@ -1,6 +1,5 @@
 package com.stefbured.oncallserver.service.user.impl;
 
-import com.stefbured.oncallserver.model.entity.user.rights.Permission;
 import com.stefbured.oncallserver.model.entity.user.rights.Role;
 import com.stefbured.oncallserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         var roles = user.getRoles().stream()
                 .map(Role::getName)
                 .collect(Collectors.toSet());
-        var authorities = user.getRoles().stream()
-                .flatMap(role -> role.getPermissions().stream())
-                .map(Permission::getAuthority)
-                .collect(Collectors.toSet());
+        var authorities = user.getAuthorityNames();
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
