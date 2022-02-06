@@ -13,6 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>on-call-server</name>
     <description>on-call-server</description>
+    <packaging>jar</packaging>
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -93,7 +94,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.stefbured.oncall.OnCallServerApplication</mainClass>
+                            <mainClass>com.stefbured.oncallserver.OnCallServerApplication</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
