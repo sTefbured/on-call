@@ -50,7 +50,7 @@ public class User implements Serializable {
     @Column(name = "registration_date", nullable = false)
     private LocalDateTime registrationDate;
 
-    @Column(name = "last_visit", nullable = false)
+    @Column(name = "last_visit")
     private LocalDateTime lastVisitDate;
 
     @Column(name = "password_expiration_date")

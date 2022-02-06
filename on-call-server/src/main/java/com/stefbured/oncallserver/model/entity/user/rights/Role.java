@@ -12,15 +12,18 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "roles")
 public class Role implements Serializable {
     @Serial
     private static final long serialVersionUID = 5176116782288632416L;
 
     @Id
+    @NonNull
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NonNull
     @Column(name = "name", unique = true, nullable = false)
     private String name;
 

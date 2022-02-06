@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stefbured.oncallserver.config.JwtConfiguration;
 import com.stefbured.oncallserver.exception.authentication.AuthenticationAttemptFailedException;
+import com.stefbured.oncallserver.model.dto.user.UserCredentialsDTO;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -34,7 +35,7 @@ public class JwtUsernamePasswordAuthFilter extends UsernamePasswordAuthenticatio
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
         try {
-            var authRequest = new ObjectMapper().readValue(request.getInputStream(), AuthenticationRequest.class);
+            var authRequest = new ObjectMapper().readValue(request.getInputStream(), UserCredentialsDTO.class);
             var authentication = new UsernamePasswordAuthenticationToken(
                     authRequest.getUsername(),
                     authRequest.getPassword()
