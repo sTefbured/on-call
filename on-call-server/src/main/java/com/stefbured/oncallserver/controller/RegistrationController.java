@@ -1,7 +1,7 @@
 package com.stefbured.oncallserver.controller;
 
 import com.stefbured.oncallserver.exception.user.UserException;
-import com.stefbured.oncallserver.model.dto.user.BatchUserRegistrationRecord;
+import com.stefbured.oncallserver.model.dto.user.BatchUserRegistrationRecordDTO;
 import com.stefbured.oncallserver.model.dto.user.UserRegisterDTO;
 import com.stefbured.oncallserver.service.user.UserService;
 import com.stefbured.oncallserver.utils.PasswordGenerator;
@@ -39,7 +39,6 @@ public class RegistrationController {
     }
 
     @PostMapping
-    @PreAuthorize("permitAll()")
     public ResponseEntity<Object> registerSingleUser(@RequestBody UserRegisterDTO user, HttpServletResponse httpServletResponse) {
         var securityContext = SecurityContextHolder.getContext();
         if (!(securityContext.getAuthentication() instanceof AnonymousAuthenticationToken)) {
@@ -64,13 +63,13 @@ public class RegistrationController {
 
     @PostMapping("batch")
     @PreAuthorize("hasAuthority('register:batch')")
-    public List<BatchUserRegistrationRecord> registerMultipleUsers(@RequestBody Set<UserRegisterDTO> users,
-                                                                   @RequestParam(required = false) Boolean generatePassword) {
+    public List<BatchUserRegistrationRecordDTO> registerMultipleUsers(@RequestBody Set<UserRegisterDTO> users,
+                                                                      @RequestParam(required = false) Boolean generatePassword) {
         LOGGER.info("Batch registration started");
         if (Boolean.TRUE.equals(generatePassword)) {
             users.forEach(user -> user.setPassword(passwordGenerator.generate(GENERATED_PASSWORD_LENGTH)));
         }
-        var registrationRecords = new ArrayList<BatchUserRegistrationRecord>(users.size());
+        var registrationRecords = new ArrayList<BatchUserRegistrationRecordDTO>(users.size());
         for (var user : users) {
             registrationRecords.add(registerWithErrorHandling(user));
         }
@@ -78,8 +77,8 @@ public class RegistrationController {
         return registrationRecords;
     }
 
-    private BatchUserRegistrationRecord registerWithErrorHandling(UserRegisterDTO user) {
-        var registrationRecord = new BatchUserRegistrationRecord();
+    private BatchUserRegistrationRecordDTO registerWithErrorHandling(UserRegisterDTO user) {
+        var registrationRecord = new BatchUserRegistrationRecordDTO();
         registrationRecord.setUser(user);
         try {
             userService.register(user);
