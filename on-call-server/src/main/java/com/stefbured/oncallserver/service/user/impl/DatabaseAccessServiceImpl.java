@@ -49,7 +49,6 @@ public class DatabaseAccessServiceImpl implements DatabaseAccessService {
         try (var statement = connection.prepareStatement(query)) {
             queryResult.setQuery(query);
             if (!statement.execute()) {
-                LOGGER.info("Query successfully executed with no data returned: query={}", query);
                 return queryResult;
             }
             var resultSet = statement.getResultSet();
@@ -70,9 +69,8 @@ public class DatabaseAccessServiceImpl implements DatabaseAccessService {
                 dataRows.add(row);
             }
             queryResult.setDataRows(dataRows);
-            LOGGER.info("Query successfully executed with {} data rows returned: query={}", rowsCount, query);
         } catch (SQLException exception) {
-            LOGGER.info("Database access error occurred: message={}", exception.getMessage());
+            LOGGER.info("Database error occurred: message={}", exception.getMessage());
             queryResult.setExceptionMessage(exception.getMessage());
         }
         return queryResult;

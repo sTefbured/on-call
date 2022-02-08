@@ -2,17 +2,14 @@ package com.stefbured.oncallserver.controller;
 
 import com.stefbured.oncallserver.model.dto.db.DatabaseQueryResultDTO;
 import com.stefbured.oncallserver.service.user.DatabaseAccessService;
+import com.stefbured.oncallserver.utils.SqlScriptSplitter;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -26,19 +23,17 @@ public class DatabaseAccessController {
     }
 
     @PostMapping()
-    public List<DatabaseQueryResultDTO> runQuery(@RequestBody QueryHandler queryHandler,
-                                                 HttpServletResponse httpServletResponse) throws IOException {
+    public ResponseEntity<List<DatabaseQueryResultDTO>> runQuery(@RequestBody QueryHandler queryHandler) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var isNotGranted = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .noneMatch(authority -> authority.equals("database:read") || authority.equals("database:write"));
         if (isNotGranted) {
-            httpServletResponse.sendRedirect("/404");
-            return Collections.emptyList();
+            return ResponseEntity.notFound().build();
         }
         var queryText = queryHandler.getQueryText().trim();
-        var queries = Arrays.stream(queryText.split(";")).toList();
-        return databaseAccessService.runQueries(queries);
+        var queries = new SqlScriptSplitter().split(queryText);
+        return ResponseEntity.ok(databaseAccessService.runQueries(queries));
     }
 
     @Data
