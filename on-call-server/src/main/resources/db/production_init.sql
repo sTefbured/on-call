@@ -12,7 +12,8 @@ values (true, 'admin',
 insert into permissions(name)
 values ('register:batch'),
        ('users:list'),
-       ('users:show');
+       ('users:show'),
+       ('database:runQuery');
 
 /* Insert roles */
 insert into roles(name)
@@ -25,6 +26,7 @@ insert into roles_permissions(role_id, permission_id)
 values (1, 1),
        (1, 2),
        (1, 3),
+       (1, 4),
        (2, 2),
        (2, 3),
        (3, 1);
