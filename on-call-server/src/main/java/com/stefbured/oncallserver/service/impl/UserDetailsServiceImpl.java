@@ -1,4 +1,4 @@
-package com.stefbured.oncallserver.service.user.impl;
+package com.stefbured.oncallserver.service.impl;
 
 import com.stefbured.oncallserver.model.entity.user.rights.Role;
 import com.stefbured.oncallserver.repository.UserRepository;

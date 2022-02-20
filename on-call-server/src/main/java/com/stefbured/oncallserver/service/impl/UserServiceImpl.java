@@ -1,14 +1,13 @@
-package com.stefbured.oncallserver.service.user.impl;
+package com.stefbured.oncallserver.service.impl;
 
 import com.stefbured.oncallserver.exception.user.InvalidUserParametersException;
 import com.stefbured.oncallserver.exception.user.UserAlreadyExistsException;
-import com.stefbured.oncallserver.model.dto.user.UserDetailsDTO;
 import com.stefbured.oncallserver.model.dto.user.UserRegisterDTO;
 import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.model.entity.user.rights.Role;
 import com.stefbured.oncallserver.repository.UserRepository;
-import com.stefbured.oncallserver.service.user.UserService;
-import com.stefbured.oncallserver.utils.UserValidator;
+import com.stefbured.oncallserver.service.UserService;
+import com.stefbured.oncallserver.utils.OnCallEntityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,13 +34,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetailsDTO register(UserRegisterDTO user) {
+    public User register(UserRegisterDTO user) {
         return registerWithRoles(user, DEFAULT_USER_ROLES);
     }
 
     @Override
-    public UserDetailsDTO registerWithRoles(UserRegisterDTO user, Set<Role> roles) {
-        if (!UserValidator.isValid(user)) {
+    public User registerWithRoles(UserRegisterDTO user, Set<Role> roles) {
+        if (!OnCallEntityValidator.isValid(user)) {
             throw new InvalidUserParametersException("Invalid user parameters");
         }
         checkUserUniqueValues(user);
@@ -59,9 +58,7 @@ public class UserServiceImpl implements UserService {
                 .lastVisitDate(LocalDateTime.now())
                 .roles(roles)
                 .build();
-        var dbEntity = userRepository.save(userEntity);
-        return new UserDetailsDTO(dbEntity.getId(), dbEntity.getUsername(), dbEntity.getFirstName(),
-                dbEntity.getLastName(), dbEntity.getBirthDate(), dbEntity.getLastVisitDate());
+        return userRepository.save(userEntity);
     }
 
     private void checkUserUniqueValues(UserRegisterDTO userRegisterDTO) {

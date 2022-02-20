@@ -3,7 +3,7 @@ package com.stefbured.oncallserver.controller;
 import com.stefbured.oncallserver.exception.user.UserException;
 import com.stefbured.oncallserver.model.dto.user.BatchUserRegistrationRecordDTO;
 import com.stefbured.oncallserver.model.dto.user.UserRegisterDTO;
-import com.stefbured.oncallserver.service.user.UserService;
+import com.stefbured.oncallserver.service.UserService;
 import com.stefbured.oncallserver.utils.PasswordGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/registration")
+@RequestMapping("api/v1/registration")
 public class RegistrationController {
     private static final Logger LOGGER = LogManager.getLogger(RegistrationController.class);
     private static final String USER_PAGE_ENDPOINT = "user";

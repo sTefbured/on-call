@@ -1,5 +1,6 @@
 package com.stefbured.oncallserver.model.entity.user.rights;
 
+import com.stefbured.oncallserver.model.entity.group.UserGroup;
 import com.stefbured.oncallserver.model.entity.user.User;
 import lombok.*;
 
@@ -24,8 +25,15 @@ public class Role implements Serializable {
     private Long id;
 
     @NonNull
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "description")
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "user_group_id")
+    private transient UserGroup userGroup;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -33,7 +41,7 @@ public class Role implements Serializable {
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> users;
+    private transient Set<User> users;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -41,5 +49,5 @@ public class Role implements Serializable {
     @JoinTable(name = "roles_permissions",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private Set<Permission> permissions;
+    private transient Set<Permission> permissions;
 }

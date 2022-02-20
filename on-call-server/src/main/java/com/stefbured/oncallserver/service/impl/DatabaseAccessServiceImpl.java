@@ -1,7 +1,7 @@
-package com.stefbured.oncallserver.service.user.impl;
+package com.stefbured.oncallserver.service.impl;
 
 import com.stefbured.oncallserver.model.dto.db.DatabaseQueryResultDTO;
-import com.stefbured.oncallserver.service.user.DatabaseAccessService;
+import com.stefbured.oncallserver.service.DatabaseAccessService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -53,24 +53,22 @@ public class DatabaseAccessServiceImpl implements DatabaseAccessService {
             }
             var resultSet = statement.getResultSet();
             var metaData = resultSet.getMetaData();
-            var columnsCount = metaData.getColumnCount();
-            var columnNames = new ArrayList<String>(columnsCount);
-            for (int i = 1; i <= columnsCount; i++) {
+            var columnNames = new ArrayList<String>(metaData.getColumnCount());
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
                 columnNames.add(metaData.getColumnName(i));
             }
             queryResult.setColumnNames(columnNames);
             var dataRows = new ArrayList<List<String>>();
-            int rowsCount = 0;
-            for (; rowsCount < MAX_ROWS_COUNT && resultSet.next(); rowsCount++) {
-                var row = new ArrayList<String>(columnsCount);
-                for (int j = 1; j <= columnsCount; j++) {
+            for (int rowsCount = 0; rowsCount < MAX_ROWS_COUNT && resultSet.next(); rowsCount++) {
+                var row = new ArrayList<String>(metaData.getColumnCount());
+                for (int j = 1; j <= metaData.getColumnCount(); j++) {
                     row.add(resultSet.getString(j));
                 }
                 dataRows.add(row);
             }
             queryResult.setDataRows(dataRows);
         } catch (SQLException exception) {
-            LOGGER.info("Database error occurred: message={}", exception.getMessage());
+            LOGGER.info("Database error handled: message={}", exception.getMessage());
             queryResult.setExceptionMessage(exception.getMessage());
         }
         return queryResult;

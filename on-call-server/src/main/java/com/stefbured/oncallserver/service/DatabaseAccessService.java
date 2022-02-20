@@ -1,4 +1,4 @@
-package com.stefbured.oncallserver.service.user;
+package com.stefbured.oncallserver.service;
 
 import com.stefbured.oncallserver.model.dto.db.DatabaseQueryResultDTO;
 

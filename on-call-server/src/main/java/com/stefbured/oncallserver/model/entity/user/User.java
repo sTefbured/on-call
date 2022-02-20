@@ -1,5 +1,6 @@
 package com.stefbured.oncallserver.model.entity.user;
 
+import com.stefbured.oncallserver.model.entity.group.UserGroup;
 import com.stefbured.oncallserver.model.entity.user.rights.Permission;
 import com.stefbured.oncallserver.model.entity.user.rights.Role;
 import lombok.*;
@@ -72,7 +73,12 @@ public class User implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "users")
-    private Set<Role> roles;
+    private transient Set<Role> roles;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToMany(mappedBy = "members")
+    private transient Set<UserGroup> userGroups;
 
     public Boolean isBanned() {
         return isBanned;

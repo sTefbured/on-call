@@ -5,14 +5,14 @@ import com.stefbured.oncallserver.model.dto.user.UserRegisterDTO;
 import java.time.LocalDateTime;
 import java.util.regex.Pattern;
 
-public class UserValidator {
+public class OnCallEntityValidator {
     private static final Pattern USERNAME_PATTERN = Pattern.compile("\\w{5,20}");
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$");
     private static final Pattern EMAIL_LOCAL_PART_PATTERN = Pattern.compile("^.+@.+$");
 
     private static final long MIN_USER_AGE = 14L;
 
-    private UserValidator() {
+    private OnCallEntityValidator() {
     }
 
     public static boolean isValid(UserRegisterDTO userRegisterDTO) {

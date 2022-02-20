@@ -1,7 +1,7 @@
 package com.stefbured.oncallserver.controller;
 
 import com.stefbured.oncallserver.model.dto.db.DatabaseQueryResultDTO;
-import com.stefbured.oncallserver.service.user.DatabaseAccessService;
+import com.stefbured.oncallserver.service.DatabaseAccessService;
 import com.stefbured.oncallserver.utils.SqlScriptSplitter;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping("/db")
+@RequestMapping("api/v1/db")
 public class DatabaseAccessController {
     private final DatabaseAccessService databaseAccessService;
 
@@ -44,6 +44,7 @@ public class DatabaseAccessController {
 
     @Data
     static class QueryHandler {
+        // TODO: create a separate DTO
         private String queryText;
     }
 }
