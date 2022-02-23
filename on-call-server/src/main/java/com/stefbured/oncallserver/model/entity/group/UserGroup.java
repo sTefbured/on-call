@@ -22,6 +22,9 @@ public class UserGroup implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "id_tag")
+    private String idTag;
+
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -31,27 +34,27 @@ public class UserGroup implements Serializable {
     @Column(name = "creation_date", nullable = false)
     private Timestamp creationDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
-    private transient User creator;
+    private User creator;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
-    private transient User owner;
+    private User owner;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_group_id")
-    private transient UserGroup parentGroup;
+    private UserGroup parentGroup;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_groups_members",
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "member_id"))
-    private transient Set<User> members;
+    private Set<User> members;
 
-    @OneToMany(mappedBy = "userGroup")
+    @OneToMany(mappedBy = "userGroup", fetch = FetchType.LAZY)
     private Set<Permission> permissions;
 
-    @OneToMany(mappedBy = "userGroup")
+    @OneToMany(mappedBy = "userGroup", fetch = FetchType.LAZY)
     private Set<Role> roles;
 }

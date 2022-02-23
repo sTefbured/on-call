@@ -33,7 +33,7 @@ public class Role implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "user_group_id")
-    private transient UserGroup userGroup;
+    private UserGroup userGroup;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -41,7 +41,7 @@ public class Role implements Serializable {
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private transient Set<User> users;
+    private Set<User> users;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -49,5 +49,5 @@ public class Role implements Serializable {
     @JoinTable(name = "roles_permissions",
             joinColumns = @JoinColumn(name = "role_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private transient Set<Permission> permissions;
+    private Set<Permission> permissions;
 }

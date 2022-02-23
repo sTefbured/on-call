@@ -1,5 +1,6 @@
 package com.stefbured.oncallserver.controller;
 
+import com.stefbured.oncallserver.exception.RedirectException;
 import com.stefbured.oncallserver.model.dto.RoleDTO;
 import com.stefbured.oncallserver.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RestController
-@RequestMapping(name = "api/v1/security")
+@RequestMapping("api/v1/security")
 public class SecurityManagementController {
     private final RoleService roleService;
 
@@ -30,30 +31,30 @@ public class SecurityManagementController {
         return roleService.create(role);
     }
 
-    @GetMapping(value = "role", params = {"page", "size"})
+    @GetMapping("role")
     @PreAuthorize("permitAll()")
-    public Collection<RoleDTO> getRoles(@RequestParam(name = "page") int pageNumber,
-                                        @RequestParam(name = "size") int pageSize,
+    public Collection<RoleDTO> getRoles(@RequestParam int page,
+                                        @RequestParam int size,
                                         HttpServletRequest httpServletRequest,
                                         HttpServletResponse httpServletResponse) {
-        if (pageNumber < 1) {
+        if (page < 1) {
             try {
                 var authorizationHeader = httpServletRequest.getHeader("Authorization");
                 httpServletResponse.addHeader("Authorization", authorizationHeader);
-                httpServletRequest.getRequestDispatcher("role?page=1&size=" + pageSize)
+                httpServletRequest.getRequestDispatcher("role?page=1&size=" + size)
                         .forward(httpServletRequest, httpServletResponse);
                 return Collections.emptyList();
             } catch (IOException | ServletException e) {
-                throw new RuntimeException("Exception during redirect");
+                throw new RedirectException("Exception during redirect");
             }
         }
-        pageNumber--;
-        return roleService.getRoles(pageNumber, pageSize);
+        page--;
+        return roleService.getRoles(page, size);
     }
 
     @GetMapping(value = "role", params = "id")
     @PreAuthorize("permitAll()")
-    public RoleDTO getRole(@RequestParam(name = "id") long id) {
+    public RoleDTO getRole(@RequestParam long id) {
         return roleService.findById(id);
     }
 

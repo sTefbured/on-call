@@ -34,3 +34,8 @@ values (1, 1),
 /* Insert users_roles */
 insert into users_roles(role_id, user_id)
 values (1, 1);
+
+/* Insert user_groups */
+insert into user_groups(id, id_tag, name, description, creation_date, creator_id, owner_id, parent_group_id)
+values (0, '', 'On-call group', 'The main group with default permissions and roles.',
+        '0001-01-01 00:00:00', 0, 0, null);

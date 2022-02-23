@@ -73,12 +73,12 @@ public class User implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "users")
-    private transient Set<Role> roles;
+    private Set<Role> roles;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany(mappedBy = "members")
-    private transient Set<UserGroup> userGroups;
+    private Set<UserGroup> userGroups;
 
     public Boolean isBanned() {
         return isBanned;

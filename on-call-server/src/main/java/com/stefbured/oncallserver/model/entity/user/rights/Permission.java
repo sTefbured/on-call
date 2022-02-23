@@ -28,7 +28,7 @@ public class Permission implements GrantedAuthority {
 
     @ManyToOne
     @JoinColumn(name = "user_group_id")
-    private transient UserGroup userGroup;
+    private UserGroup userGroup;
 
     @Override
     public String getAuthority() {
