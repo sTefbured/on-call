@@ -1,11 +1,13 @@
 package com.stefbured.oncallserver.model.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.stefbured.oncallserver.model.dto.RoleDTO;
+import com.stefbured.oncallserver.model.dto.UserGroupDTO;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
-@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
     private Long id;
@@ -33,4 +35,8 @@ public class UserDTO {
     private Boolean isBanned;
 
     private Boolean isEnabled;
+
+    private Set<RoleDTO> roles;
+
+    private Set<UserGroupDTO> userGroups;
 }

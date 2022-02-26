@@ -6,6 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DatabaseQueryResultDTO {
     private String query;
 
@@ -15,6 +16,5 @@ public class DatabaseQueryResultDTO {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<List<String>> dataRows;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String exceptionMessage;
 }

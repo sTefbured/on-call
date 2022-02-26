@@ -2,7 +2,7 @@ package com.stefbured.oncallserver.controller;
 
 import com.stefbured.oncallserver.exception.user.UserException;
 import com.stefbured.oncallserver.model.dto.user.BatchUserRegistrationRecordDTO;
-import com.stefbured.oncallserver.model.dto.user.UserRegisterDTO;
+import com.stefbured.oncallserver.model.dto.user.UserDTO;
 import com.stefbured.oncallserver.service.UserService;
 import com.stefbured.oncallserver.utils.PasswordGenerator;
 import org.apache.logging.log4j.LogManager;
@@ -39,7 +39,7 @@ public class RegistrationController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> registerSingleUser(@RequestBody UserRegisterDTO user, HttpServletResponse httpServletResponse) {
+    public ResponseEntity<Object> registerSingleUser(@RequestBody UserDTO user, HttpServletResponse httpServletResponse) {
         var securityContext = SecurityContextHolder.getContext();
         if (!(securityContext.getAuthentication() instanceof AnonymousAuthenticationToken)) {
             redirectToProfilePage(securityContext, httpServletResponse);
@@ -63,7 +63,7 @@ public class RegistrationController {
 
     @PostMapping("batch")
     @PreAuthorize("hasAuthority('register:batch')")
-    public List<BatchUserRegistrationRecordDTO> registerMultipleUsers(@RequestBody Set<UserRegisterDTO> users,
+    public List<BatchUserRegistrationRecordDTO> registerMultipleUsers(@RequestBody Set<UserDTO> users,
                                                                       @RequestParam(required = false) Boolean generatePassword) {
         LOGGER.info("Batch registration started");
         if (Boolean.TRUE.equals(generatePassword)) {
@@ -77,7 +77,7 @@ public class RegistrationController {
         return registrationRecords;
     }
 
-    private BatchUserRegistrationRecordDTO registerWithErrorHandling(UserRegisterDTO user) {
+    private BatchUserRegistrationRecordDTO registerWithErrorHandling(UserDTO user) {
         var registrationRecord = new BatchUserRegistrationRecordDTO();
         registrationRecord.setUser(user);
         try {
@@ -92,8 +92,8 @@ public class RegistrationController {
 
     private void redirectToProfilePage(SecurityContext securityContext, HttpServletResponse httpServletResponse) {
         var username = securityContext.getAuthentication().getName();
-        var userEntity = userService.getByUsername(username);
-        var redirectLocation = USER_PAGE_ENDPOINT + "/" + userEntity.getId();
+        var userId = userService.getUserIdByUsername(username);
+        var redirectLocation = USER_PAGE_ENDPOINT + "/" + userId;
         try {
             httpServletResponse.sendRedirect(redirectLocation);
         } catch (IOException e) {

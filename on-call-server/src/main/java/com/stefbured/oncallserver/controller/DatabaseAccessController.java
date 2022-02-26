@@ -1,5 +1,6 @@
 package com.stefbured.oncallserver.controller;
 
+import com.stefbured.oncallserver.model.dto.db.DatabaseQueryDTO;
 import com.stefbured.oncallserver.model.dto.db.DatabaseQueryResultDTO;
 import com.stefbured.oncallserver.service.DatabaseAccessService;
 import com.stefbured.oncallserver.utils.SqlScriptSplitter;
@@ -24,8 +25,8 @@ public class DatabaseAccessController {
         this.databaseAccessService = databaseAccessService;
     }
 
-    @RequestMapping
-    public ResponseEntity<List<DatabaseQueryResultDTO>> runQuery(@RequestBody QueryHandler queryHandler,
+    @PostMapping
+    public ResponseEntity<List<DatabaseQueryResultDTO>> runQuery(@RequestBody DatabaseQueryDTO databaseQuery,
                                                                  HttpServletRequest request) {
         if (!HttpMethod.POST.name().equals(request.getMethod())) {
             return ResponseEntity.notFound().build();
@@ -37,14 +38,8 @@ public class DatabaseAccessController {
         if (isNotGranted) {
             return ResponseEntity.notFound().build();
         }
-        var queryText = queryHandler.getQueryText().trim();
+        var queryText = databaseQuery.getQuery().trim();
         var queries = new SqlScriptSplitter().split(queryText);
         return ResponseEntity.ok(databaseAccessService.runQueries(queries));
-    }
-
-    @Data
-    static class QueryHandler {
-        // TODO: create a separate DTO
-        private String queryText;
     }
 }

@@ -4,6 +4,7 @@ import com.stefbured.oncallserver.model.entity.group.UserGroup;
 import com.stefbured.oncallserver.model.entity.user.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsernameOrEmail(String username, String email);
 
     List<User> findAllByUserGroupsContains(UserGroup group, Pageable page);
+
+    @Query(value = "select id from users where username = ?1", nativeQuery = true)
+    Long getUserIdByUsername(String username);
 }

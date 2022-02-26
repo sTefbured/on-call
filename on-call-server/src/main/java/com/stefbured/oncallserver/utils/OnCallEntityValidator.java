@@ -1,6 +1,6 @@
 package com.stefbured.oncallserver.utils;
 
-import com.stefbured.oncallserver.model.dto.user.UserRegisterDTO;
+import com.stefbured.oncallserver.model.dto.user.UserDTO;
 
 import java.time.LocalDateTime;
 import java.util.regex.Pattern;
@@ -15,7 +15,7 @@ public class OnCallEntityValidator {
     private OnCallEntityValidator() {
     }
 
-    public static boolean isValid(UserRegisterDTO userRegisterDTO) {
+    public static boolean isValid(UserDTO userRegisterDTO) {
         return USERNAME_PATTERN.matcher(userRegisterDTO.getUsername()).matches()
                 && PASSWORD_PATTERN.matcher(userRegisterDTO.getPassword()).matches()
                 && isEmailValid(userRegisterDTO.getEmail())
