@@ -38,8 +38,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtUsernamePasswordAuthFilter(authenticationManager(), jwtConfiguration))
                 .addFilterAfter(new JwtTokenVerifierFilter(jwtConfiguration), JwtUsernamePasswordAuthFilter.class)
                 .authorizeRequests()
-                .antMatchers("/registration/**").permitAll()
-                .antMatchers("/db/**").permitAll()
+                .antMatchers("/api/v1/registration/**").permitAll()
+                .antMatchers("/api/v1/db/**").permitAll()
                 .anyRequest()
                 .authenticated();
     }
