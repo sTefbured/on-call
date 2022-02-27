@@ -19,7 +19,6 @@ public class UserGroup implements Serializable {
     private static final long serialVersionUID = 703295853496190010L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "id_tag")

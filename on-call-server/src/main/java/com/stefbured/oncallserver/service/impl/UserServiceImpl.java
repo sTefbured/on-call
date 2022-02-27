@@ -8,6 +8,7 @@ import com.stefbured.oncallserver.model.dto.user.UserDTO;
 import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.repository.UserRepository;
 import com.stefbured.oncallserver.service.UserService;
+import com.stefbured.oncallserver.utils.LongPrimaryKeyGenerator;
 import com.stefbured.oncallserver.utils.OnCallEntityValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,15 @@ public class UserServiceImpl implements UserService {
         DEFAULT_USER_ROLES_IDS.add(1L);
     }
 
+    private final LongPrimaryKeyGenerator primaryKeyGenerator;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
+    public UserServiceImpl(LongPrimaryKeyGenerator primaryKeyGenerator,
+                           UserRepository userRepository,
+                           ModelMapper modelMapper) {
+        this.primaryKeyGenerator = primaryKeyGenerator;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
@@ -57,6 +62,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toSet());
         userDto.setRoles(roles);
         var user = modelMapper.getTypeMap(UserDTO.class, User.class, REGISTRATION_DTO_TO_USER).map(userDto);
+        user.setId(primaryKeyGenerator.generatePk(User.class));
         var registeredUser = userRepository.save(user);
         return modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_POST_REGISTRATION_DTO).map(registeredUser);
     }

@@ -17,7 +17,6 @@ public class Permission implements GrantedAuthority {
     private static final long serialVersionUID = -4680858741953145110L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name", nullable = false, length = 30)

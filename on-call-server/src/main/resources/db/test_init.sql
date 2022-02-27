@@ -44,17 +44,17 @@ values (0, true, 'SYSTEM',
         null, null, false);
 
 /* Insert permissions */
-insert into permissions(name)
-values ('register:batch'),
-       ('users:list'),
-       ('users:show'),
-       ('database:runQuery');
+insert into permissions(id, name)
+values (1, 'register:batch'),
+       (2, 'users:list'),
+       (3, 'users:show'),
+       (4, 'database:runQuery');
 
 /* Insert roles */
-insert into roles(name)
-values ('Administrator'),
-       ('User'),
-       ('Group owner');
+insert into roles(id, name)
+values (1, 'Administrator'),
+       (2, 'User'),
+       (3, 'Group owner');
 
 /* Insert roles_permissions */
 insert into roles_permissions(role_id, permission_id)
