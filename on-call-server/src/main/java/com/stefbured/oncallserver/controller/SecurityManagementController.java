@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,7 +28,7 @@ public class SecurityManagementController {
 
     @PostMapping("role")
     @ResponseStatus(HttpStatus.CREATED)
-    public RoleDTO createRole(@RequestBody RoleDTO role) {
+    public RoleDTO createRole(@Valid @RequestBody RoleDTO role) {
         return roleService.create(role);
     }
 
@@ -60,7 +61,7 @@ public class SecurityManagementController {
 
     @DeleteMapping("role")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteRole(@RequestBody RoleDTO roleDTO) {
+    public void deleteRole(@Valid @RequestBody RoleDTO roleDTO) {
         roleService.deleteById(roleDTO.getId());
     }
 }

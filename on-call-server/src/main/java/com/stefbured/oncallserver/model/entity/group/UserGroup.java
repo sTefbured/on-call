@@ -8,8 +8,10 @@ import lombok.Data;
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Set;
+
+import static com.stefbured.oncallserver.model.ModelConstants.UserGroup.*;
 
 @Entity
 @Data
@@ -21,17 +23,17 @@ public class UserGroup implements Serializable {
     @Id
     private Long id;
 
-    @Column(name = "id_tag")
+    @Column(name = "id_tag", length = MAX_USER_GROUP_ID_TAG_LENGTH)
     private String idTag;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", length = MAX_USER_GROUP_NAME_LENGTH, nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", length = MAX_USER_GROUP_DESCRIPTION_LENGTH)
     private String description;
 
     @Column(name = "creation_date", nullable = false)
-    private Timestamp creationDate;
+    private LocalDateTime creationDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")

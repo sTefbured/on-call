@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class RegistrationController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> registerSingleUser(@RequestBody UserDTO user, HttpServletResponse httpServletResponse) {
+    public ResponseEntity<Object> registerSingleUser(@Valid @RequestBody UserDTO user, HttpServletResponse httpServletResponse) {
         var securityContext = SecurityContextHolder.getContext();
         if (!(securityContext.getAuthentication() instanceof AnonymousAuthenticationToken)) {
             redirectToProfilePage(securityContext, httpServletResponse);
@@ -63,7 +64,7 @@ public class RegistrationController {
 
     @PostMapping("batch")
     @PreAuthorize("hasAuthority('register:batch')")
-    public List<BatchUserRegistrationRecordDTO> registerMultipleUsers(@RequestBody Set<UserDTO> users,
+    public List<BatchUserRegistrationRecordDTO> registerMultipleUsers(@RequestBody Set<@Valid UserDTO> users,
                                                                       @RequestParam(required = false) Boolean generatePassword) {
         LOGGER.info("Batch registration started");
         if (Boolean.TRUE.equals(generatePassword)) {

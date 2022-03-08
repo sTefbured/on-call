@@ -9,6 +9,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Set;
 
+import static com.stefbured.oncallserver.model.ModelConstants.Role.MAX_ROLE_DESCRIPTION_LENGTH;
+import static com.stefbured.oncallserver.model.ModelConstants.Role.MAX_ROLE_NAME_LENGTH;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -23,10 +26,10 @@ public class Role implements Serializable {
     private Long id;
 
     @NonNull
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", length = MAX_ROLE_NAME_LENGTH, nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", length = MAX_ROLE_DESCRIPTION_LENGTH)
     private String description;
 
     @ManyToOne

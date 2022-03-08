@@ -4,7 +4,6 @@ import com.stefbured.oncallserver.model.dto.db.DatabaseQueryDTO;
 import com.stefbured.oncallserver.model.dto.db.DatabaseQueryResultDTO;
 import com.stefbured.oncallserver.service.DatabaseAccessService;
 import com.stefbured.oncallserver.utils.SqlScriptSplitter;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -26,7 +26,7 @@ public class DatabaseAccessController {
     }
 
     @PostMapping
-    public ResponseEntity<List<DatabaseQueryResultDTO>> runQuery(@RequestBody DatabaseQueryDTO databaseQuery,
+    public ResponseEntity<List<DatabaseQueryResultDTO>> runQuery(@Valid @RequestBody DatabaseQueryDTO databaseQuery,
                                                                  HttpServletRequest request) {
         if (!HttpMethod.POST.name().equals(request.getMethod())) {
             return ResponseEntity.notFound().build();

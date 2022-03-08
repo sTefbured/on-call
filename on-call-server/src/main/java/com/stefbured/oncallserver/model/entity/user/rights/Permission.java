@@ -8,6 +8,9 @@ import org.springframework.security.core.GrantedAuthority;
 import javax.persistence.*;
 import java.io.Serial;
 
+import static com.stefbured.oncallserver.model.ModelConstants.Permission.MAX_PERMISSION_DESCRIPTION_LENGTH;
+import static com.stefbured.oncallserver.model.ModelConstants.Permission.MAX_PERMISSION_NAME_LENGTH;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -19,10 +22,10 @@ public class Permission implements GrantedAuthority {
     @Id
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 30)
+    @Column(name = "name", length = MAX_PERMISSION_NAME_LENGTH, nullable = false)
     private String name;
 
-    @Column(name = "description", length = 50)
+    @Column(name = "description", length = MAX_PERMISSION_DESCRIPTION_LENGTH)
     private String description;
 
     @ManyToOne

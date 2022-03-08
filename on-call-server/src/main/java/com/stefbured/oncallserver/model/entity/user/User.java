@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.stefbured.oncallserver.model.entity.user.UserConstants.MAX_EMAIL_LENGTH;
-import static com.stefbured.oncallserver.model.entity.user.UserConstants.MAX_USERNAME_LENGTH;
+import static com.stefbured.oncallserver.model.ModelConstants.User.*;
 
 @Entity
 @Data
@@ -32,16 +31,16 @@ public class User implements Serializable {
     @Column(name = "username", nullable = false, unique = true, length = MAX_USERNAME_LENGTH)
     private String username;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, length = MAX_PASSWORD_LENGTH)
     private String password;
 
     @Column(name = "email", nullable = false, unique = true, length = MAX_EMAIL_LENGTH)
     private String email;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", length = MAX_NAME_LENGTH)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", length = MAX_NAME_LENGTH)
     private String lastName;
 
     @Column(name = "birth_date")
