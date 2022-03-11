@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import static com.stefbured.oncallserver.model.ModelConstants.UserGroup.*;
@@ -31,7 +31,7 @@ public class UserGroupDTO {
     private String description;
 
     @PastOrPresent(message = CREATION_DATE_VALIDATION_ERROR_MESSAGE)
-    private Timestamp creationDate;
+    private LocalDateTime creationDate;
 
     private UserDTO creator;
 
