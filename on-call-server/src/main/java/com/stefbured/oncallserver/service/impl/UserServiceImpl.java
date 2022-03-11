@@ -1,6 +1,5 @@
 package com.stefbured.oncallserver.service.impl;
 
-import com.stefbured.oncallserver.exception.user.InvalidUserParametersException;
 import com.stefbured.oncallserver.exception.user.UserAlreadyExistsException;
 import com.stefbured.oncallserver.exception.user.UserNotFoundException;
 import com.stefbured.oncallserver.model.dto.RoleDTO;
@@ -9,7 +8,6 @@ import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.repository.UserRepository;
 import com.stefbured.oncallserver.service.UserService;
 import com.stefbured.oncallserver.utils.LongPrimaryKeyGenerator;
-import com.stefbured.oncallserver.utils.OnCallEntityValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,9 +46,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO registerWithRoles(UserDTO userDto, Set<Long> rolesIds) {
-        if (!OnCallEntityValidator.isValid(userDto)) {
-            throw new InvalidUserParametersException("Invalid user parameters");
-        }
         checkUserUniqueValues(userDto);
         rolesIds.addAll(DEFAULT_USER_ROLES_IDS);
         var roles = rolesIds.stream()
