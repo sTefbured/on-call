@@ -9,6 +9,7 @@ import javax.validation.constraints.Past;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -38,7 +39,7 @@ public class UserDTO {
     private String lastName;
 
     @Past(message = BIRTH_DATE_IN_FUTURE_ERROR_MESSAGE)
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
 
     @PastOrPresent(message = REGISTRATION_DATE_VALIDATION_ERROR_MESSAGE)
     private LocalDateTime registrationDate;
