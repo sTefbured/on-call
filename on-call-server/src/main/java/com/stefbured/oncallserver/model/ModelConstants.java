@@ -9,7 +9,7 @@ public class ModelConstants {
         public static final int MAX_EMAIL_LENGTH = 320;
         public static final int MAX_NAME_LENGTH = 50;
         public static final String USERNAME_VALIDATION_REGEX = "\\w{5,20}";
-        public static final String PASSWORD_VALIDATION_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]$";
+        public static final String PASSWORD_VALIDATION_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
         public static final String EMAIL_VALIDATION_REGEX = "^[^@]+@[^@]+$";
 
         public static final String USERNAME_VALIDATION_ERROR_MESSAGE = "Username must only consist of latin letters and numbers and its length must be in range from 5 to 20";
