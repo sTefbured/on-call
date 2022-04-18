@@ -12,8 +12,11 @@ import java.util.Scanner;
 
 @Component
 public class ApplicationStartupListener implements ApplicationRunner {
-    private static final String GET_ADMIN_USER = "select * from users where username = 'admin'";
-    private static final String TEST_INIT_QUERY_PATH = "db/test_init.sql";
+    private static final String GET_ADMIN_USER = "select * from users where username = 'sTefbured-admin'";
+    private static final String DEFAULTS_QUERY_PATH = "db/defaults.sql";
+    private static final String TEST_GRANTS_QUERY_PATH = "db/test/test_grants.sql";
+    private static final String TEST_GROUPS_QUERY_PATH = "db/test/test_groups.sql";
+    private static final String TEST_USERS_QUERY_PATH = "db/test/test_users.sql";
     private static final String PRODUCTION_INIT_QUERY_PATH = "db/production_init.sql";
 
     private final SessionFactory sessionFactory;
@@ -25,8 +28,11 @@ public class ApplicationStartupListener implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
+        initializeDatabase(DEFAULTS_QUERY_PATH);
         if (args.containsOption("test")) {
-            initializeDatabase(TEST_INIT_QUERY_PATH);
+            initializeDatabase(TEST_USERS_QUERY_PATH);
+            initializeDatabase(TEST_GROUPS_QUERY_PATH);
+            initializeDatabase(TEST_GRANTS_QUERY_PATH);
         } else {
             initializeDatabase(PRODUCTION_INIT_QUERY_PATH);
         }
@@ -35,15 +41,11 @@ public class ApplicationStartupListener implements ApplicationRunner {
     private void initializeDatabase(String initQueryPath) {
         try (var session = sessionFactory.openSession()) {
             session.doWork(connection -> {
-                var statement = connection.prepareStatement(GET_ADMIN_USER);
-                var result = statement.executeQuery();
-                if (!result.next()) {
-                    var initQueryText = getInitQuery(initQueryPath);
-                    var initQueries = new SqlScriptSplitter().split(initQueryText);
-                    for (var query : initQueries) {
-                        statement = connection.prepareStatement(query);
-                        statement.executeUpdate();
-                    }
+                var initQueryText = getInitQuery(initQueryPath);
+                var initQueries = new SqlScriptSplitter().split(initQueryText);
+                for (var query : initQueries) {
+                    var statement = connection.prepareStatement(query);
+                    statement.executeUpdate();
                 }
             });
         }

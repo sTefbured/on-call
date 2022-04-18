@@ -1,11 +1,7 @@
-package com.stefbured.oncallserver.model.dto;
+package com.stefbured.oncallserver.model.dto.role;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.stefbured.oncallserver.model.entity.user.User;
-import com.stefbured.oncallserver.model.entity.user.rights.Permission;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Size;
 import java.util.Set;
@@ -13,8 +9,6 @@ import java.util.Set;
 import static com.stefbured.oncallserver.model.ModelConstants.Role.*;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoleDTO {
     private Long id;
@@ -25,7 +19,9 @@ public class RoleDTO {
     @Size(max = MAX_ROLE_DESCRIPTION_LENGTH, message = ROLE_DESCRIPTION_LENGTH_ERROR_MESSAGE)
     private String description;
 
-    private Set<User> users;
+    private RoleTypeDTO roleType;
 
-    private Set<Permission> permissions;
+    private Set<UserGrantDTO> userGrants;
+
+    private Set<PermissionDTO> permissions;
 }

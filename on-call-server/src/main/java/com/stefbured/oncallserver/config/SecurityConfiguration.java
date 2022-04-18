@@ -36,9 +36,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilter(new JwtUsernamePasswordAuthFilter(authenticationManager(), jwtConfiguration))
-                .addFilterAfter(new JwtTokenVerifierFilter(jwtConfiguration), JwtUsernamePasswordAuthFilter.class)
+                .addFilterAfter(jwtTokenVerifierFilter(), JwtUsernamePasswordAuthFilter.class)
                 .authorizeRequests()
-                .antMatchers("/api/v1/registration/**").permitAll()
+                .antMatchers("/api/v1/user/**").permitAll()
                 .antMatchers("/api/v1/db/**").permitAll()
                 .anyRequest()
                 .authenticated();
@@ -52,6 +52,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected UserDetailsService userDetailsService() {
         return userDetailsService;
+    }
+
+    @Bean
+    protected JwtTokenVerifierFilter jwtTokenVerifierFilter() {
+        return new JwtTokenVerifierFilter(jwtConfiguration);
     }
 
     @Bean

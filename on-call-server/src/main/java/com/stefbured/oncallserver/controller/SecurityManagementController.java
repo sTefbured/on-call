@@ -1,7 +1,8 @@
 package com.stefbured.oncallserver.controller;
 
 import com.stefbured.oncallserver.exception.RedirectException;
-import com.stefbured.oncallserver.model.dto.RoleDTO;
+import com.stefbured.oncallserver.model.dto.role.RoleDTO;
+import com.stefbured.oncallserver.model.entity.role.Role;
 import com.stefbured.oncallserver.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -29,7 +31,8 @@ public class SecurityManagementController {
     @PostMapping("role")
     @ResponseStatus(HttpStatus.CREATED)
     public RoleDTO createRole(@Valid @RequestBody RoleDTO role) {
-        return roleService.create(role);
+        var result = roleService.create(new Role());
+        return new RoleDTO();
     }
 
     @GetMapping("role")
@@ -50,13 +53,15 @@ public class SecurityManagementController {
             }
         }
         page--;
-        return roleService.getRoles(page, size);
+        var result = roleService.getRoles(page, size);
+        return new ArrayList<>();
     }
 
     @GetMapping(value = "role", params = "id")
     @PreAuthorize("permitAll()")
     public RoleDTO getRole(@RequestParam long id) {
-        return roleService.findById(id);
+        var result = roleService.findById(id);
+        return new RoleDTO();
     }
 
     @DeleteMapping("role")

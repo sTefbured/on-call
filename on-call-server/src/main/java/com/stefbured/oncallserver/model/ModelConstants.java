@@ -48,24 +48,24 @@ public class ModelConstants {
         }
     }
 
-    public static class UserGroup {
-        public static final int MAX_USER_GROUP_ID_TAG_LENGTH = 32;
-        public static final int MIN_USER_GROUP_NAME_LENGTH = 5;
-        public static final int MAX_USER_GROUP_NAME_LENGTH = 32;
-        public static final int MAX_USER_GROUP_DESCRIPTION_LENGTH = 120;
+    public static class Group {
+        public static final int MAX_GROUP_ID_TAG_LENGTH = 32;
+        public static final int MIN_GROUP_NAME_LENGTH = 5;
+        public static final int MAX_GROUP_NAME_LENGTH = 100;
+        public static final int MAX_GROUP_DESCRIPTION_LENGTH = 120;
 
-        public static final String USER_GROUP_ID_TAG_LENGTH_ERROR_MESSAGE = "Max id tag length is " + MAX_USER_GROUP_ID_TAG_LENGTH;
-        public static final String USER_GROUP_NAME_LENGTH_ERROR_MESSAGE = "Length of user group name must be in range from " + MIN_USER_GROUP_NAME_LENGTH + " to " + MAX_USER_GROUP_NAME_LENGTH;
-        public static final String USER_GROUP_DESCRIPTION_LENGTH_ERROR_MESSAGE = "Max length of user group description is" + MAX_USER_GROUP_DESCRIPTION_LENGTH;
-        public static final String CREATION_DATE_VALIDATION_ERROR_MESSAGE = "Group creation date must be equal to current or past date";
+        public static final String GROUP_ID_TAG_LENGTH_ERROR_MESSAGE = "Max id tag length is " + MAX_GROUP_ID_TAG_LENGTH;
+        public static final String GROUP_NAME_LENGTH_ERROR_MESSAGE = "Length of user group name must be in range from " + MIN_GROUP_NAME_LENGTH + " to " + MAX_GROUP_NAME_LENGTH;
+        public static final String GROUP_DESCRIPTION_LENGTH_ERROR_MESSAGE = "Max length of user group description is" + MAX_GROUP_DESCRIPTION_LENGTH;
+        public static final String CREATION_DATE_TIME_VALIDATION_ERROR_MESSAGE = "Group creation date must be equal to current or past date";
 
-        private UserGroup() {
+        private Group() {
         }
     }
 
     public static class Permission {
-        public static final int MAX_PERMISSION_NAME_LENGTH = 10;
-        public static final int MAX_PERMISSION_DESCRIPTION_LENGTH = 10;
+        public static final int MAX_PERMISSION_NAME_LENGTH = 20;
+        public static final int MAX_PERMISSION_DESCRIPTION_LENGTH = 100;
 
         private Permission() {
         }

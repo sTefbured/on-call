@@ -1,8 +1,10 @@
 package com.stefbured.oncallserver.model.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.stefbured.oncallserver.model.dto.RoleDTO;
-import com.stefbured.oncallserver.model.dto.UserGroupDTO;
+import com.stefbured.oncallserver.model.dto.ScheduleRecordDTO;
+import com.stefbured.oncallserver.model.dto.chat.ChatDTO;
+import com.stefbured.oncallserver.model.dto.group.GroupDTO;
+import com.stefbured.oncallserver.model.dto.role.UserGrantDTO;
 import lombok.*;
 
 import javax.validation.constraints.Past;
@@ -42,20 +44,24 @@ public class UserDTO {
     private LocalDate birthDate;
 
     @PastOrPresent(message = REGISTRATION_DATE_VALIDATION_ERROR_MESSAGE)
-    private LocalDateTime registrationDate;
+    private LocalDateTime registrationDateTime;
 
     @PastOrPresent(message = LAST_VISIT_DATE_VALIDATION_ERROR_MESSAGE)
-    private LocalDateTime lastVisitDate;
+    private LocalDateTime lastVisitDateTime;
 
     private LocalDateTime passwordExpirationDate;
-
-    private LocalDateTime userExpirationDate;
 
     private Boolean isBanned;
 
     private Boolean isEnabled;
 
-    private Set<RoleDTO> roles;
+    private Set<UserGrantDTO> grants;
 
-    private Set<UserGroupDTO> userGroups;
+    private Set<GroupDTO> createdGroups;
+
+    private Set<ScheduleRecordDTO> assignedScheduleRecords;
+
+    private Set<ScheduleRecordDTO> createdScheduleRecords;
+
+    private Set<ChatDTO> createdChats;
 }

@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
+import static com.stefbured.oncallserver.OnCallDefaultPermissions.DATABASE_ACCESS;
+
 @RestController
 @RequestMapping("api/v1/db")
 public class DatabaseAccessController {
@@ -34,7 +36,7 @@ public class DatabaseAccessController {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var isNotGranted = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .noneMatch(authority -> authority.equals("database:runQuery"));
+                .noneMatch(DATABASE_ACCESS::equals);
         if (isNotGranted) {
             return ResponseEntity.notFound().build();
         }

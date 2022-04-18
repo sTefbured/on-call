@@ -1,12 +1,8 @@
-package com.stefbured.oncallserver.model.entity.user.rights;
+package com.stefbured.oncallserver.model.entity.role;
 
-import com.stefbured.oncallserver.model.entity.group.UserGroup;
-import com.stefbured.oncallserver.model.entity.user.User;
 import lombok.*;
 
 import javax.persistence.*;
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.Set;
 
 import static com.stefbured.oncallserver.model.ModelConstants.Role.MAX_ROLE_DESCRIPTION_LENGTH;
@@ -18,10 +14,7 @@ import static com.stefbured.oncallserver.model.ModelConstants.Role.MAX_ROLE_NAME
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Table(name = "roles")
-public class Role implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 5176116782288632416L;
-
+public class Role {
     @Id
     private Long id;
 
@@ -32,17 +25,16 @@ public class Role implements Serializable {
     @Column(name = "description", length = MAX_ROLE_DESCRIPTION_LENGTH)
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "user_group_id")
-    private UserGroup userGroup;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_type_id")
+    private RoleType roleType;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @ManyToMany
-    @JoinTable(name = "users_roles",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> users;
+    @OneToMany(mappedBy = "role")
+    private Set<UserGrant> userGrants;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

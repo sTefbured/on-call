@@ -1,13 +1,13 @@
 package com.stefbured.oncallserver.service;
 
-import com.stefbured.oncallserver.model.dto.RoleDTO;
+import com.stefbured.oncallserver.model.entity.role.Role;
 
 import java.util.Collection;
 
 public interface RoleService {
-    Collection<RoleDTO> getRoles(int pageNumber, int pageSize);
-    RoleDTO findById(Long id);
-    RoleDTO create(RoleDTO role);
-    RoleDTO update(RoleDTO role);
+    Collection<Role> getRoles(int pageNumber, int pageSize);
+    Role findById(Long id);
+    Role create(Role role);
+    Role update(Role role);
     boolean deleteById(Long id);
 }

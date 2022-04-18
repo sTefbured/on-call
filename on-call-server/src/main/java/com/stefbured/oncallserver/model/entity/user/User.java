@@ -1,14 +1,14 @@
 package com.stefbured.oncallserver.model.entity.user;
 
-import com.stefbured.oncallserver.model.entity.group.UserGroup;
-import com.stefbured.oncallserver.model.entity.user.rights.Permission;
-import com.stefbured.oncallserver.model.entity.user.rights.Role;
+import com.stefbured.oncallserver.model.entity.chat.Chat;
+import com.stefbured.oncallserver.model.entity.group.Group;
+import com.stefbured.oncallserver.model.entity.role.Permission;
+import com.stefbured.oncallserver.model.entity.role.UserGrant;
+import com.stefbured.oncallserver.model.entity.schedule.ScheduleRecord;
 import lombok.*;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -22,10 +22,7 @@ import static com.stefbured.oncallserver.model.ModelConstants.User.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @Table(name = "users")
-public class User implements Serializable {
-    @Serial
-    private static final long serialVersionUID = -2624571695743685604L;
-
+public class User {
     @Id
     private Long id;
 
@@ -47,17 +44,14 @@ public class User implements Serializable {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @Column(name = "registration_date", nullable = false)
-    private LocalDateTime registrationDate;
+    @Column(name = "registration_date_time", nullable = false)
+    private LocalDateTime registrationDateTime;
 
-    @Column(name = "last_visit")
-    private LocalDateTime lastVisitDate;
+    @Column(name = "last_visit_date_time")
+    private LocalDateTime lastVisitDateTime;
 
     @Column(name = "password_expiration_date")
     private LocalDateTime passwordExpirationDate;
-
-    @Column(name = "user_expiration_date")
-    private LocalDateTime userExpirationDate;
 
     @Column(name = "is_banned")
     @Type(type = "boolean")
@@ -71,13 +65,28 @@ public class User implements Serializable {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(mappedBy = "users")
-    private Set<Role> roles;
+    @OneToMany(mappedBy = "user")
+    private Set<UserGrant> grants;
 
-    @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(mappedBy = "members")
-    private Set<UserGroup> userGroups;
+    @ToString.Exclude
+    @OneToMany(mappedBy = "creator")
+    private Set<Group> createdGroups;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user")
+    private Set<ScheduleRecord> assignedScheduleRecords;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "creator")
+    private Set<ScheduleRecord> createdScheduleRecords;
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "creator")
+    private Set<Chat> createdChats;
 
     public Boolean isBanned() {
         return isBanned;
@@ -88,8 +97,8 @@ public class User implements Serializable {
     }
 
     public Set<String> getAuthorityNames() {
-        return getRoles().stream()
-                .flatMap(role -> role.getPermissions().stream())
+        return getGrants().stream()
+                .flatMap(grant -> grant.getRole().getPermissions().stream())
                 .map(Permission::getAuthority)
                 .collect(Collectors.toSet());
     }

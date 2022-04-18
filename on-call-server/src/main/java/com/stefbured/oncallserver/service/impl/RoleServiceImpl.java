@@ -1,7 +1,7 @@
 package com.stefbured.oncallserver.service.impl;
 
 import com.stefbured.oncallserver.exception.user.UserNotFoundException;
-import com.stefbured.oncallserver.model.dto.RoleDTO;
+import com.stefbured.oncallserver.model.entity.role.Role;
 import com.stefbured.oncallserver.repository.RoleRepository;
 import com.stefbured.oncallserver.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,26 +20,22 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Collection<RoleDTO> getRoles(int page, int pageSize) {
-        return roleRepository.findAllByOrderByIdAsc(PageRequest.of(page, pageSize))
-                .map(r -> new RoleDTO(r.getId(), r.getName(), r.getDescription(), null, null))
-                .toList();
+    public Collection<Role> getRoles(int page, int pageSize) {
+        return roleRepository.findAllByOrderByIdAsc(PageRequest.of(page, pageSize)).toList();
     }
 
     @Override
-    public RoleDTO findById(Long id) {
-        return roleRepository.findById(id)
-                .map(r -> new RoleDTO(r.getId(), r.getName(), r.getDescription(), null, null))
-                .orElseThrow(() -> new UserNotFoundException("No user with id=" + id));
+    public Role findById(Long id) {
+        return roleRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
-    public RoleDTO create(RoleDTO role) {
+    public Role create(Role role) {
         return null;
     }
 
     @Override
-    public RoleDTO update(RoleDTO role) {
+    public Role update(Role role) {
         return null;
     }
 

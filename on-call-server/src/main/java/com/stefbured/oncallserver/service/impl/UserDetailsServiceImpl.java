@@ -1,6 +1,5 @@
 package com.stefbured.oncallserver.service.impl;
 
-import com.stefbured.oncallserver.model.entity.user.rights.Role;
 import com.stefbured.oncallserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -26,17 +24,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + " was not found."));
-        var roles = user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
         var authorities = user.getAuthorityNames();
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .roles(roles.toArray(String[]::new))
                 .authorities(authorities.toArray(String[]::new))
-                .accountExpired(isBeforeCurrentDate(user.getUserExpirationDate()))
-                .accountLocked(user.isBanned() != null && user.isBanned())
+                .accountExpired(false)
+                .accountLocked(Boolean.TRUE.equals(user.isBanned()))
                 .credentialsExpired(isBeforeCurrentDate(user.getPasswordExpirationDate()))
                 .disabled(!user.isEnabled())
                 .build();
