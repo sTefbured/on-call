@@ -33,10 +33,10 @@ insert into user_grants(id, chat_id, group_id, role_id, user_id)
 values (549032634534561,
         null,
         634426544342552, /* Belarusian National Technical University */
-        444562356788634, /* Group user */
+        444562356788634, /* Group member */
         1233467754445657), /* sTefbured-user */
        (549032634534562,
         null,
         735965368008523, /* Faculty of Information Technologies and Robotics */
-        444562356788634, /* Group user */
+        444562356788634, /* Group member */
         1233467754445657); /* sTefbured-user */

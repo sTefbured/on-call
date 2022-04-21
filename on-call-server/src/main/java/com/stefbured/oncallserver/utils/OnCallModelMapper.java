@@ -1,8 +1,10 @@
 package com.stefbured.oncallserver.utils;
 
 import com.stefbured.oncallserver.model.dto.group.GroupDTO;
+import com.stefbured.oncallserver.model.dto.role.UserGrantDTO;
 import com.stefbured.oncallserver.model.dto.user.UserDTO;
 import com.stefbured.oncallserver.model.entity.group.Group;
+import com.stefbured.oncallserver.model.entity.role.UserGrant;
 import com.stefbured.oncallserver.model.entity.user.User;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -16,13 +18,18 @@ public class OnCallModelMapper extends ModelMapper {
     public static final String GROUP_TO_PREVIEW_DTO = "groupToPreviewDto";
 
     // User mappings
-    public static final String USER_TO_DTO = "userToDto";
-    public static final String USER_TO_LIMITED_DTO = "userToLimitedDto";
+    public static final String USER_TO_PRIVATE_INFORMATION_DTO = "userToPrivateInformationDto";
+    public static final String USER_TO_PUBLIC_INFORMATION_DTO = "userToPublicInformationDto";
+    public static final String USER_TO_PREVIEW_DTO = "userToPreviewDto";
     public static final String USER_TO_POST_REGISTRATION_DTO = "userToPostRegistrationDto";
+
+    // UserGrant mappings
+    public static final String USER_GRANT_TO_SHORT_DTO_FOR_USER = "userGrantToShortDtoForUser";
 
     public OnCallModelMapper() {
         addGroupMappings();
         addUserToDtoMappings();
+        addUserGrantMappings();
     }
 
     public void mapSkippingNullValues(Object source, Object destination) {
@@ -34,7 +41,7 @@ public class OnCallModelMapper extends ModelMapper {
     }
 
     private void addUserToDtoMappings() {
-        createTypeMap(User.class, UserDTO.class, USER_TO_DTO)
+        createTypeMap(User.class, UserDTO.class, USER_TO_PRIVATE_INFORMATION_DTO)
                 .setConverter(context -> {
                     var source = context.getSource();
                     var destination = new UserDTO();
@@ -49,14 +56,43 @@ public class OnCallModelMapper extends ModelMapper {
                     destination.setPasswordExpirationDate(source.getPasswordExpirationDate());
                     destination.setIsBanned(source.isBanned());
                     destination.setIsEnabled(source.isEnabled());
-                    // TODO: roles and groups??
+                    if (source.getGrants() != null) {
+                        var grantMapper = getTypeMap(UserGrant.class, UserGrantDTO.class, USER_GRANT_TO_SHORT_DTO_FOR_USER);
+                        destination.setGrants(source.getGrants().stream()
+                                .map(grantMapper::map)
+                                .toList());
+                    }
+                    if (source.getCreatedGroups() != null) {
+                        var groupMapper = getTypeMap(Group.class, GroupDTO.class, GROUP_TO_PREVIEW_DTO);
+                        destination.setCreatedGroups(source.getCreatedGroups().stream()
+                                .map(groupMapper::map)
+                                .collect(Collectors.toSet()));
+                    }
+                    //TODO: add schedule records and created chats
                     return destination;
                 });
-        createTypeMap(User.class, UserDTO.class, USER_TO_LIMITED_DTO)
+        createTypeMap(User.class, UserDTO.class, USER_TO_PUBLIC_INFORMATION_DTO)
                 .setConverter(context -> {
                     var source = context.getSource();
                     var destination = new UserDTO();
-                    fillLimitedUserDtoParameters(source, destination);
+                    destination.setId(source.getId());
+                    destination.setUsername(source.getUsername());
+                    destination.setFirstName(source.getFirstName());
+                    destination.setLastName(source.getLastName());
+                    destination.setBirthDate(source.getBirthDate());
+                    destination.setRegistrationDateTime(source.getRegistrationDateTime());
+                    destination.setLastVisitDateTime(source.getLastVisitDateTime());
+                    destination.setIsBanned(source.isBanned());
+                    return destination;
+                });
+        createTypeMap(User.class, UserDTO.class, USER_TO_PREVIEW_DTO)
+                .setConverter(context -> {
+                    var source = context.getSource();
+                    var destination = new UserDTO();
+                    destination.setId(source.getId());
+                    destination.setUsername(source.getUsername());
+                    destination.setFirstName(source.getFirstName());
+                    destination.setLastName(source.getLastName());
                     return destination;
                 });
 
@@ -77,11 +113,27 @@ public class OnCallModelMapper extends ModelMapper {
 
     }
 
-    private void fillLimitedUserDtoParameters(User source, UserDTO destination) {
-        destination.setId(source.getId());
-        destination.setUsername(source.getUsername());
-        destination.setFirstName(source.getFirstName());
-        destination.setLastName(source.getLastName());
+    private void addUserGrantMappings() {
+        createTypeMap(UserGrant.class, UserGrantDTO.class, USER_GRANT_TO_SHORT_DTO_FOR_USER)
+                .setConverter(context -> {
+                    var source = context.getSource();
+                    var destination = new UserGrantDTO();
+                    destination.setId(source.getId());
+                    if (source.getGroup() != null) {
+                        var typeMapper = getTypeMap(Group.class, GroupDTO.class, GROUP_TO_PREVIEW_DTO);
+                        destination.setGroup(typeMapper.map(source.getGroup()));
+                    }
+                    if (source.getChat() != null) {
+//                        TODO: add chat mapping after its implementation
+//                        var typeMapper = getTypeMap(User.class, UserDTO.class, USER_TO_PREVIEW_DTO);
+//                        destination.setUser(typeMapper.map(source.getUser()));
+                    }
+
+//                    TODO: add role mapping after its implementation
+//                    var roleMapper = getTypeMap(Role.class, RoleDTO.class, USER_TO_PREVIEW_DTO);
+//                    destination.setRole(roleMapper.map(source.getRole()));
+                    return destination;
+                });
     }
 
     private void addGroupMappings() {
@@ -95,7 +147,7 @@ public class OnCallModelMapper extends ModelMapper {
                     var childGroups = source.getChildGroups() == null ? null : source.getChildGroups().stream()
                             .map(limitedGroupMapper::map)
                             .collect(Collectors.toSet());
-                    var limitedUserMapper = getTypeMap(User.class, UserDTO.class, USER_TO_LIMITED_DTO);
+                    var limitedUserMapper = getTypeMap(User.class, UserDTO.class, USER_TO_PREVIEW_DTO);
                     var creator = limitedUserMapper.map(source.getCreator());
                     var destination = new GroupDTO();
                     destination.setId(source.getId());
@@ -118,7 +170,7 @@ public class OnCallModelMapper extends ModelMapper {
                     var childGroups = source.getChildGroups() == null ? null : source.getChildGroups().stream()
                             .map(limitedGroupMapper::map)
                             .collect(Collectors.toSet());
-                    var limitedUserMapper = getTypeMap(User.class, UserDTO.class, USER_TO_LIMITED_DTO);
+                    var limitedUserMapper = getTypeMap(User.class, UserDTO.class, USER_TO_PREVIEW_DTO);
                     var creator = limitedUserMapper.map(source.getCreator());
                     var destination = new GroupDTO();
                     destination.setId(source.getId());

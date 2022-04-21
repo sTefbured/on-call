@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
-import static com.stefbured.oncallserver.OnCallDefaultPermissions.DATABASE_ACCESS;
+import static com.stefbured.oncallserver.OnCallConstants.DATABASE_ACCESS;
 
 @RestController
 @RequestMapping("api/v1/db")

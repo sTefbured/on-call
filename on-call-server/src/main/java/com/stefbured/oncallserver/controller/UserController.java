@@ -2,127 +2,112 @@ package com.stefbured.oncallserver.controller;
 
 import com.stefbured.oncallserver.exception.user.UserException;
 import com.stefbured.oncallserver.exception.user.UserNotFoundException;
-import com.stefbured.oncallserver.model.dto.user.BatchUserRegistrationRecordDTO;
 import com.stefbured.oncallserver.model.dto.user.UserDTO;
 import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.service.UserService;
 import com.stefbured.oncallserver.utils.OnCallModelMapper;
-import com.stefbured.oncallserver.utils.PasswordGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URI;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static com.stefbured.oncallserver.utils.OnCallModelMapper.USER_TO_DTO;
-import static com.stefbured.oncallserver.utils.OnCallModelMapper.USER_TO_POST_REGISTRATION_DTO;
+import static com.stefbured.oncallserver.OnCallConstants.*;
+import static com.stefbured.oncallserver.utils.OnCallModelMapper.*;
 
 @RestController
 @RequestMapping("api/v1/user")
 public class UserController {
     private static final Logger LOGGER = LogManager.getLogger(UserController.class);
-    private static final int GENERATED_PASSWORD_LENGTH = 16;
 
     private final UserService userService;
     private final OnCallModelMapper modelMapper;
-    private final PasswordGenerator passwordGenerator;
 
     @Autowired
     public UserController(UserService userService, OnCallModelMapper modelMapper) {
         this.userService = userService;
         this.modelMapper = modelMapper;
-        passwordGenerator = new PasswordGenerator();
     }
 
     @GetMapping("{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('" + USER_PUBLIC_INFO_VIEW + "', '" + USER_PRIVATE_INFO_VIEW + "')")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
-        User result;
+        User queriedUser;
         try {
-            result = userService.getUserById(id);
+            queriedUser = userService.getUserById(id);
         } catch (UserNotFoundException exception) {
             return ResponseEntity.notFound().build();
         }
-        var resultDTO = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_DTO).map(result);
-        return ResponseEntity.ok(resultDTO);
+        UserDTO result;
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var isReceiversProfile = queriedUser.getUsername().equals(authentication.getName());
+        var authorities = authentication.getAuthorities();
+        if (isReceiversProfile
+                || authorities.stream().anyMatch(a -> a.getAuthority().equals(USER_PRIVATE_INFO_VIEW))) {
+            result = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_PRIVATE_INFORMATION_DTO).map(queriedUser);
+        } else {
+            result = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_PUBLIC_INFORMATION_DTO).map(queriedUser);
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("all")
+    @PreAuthorize("hasAnyAuthority('" + USER_PUBLIC_INFO_VIEW + "', '" + USER_PRIVATE_INFO_VIEW + "')")
+    public ResponseEntity<Set<UserDTO>> getUsersList(@RequestParam int page, @RequestParam int pageSize) {
+        var users = userService.getUsers(page, pageSize);
+        var typeMap = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_PREVIEW_DTO);
+        var result = users.stream().map(typeMap::map).collect(Collectors.toSet());
+        var totalUsersCount = userService.getUsersCount();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_RANGE, String.valueOf(totalUsersCount))
+                .body(result);
     }
 
     @PostMapping
-    @PreAuthorize("isAnonymous() || hasAuthority('')")
-    public ResponseEntity<Object> registerUser(@Valid @RequestBody UserDTO user) {
+    @PreAuthorize("isAnonymous() || hasAuthority('" + USER_REGISTER + "')")
+    public ResponseEntity<Object> registerUser(@Valid @RequestBody UserDTO user, HttpServletRequest request) {
         LOGGER.info("Performing single user registration: username={}", user.getUsername());
         try {
+            if (SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) {
+                user.setGrants(null);
+            }
             var userEntity = new User();
             modelMapper.mapSkippingNullValues(user, userEntity);
             var typeMap = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_POST_REGISTRATION_DTO);
             var userDetails = typeMap.map(userService.register(userEntity));
             LOGGER.info("Successful registration: user={}", userDetails);
-            return ResponseEntity.status(HttpStatus.CREATED).body(userDetails);
-        } catch (Exception exception) {
+            var locationUri = URI.create(request.getRequestURI()).resolve(userDetails.getId().toString());
+            return ResponseEntity.created(locationUri).body(userDetails);
+        } catch (UserException exception) {
             LOGGER.info("Registration failed: {}", exception.getMessage());
-            if (exception instanceof UserException) {
-                return ResponseEntity.badRequest().body(exception.getMessage());
-            } else {
-                return ResponseEntity.badRequest().body("Unknown error during registration");
-            }
+            return ResponseEntity.badRequest().body(exception.getMessage());
         }
-    }
-
-    @PostMapping("batch")
-    @PreAuthorize("hasAuthority('register:batch')")
-    public ResponseEntity<List<BatchUserRegistrationRecordDTO>> registerMultipleUsers(@RequestBody Set<@Valid UserDTO> users,
-                                                                                      @RequestParam(required = false) Boolean generatePassword) {
-        LOGGER.info("Batch registration started");
-        if (Boolean.TRUE.equals(generatePassword)) {
-            users.forEach(user -> user.setPassword(passwordGenerator.generate(GENERATED_PASSWORD_LENGTH)));
-        }
-        var registrationRecords = new ArrayList<BatchUserRegistrationRecordDTO>(users.size());
-        for (var user : users) {
-            registrationRecords.add(registerWithErrorHandling(user));
-        }
-        LOGGER.info("Batch registration finished: {}", registrationRecords);
-        return ResponseEntity.ok(registrationRecords);
     }
 
     @PutMapping
-    //TODO: finish
-    public ResponseEntity<UserDTO> editUser(@RequestBody @Valid UserDTO user) {
+    @PreAuthorize("isAuthenticated() && (hasAuthority('" + USER_EDIT + "') || #user.getUsername().equals(authentication.name))")
+    public ResponseEntity<Object> editUser(@RequestBody @Valid UserDTO user) {
+        if (user.getId() == null) {
+            return ResponseEntity.badRequest().body("UserId wasn't provided");
+        }
+        var userEntity = new User();
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (userService.userHasAnyAuthority(authentication.getName())) {
-            var userEntity = new User();
-            modelMapper.mapSkippingNullValues(user, userEntity);
-            var typeMap = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_DTO);
-            var result = typeMap.map(userService.updateUser(userEntity));
-            return ResponseEntity.ok(result);
+        if (!user.getUsername().equals(authentication.getName())) {
+            user.setPassword(null);
         }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }
-
-    @DeleteMapping(value = "{id}")
-    public void deleteUserById(@PathVariable Long id) {
-        userService.deleteUserById(id);
-    }
-
-    private BatchUserRegistrationRecordDTO registerWithErrorHandling(UserDTO user) {
-        var registrationRecord = new BatchUserRegistrationRecordDTO();
-        registrationRecord.setUser(user);
-        try {
-            var userEntity = new User();
-            modelMapper.mapSkippingNullValues(user, userEntity);
-            userService.register(userEntity);
-            registrationRecord.setSuccessful(true);
-        } catch (Exception exception) {
-            registrationRecord.setSuccessful(false);
-            registrationRecord.setExceptionMessage(exception.getMessage());
-        }
-        return registrationRecord;
+        modelMapper.mapSkippingNullValues(user, userEntity);
+        var typeMap = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_PRIVATE_INFORMATION_DTO);
+        var result = typeMap.map(userService.updateUser(userEntity));
+        return ResponseEntity.ok(result);
     }
 }

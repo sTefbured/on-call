@@ -22,7 +22,7 @@ import java.net.URI;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.stefbured.oncallserver.OnCallDefaultPermissions.*;
+import static com.stefbured.oncallserver.OnCallConstants.*;
 import static com.stefbured.oncallserver.utils.OnCallModelMapper.*;
 
 @RestController
@@ -71,7 +71,7 @@ public class GroupController {
             }
         }
         page--;
-        var typeMap = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_LIMITED_DTO);
+        var typeMap = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_PREVIEW_DTO);
         var groupMembers = groupService.getGroupMembers(groupId, page, pageSize).stream()
                 .map(typeMap::map)
                 .collect(Collectors.toSet());

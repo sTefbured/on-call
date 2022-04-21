@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 @Component
 public class ApplicationStartupListener implements ApplicationRunner {
-    private static final String GET_ADMIN_USER = "select * from users where username = 'sTefbured-admin'";
+    private static final String DROP_TABLES_QUERY_PATH = "db/clear_tables.sql";
     private static final String DEFAULTS_QUERY_PATH = "db/defaults.sql";
     private static final String TEST_GRANTS_QUERY_PATH = "db/test/test_grants.sql";
     private static final String TEST_GROUPS_QUERY_PATH = "db/test/test_groups.sql";
@@ -28,22 +28,25 @@ public class ApplicationStartupListener implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        initializeDatabase(DEFAULTS_QUERY_PATH);
-        if (args.containsOption("test")) {
-            initializeDatabase(TEST_USERS_QUERY_PATH);
-            initializeDatabase(TEST_GROUPS_QUERY_PATH);
-            initializeDatabase(TEST_GRANTS_QUERY_PATH);
-        } else {
-            initializeDatabase(PRODUCTION_INIT_QUERY_PATH);
+        if (args.containsOption("dbreload")) {
+            runQueries(DROP_TABLES_QUERY_PATH);
+            runQueries(DEFAULTS_QUERY_PATH);
+            if (args.containsOption("test")) {
+                runQueries(TEST_USERS_QUERY_PATH);
+                runQueries(TEST_GROUPS_QUERY_PATH);
+                runQueries(TEST_GRANTS_QUERY_PATH);
+            } else {
+                runQueries(PRODUCTION_INIT_QUERY_PATH);
+            }
         }
     }
 
-    private void initializeDatabase(String initQueryPath) {
+    private void runQueries(String queryPath) {
         try (var session = sessionFactory.openSession()) {
             session.doWork(connection -> {
-                var initQueryText = getInitQuery(initQueryPath);
-                var initQueries = new SqlScriptSplitter().split(initQueryText);
-                for (var query : initQueries) {
+                var initQueryText = getInitQuery(queryPath);
+                var queries = new SqlScriptSplitter().split(initQueryText);
+                for (var query : queries) {
                     var statement = connection.prepareStatement(query);
                     statement.executeUpdate();
                 }
@@ -51,10 +54,10 @@ public class ApplicationStartupListener implements ApplicationRunner {
         }
     }
 
-    private String getInitQuery(String initQueryPath) {
-        var queryStream = getClass().getClassLoader().getResourceAsStream(initQueryPath);
+    private String getInitQuery(String queryPath) {
+        var queryStream = getClass().getClassLoader().getResourceAsStream(queryPath);
         if (queryStream == null) {
-            throw new NullPointerException("Init script file name is null");
+            throw new NullPointerException("Query file name is null");
         }
         String query;
         try (var scanner = new Scanner(queryStream)) {

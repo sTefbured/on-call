@@ -13,6 +13,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import static com.stefbured.oncallserver.model.ModelConstants.User.*;
@@ -55,7 +56,7 @@ public class UserDTO {
 
     private Boolean isEnabled;
 
-    private Set<UserGrantDTO> grants;
+    private List<UserGrantDTO> grants;
 
     private Set<GroupDTO> createdGroups;
 
