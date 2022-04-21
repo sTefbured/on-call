@@ -4,8 +4,9 @@ import com.stefbured.oncallserver.model.dto.role.UserGrantDTO;
 import com.stefbured.oncallserver.model.entity.role.UserGrant;
 import com.stefbured.oncallserver.service.UserGrantService;
 import com.stefbured.oncallserver.service.UserService;
-import com.stefbured.oncallserver.utils.OnCallModelMapper;
+import com.stefbured.oncallserver.mapper.OnCallModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,7 @@ import java.net.URI;
 import java.util.NoSuchElementException;
 
 import static com.stefbured.oncallserver.OnCallConstants.*;
+import static com.stefbured.oncallserver.mapper.UserGrantModelMapper.USER_GRANT_MODEL_MAPPER;
 
 @RestController
 @RequestMapping("api/v1/userGrant")
@@ -27,7 +29,7 @@ public class UserGrantController {
     @Autowired
     public UserGrantController(UserService userService,
                                UserGrantService userGrantService,
-                               OnCallModelMapper modelMapper) {
+                               @Qualifier(USER_GRANT_MODEL_MAPPER) OnCallModelMapper modelMapper) {
         this.userService = userService;
         this.userGrantService = userGrantService;
         this.modelMapper = modelMapper;

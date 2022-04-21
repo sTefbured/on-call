@@ -9,8 +9,9 @@ import com.stefbured.oncallserver.repository.UserRepository;
 import com.stefbured.oncallserver.service.UserGrantService;
 import com.stefbured.oncallserver.service.UserService;
 import com.stefbured.oncallserver.utils.LongPrimaryKeyGenerator;
-import com.stefbured.oncallserver.utils.OnCallModelMapper;
+import com.stefbured.oncallserver.mapper.OnCallModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.stefbured.oncallserver.OnCallConstants.ON_CALL_USER_ROLE_ID;
+import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_MODEL_MAPPER;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -38,7 +40,7 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(LongPrimaryKeyGenerator primaryKeyGenerator,
                            UserRepository userRepository,
                            UserGrantService userGrantService,
-                           OnCallModelMapper modelMapper,
+                           @Qualifier(USER_MODEL_MAPPER) OnCallModelMapper modelMapper,
                            PasswordEncoder passwordEncoder) {
         this.primaryKeyGenerator = primaryKeyGenerator;
         this.userRepository = userRepository;
@@ -61,7 +63,7 @@ public class UserServiceImpl implements UserService {
         user.setLastVisitDateTime(LocalDateTime.now());
         var createdUser = userRepository.save(user);
         DEFAULT_USER_ROLES_IDS.forEach(roleId -> {
-            if (grants.stream().anyMatch(grant -> grant.getRole().getId().equals(roleId)
+            if (grants.stream().noneMatch(grant -> grant.getRole().getId().equals(roleId)
                     && grant.getGroup() == null && grant.getChat() == null)) {
                 var grant = new UserGrant();
                 var role = new Role();

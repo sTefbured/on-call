@@ -5,10 +5,11 @@ import com.stefbured.oncallserver.exception.user.UserNotFoundException;
 import com.stefbured.oncallserver.model.dto.user.UserDTO;
 import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.service.UserService;
-import com.stefbured.oncallserver.utils.OnCallModelMapper;
+import com.stefbured.oncallserver.mapper.OnCallModelMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.stefbured.oncallserver.OnCallConstants.*;
-import static com.stefbured.oncallserver.utils.OnCallModelMapper.*;
+import static com.stefbured.oncallserver.mapper.UserModelMapper.*;
 
 @RestController
 @RequestMapping("api/v1/user")
@@ -34,7 +35,7 @@ public class UserController {
     private final OnCallModelMapper modelMapper;
 
     @Autowired
-    public UserController(UserService userService, OnCallModelMapper modelMapper) {
+    public UserController(UserService userService, @Qualifier(USER_MODEL_MAPPER) OnCallModelMapper modelMapper) {
         this.userService = userService;
         this.modelMapper = modelMapper;
     }

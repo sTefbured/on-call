@@ -7,8 +7,9 @@ import com.stefbured.oncallserver.model.entity.group.Group;
 import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.service.GroupService;
 import com.stefbured.oncallserver.service.UserService;
-import com.stefbured.oncallserver.utils.OnCallModelMapper;
+import com.stefbured.oncallserver.mapper.OnCallModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,20 +24,27 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.stefbured.oncallserver.OnCallConstants.*;
-import static com.stefbured.oncallserver.utils.OnCallModelMapper.*;
+import static com.stefbured.oncallserver.mapper.GroupModelMapper.*;
+import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_MODEL_MAPPER;
+import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_TO_PREVIEW_DTO;
 
 @RestController
 @RequestMapping("api/v1/group/")
 public class GroupController {
     private final GroupService groupService;
-    private final OnCallModelMapper modelMapper;
     private final UserService userService;
+    private final OnCallModelMapper groupMapper;
+    private final OnCallModelMapper userMapper;
 
     @Autowired
-    public GroupController(GroupService groupService, OnCallModelMapper modelMapper, UserService userService) {
+    public GroupController(GroupService groupService,
+                           UserService userService,
+                           @Qualifier(GROUP_MODEL_MAPPER) OnCallModelMapper groupMapper,
+                           @Qualifier(USER_MODEL_MAPPER) OnCallModelMapper userMapper) {
         this.groupService = groupService;
-        this.modelMapper = modelMapper;
         this.userService = userService;
+        this.groupMapper = groupMapper;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("**")
@@ -71,9 +79,9 @@ public class GroupController {
             }
         }
         page--;
-        var typeMap = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_PREVIEW_DTO);
+        var userTypeMap = userMapper.getTypeMap(User.class, UserDTO.class, USER_TO_PREVIEW_DTO);
         var groupMembers = groupService.getGroupMembers(groupId, page, pageSize).stream()
-                .map(typeMap::map)
+                .map(userTypeMap::map)
                 .collect(Collectors.toSet());
         return ResponseEntity.ok(groupMembers);
     }
@@ -89,7 +97,7 @@ public class GroupController {
         }
 
         var groupEntity = new Group();
-        modelMapper.mapSkippingNullValues(group, groupEntity);
+        groupMapper.mapSkippingNullValues(group, groupEntity);
         var createdGroup = groupService.create(groupEntity);
 
 //        TODO: ADD GRANTS FROM PARENT GROUP TO THE CREATOR WHEN GRANTS SERVICE WILL BE IMPLEMENTED
@@ -100,7 +108,7 @@ public class GroupController {
 //            grant.setId();
 //        }
 
-        var result = modelMapper.getTypeMap(Group.class, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO).map(createdGroup);
+        var result = groupMapper.getTypeMap(Group.class, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO).map(createdGroup);
         var locationUri = URI.create(request.getRequestURI()).resolve(result.getId().toString());
         return ResponseEntity.created(locationUri).body(result);
     }
@@ -113,9 +121,9 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         var groupEntity = groupService.getById(group.getId());
-        modelMapper.mapSkippingNullValues(group, groupEntity);
+        groupMapper.mapSkippingNullValues(group, groupEntity);
         var updatedGroup = groupService.update(groupEntity);
-        var result = modelMapper.getTypeMap(Group.class, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO).map(updatedGroup);
+        var result = groupMapper.getTypeMap(Group.class, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO).map(updatedGroup);
         return ResponseEntity.ok(result);
     }
 
@@ -138,9 +146,9 @@ public class GroupController {
         GroupDTO result;
         if (userService.userHasGlobalAuthority(username, GROUP_ADMIN_VIEW)
                 || userService.userHasAuthorityForGroup(username, group.getId(), GROUP_ADMIN_VIEW)) {
-            result = modelMapper.getTypeMap(Group.class, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO).map(group);
+            result = groupMapper.getTypeMap(Group.class, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO).map(group);
         } else if (userService.userHasAuthorityForGroup(username, group.getId(), GROUP_MEMBER_VIEW)) {
-            result = modelMapper.getTypeMap(Group.class, GroupDTO.class, GROUP_TO_MEMBER_VIEW_DTO).map(group);
+            result = groupMapper.getTypeMap(Group.class, GroupDTO.class, GROUP_TO_MEMBER_VIEW_DTO).map(group);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

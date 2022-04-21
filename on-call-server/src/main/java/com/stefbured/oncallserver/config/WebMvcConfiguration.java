@@ -1,13 +1,8 @@
 package com.stefbured.oncallserver.config;
 
-import com.stefbured.oncallserver.utils.OnCallModelMapper;
 import lombok.Setter;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -25,17 +20,5 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(allowedOrigins)
                 .allowedMethods("GET", "POST", "PUT", "DELETE");
-    }
-
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public OnCallModelMapper onCallModelMapper() {
-        return new OnCallModelMapper();
-    }
-
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
-    public ModelMapper modelMapper() {
-        return onCallModelMapper();
     }
 }
