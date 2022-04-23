@@ -108,7 +108,7 @@ public class GroupController {
 //            grant.setId();
 //        }
 
-        var result = groupMapper.getTypeMap(Group.class, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO).map(createdGroup);
+        var result = groupMapper.map(createdGroup, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO);
         var locationUri = URI.create(request.getRequestURI()).resolve(result.getId().toString());
         return ResponseEntity.created(locationUri).body(result);
     }
@@ -123,7 +123,7 @@ public class GroupController {
         var groupEntity = groupService.getById(group.getId());
         groupMapper.mapSkippingNullValues(group, groupEntity);
         var updatedGroup = groupService.update(groupEntity);
-        var result = groupMapper.getTypeMap(Group.class, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO).map(updatedGroup);
+        var result = groupMapper.map(updatedGroup, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO);
         return ResponseEntity.ok(result);
     }
 
@@ -146,9 +146,9 @@ public class GroupController {
         GroupDTO result;
         if (userService.userHasGlobalAuthority(username, GROUP_ADMIN_VIEW)
                 || userService.userHasAuthorityForGroup(username, group.getId(), GROUP_ADMIN_VIEW)) {
-            result = groupMapper.getTypeMap(Group.class, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO).map(group);
+            result = groupMapper.map(group, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO);
         } else if (userService.userHasAuthorityForGroup(username, group.getId(), GROUP_MEMBER_VIEW)) {
-            result = groupMapper.getTypeMap(Group.class, GroupDTO.class, GROUP_TO_MEMBER_VIEW_DTO).map(group);
+            result = groupMapper.map(group, GroupDTO.class, GROUP_TO_MEMBER_VIEW_DTO);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

@@ -55,9 +55,9 @@ public class UserController {
         var authorities = authentication.getAuthorities();
         if (isReceiversProfile
                 || authorities.stream().anyMatch(a -> a.getAuthority().equals(USER_PRIVATE_INFO_VIEW))) {
-            result = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_PRIVATE_INFORMATION_DTO).map(queriedUser);
+            result = modelMapper.map(queriedUser, UserDTO.class, USER_TO_PRIVATE_INFORMATION_DTO);
         } else {
-            result = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_PUBLIC_INFORMATION_DTO).map(queriedUser);
+            result = modelMapper.map(queriedUser, UserDTO.class, USER_TO_PUBLIC_INFORMATION_DTO);
         }
         return ResponseEntity.ok(result);
     }
@@ -84,8 +84,8 @@ public class UserController {
             }
             var userEntity = new User();
             modelMapper.mapSkippingNullValues(user, userEntity);
-            var typeMap = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_POST_REGISTRATION_DTO);
-            var userDetails = typeMap.map(userService.register(userEntity));
+            var registeredUser = userService.register(userEntity);
+            var userDetails = modelMapper.map(registeredUser, UserDTO.class, USER_TO_POST_REGISTRATION_DTO);
             LOGGER.info("Successful registration: user={}", userDetails);
             var locationUri = URI.create(request.getRequestURI()).resolve(userDetails.getId().toString());
             return ResponseEntity.created(locationUri).body(userDetails);
@@ -107,8 +107,8 @@ public class UserController {
             user.setPassword(null);
         }
         modelMapper.mapSkippingNullValues(user, userEntity);
-        var typeMap = modelMapper.getTypeMap(User.class, UserDTO.class, USER_TO_PRIVATE_INFORMATION_DTO);
-        var result = typeMap.map(userService.updateUser(userEntity));
+        var updatedUser = userService.updateUser(userEntity);
+        var result = modelMapper.map(updatedUser, UserDTO.class, USER_TO_PRIVATE_INFORMATION_DTO);
         return ResponseEntity.ok(result);
     }
 }
