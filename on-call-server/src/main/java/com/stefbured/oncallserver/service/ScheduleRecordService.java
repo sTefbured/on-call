@@ -1,14 +1,15 @@
 package com.stefbured.oncallserver.service;
 
 import com.stefbured.oncallserver.model.entity.schedule.ScheduleRecord;
-import com.stefbured.oncallserver.model.entity.user.User;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Collection;
 
 public interface ScheduleRecordService {
-    List<ScheduleRecord> getAllScheduleRecordsForUser(User user, int page, int pageSize);
-    List<ScheduleRecord> getAllScheduleRecordsForGroup();
+    ScheduleRecord getScheduleRecordById(Long recordId);
+    Collection<ScheduleRecord> getAllScheduleRecordsForUser(Long userId, LocalDateTime from, LocalDateTime to);
+    Collection<ScheduleRecord> getAllScheduleRecordsForGroup(Long groupId, LocalDateTime from, LocalDateTime to);
     ScheduleRecord createScheduleRecord(ScheduleRecord scheduleRecord);
     ScheduleRecord editScheduleRecord(ScheduleRecord scheduleRecord);
-    void deleteScheduleRecord(ScheduleRecord scheduleRecord);
+    void deleteScheduleRecordById(Long recordId);
 }

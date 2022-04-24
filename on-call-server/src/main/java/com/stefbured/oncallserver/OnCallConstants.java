@@ -26,6 +26,12 @@ public final class OnCallConstants {
     public static final String USER_GRANT_VIEW = "userGrant:view";
     public static final String USER_GRANT_DELETE = "userGrant:delete";
 
+    // ScheduleRecord permissions
+    public static final String SCHEDULE_RECORD_CREATE = "scheduleRecord:create";
+    public static final String SCHEDULE_RECORD_VIEW = "scheduleRecord:view";
+    public static final String SCHEDULE_RECORD_EDIT = "scheduleRecord:edit";
+    public static final String SCHEDULE_RECORD_DELETE = "scheduleRecord:delete";
+
     private OnCallConstants() {
     }
 }

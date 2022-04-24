@@ -64,7 +64,7 @@ public class ModelConstants {
     }
 
     public static class Permission {
-        public static final int MAX_PERMISSION_NAME_LENGTH = 20;
+        public static final int MAX_PERMISSION_NAME_LENGTH = 30;
         public static final int MAX_PERMISSION_DESCRIPTION_LENGTH = 100;
 
         private Permission() {

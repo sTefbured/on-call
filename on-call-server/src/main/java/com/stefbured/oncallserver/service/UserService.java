@@ -11,10 +11,18 @@ public interface UserService {
     Set<User> getUsers(int page, int pageSize);
     long getUsersCount();
     User updateUser(User user);
+    @Deprecated
     void deleteUserById(Long userId);
+    @Deprecated
     boolean userHasAnyAuthority(String username, String... authorities);
+    @Deprecated
     boolean userHasGlobalAuthority(String username, String authority);
+    boolean userHasGlobalAuthority(Long userId, String authority);
+    @Deprecated
     boolean userHasAuthorityForGroup(String username, Long groupId, String authority);
+    boolean userHasAuthorityForGroup(Long userId, Long groupId, String authority);
+    @Deprecated
     boolean userHasAuthorityForChat(String username, Long chatId, String authority);
+    boolean userHasAuthorityForChat(Long userId, Long chatId, String authority);
     Long getUserIdByUsername(String username);
 }

@@ -17,6 +17,7 @@ public class ApplicationStartupListener implements ApplicationRunner {
     private static final String TEST_GRANTS_QUERY_PATH = "db/test/test_grants.sql";
     private static final String TEST_GROUPS_QUERY_PATH = "db/test/test_groups.sql";
     private static final String TEST_USERS_QUERY_PATH = "db/test/test_users.sql";
+    private static final String TEST_SCHEDULE_RECORDS_QUERY_PATH = "db/test/test_schedule_records.sql";
     private static final String PRODUCTION_INIT_QUERY_PATH = "db/production_init.sql";
 
     private final SessionFactory sessionFactory;
@@ -29,12 +30,14 @@ public class ApplicationStartupListener implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         if (args.containsOption("dbreload")) {
-            runQueries(DROP_TABLES_QUERY_PATH);
-            runQueries(DEFAULTS_QUERY_PATH);
             if (args.containsOption("test")) {
+                runQueries(DROP_TABLES_QUERY_PATH);
+                runQueries(DEFAULTS_QUERY_PATH);
                 runQueries(TEST_USERS_QUERY_PATH);
                 runQueries(TEST_GROUPS_QUERY_PATH);
                 runQueries(TEST_GRANTS_QUERY_PATH);
+//                TODO: uncomment when test queries will be added
+//                runQueries(TEST_SCHEDULE_RECORDS_QUERY_PATH);
             } else {
                 runQueries(PRODUCTION_INIT_QUERY_PATH);
             }

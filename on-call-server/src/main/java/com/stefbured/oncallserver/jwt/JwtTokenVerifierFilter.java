@@ -66,6 +66,7 @@ public class JwtTokenVerifierFilter extends OncePerRequestFilter {
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toSet());
             var authentication = new UsernamePasswordAuthenticationToken(username, null, grantedAuthorities);
+            authentication.setDetails(queriedUser.getId());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             LOGGER.debug("Token verification success: authentication={}", authentication);
         } catch (SignatureVerificationException | UserNotFoundException exception) {

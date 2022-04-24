@@ -79,7 +79,7 @@ public class UserGrantController {
     }
 
     @DeleteMapping("{userGrantId}")
-    public ResponseEntity<Void> deleteUserGrantById(@PathVariable Long userGrantId) {
+    public ResponseEntity<String> deleteUserGrantById(@PathVariable Long userGrantId) {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         var hasGlobalPermission = userService.userHasGlobalAuthority(username, USER_GRANT_DELETE);
         var queriedGrant = userGrantService.getUserGrantById(userGrantId);
@@ -91,6 +91,6 @@ public class UserGrantController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         userGrantService.deleteUserGrantById(userGrantId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Grant deleted");
     }
 }
