@@ -7,6 +7,8 @@ import com.stefbured.oncallserver.model.entity.user.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -43,25 +45,30 @@ public class Group {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_group_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Group parentGroup;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "group")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<UserGrant> userGrants;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "parentGroup")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Group> childGroups;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "group")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<ScheduleRecord> scheduleRecords;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "group")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Chat> chats;
 }

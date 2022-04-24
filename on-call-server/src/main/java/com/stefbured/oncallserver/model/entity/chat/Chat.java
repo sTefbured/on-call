@@ -6,6 +6,8 @@ import com.stefbured.oncallserver.model.entity.user.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -31,11 +33,13 @@ public class Chat {
     private User creator;
 
     @OneToMany(mappedBy = "chat")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Message> messages;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "chat")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<UserGrant> usersGrants;
 
     @EqualsAndHashCode.Exclude

@@ -1,9 +1,9 @@
 package com.stefbured.oncallserver.utils;
 
+import com.stefbured.oncallserver.config.SpringContextHolder;
 import com.stefbured.oncallserver.exception.primarykey.PrimaryKeyGenerationException;
 import com.stefbured.oncallserver.exception.primarykey.PrimaryKeyGenerationTimeoutException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -15,12 +15,10 @@ public class LongPrimaryKeyGenerator {
     private static final String REPOSITORY_STRING = "Repository";
     private static final long GENERATION_TIMEOUT = 5000L;
 
-    private final ApplicationContext applicationContext;
     private final Random random;
 
     @Autowired
-    public LongPrimaryKeyGenerator(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    public LongPrimaryKeyGenerator() {
         random = new Random(System.currentTimeMillis());
     }
 
@@ -40,7 +38,7 @@ public class LongPrimaryKeyGenerator {
         try {
             var repositoryClass = Class.forName(REPOSITORY_PACKAGE + clazz.getSimpleName() + REPOSITORY_STRING);
             var findByIdMethod = repositoryClass.getMethod("findById", Object.class);
-            var repository = applicationContext.getBean(repositoryClass);
+            var repository = SpringContextHolder.getContext().getBean(repositoryClass);
             return ((Optional<?>)findByIdMethod.invoke(repository, primaryKey)).isPresent();
         } catch (ReflectiveOperationException e) {
             throw new PrimaryKeyGenerationException("Reflective operation error during primary key generation", e);

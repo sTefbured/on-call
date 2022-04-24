@@ -73,5 +73,5 @@ values (335652845749234, 62535625772466), /* group:adminView */
 
 /* default role-permission connections for 'Group user' */
 insert into roles_permissions (role_id, permission_id)
-values (444562356788634, 73468932467853); /* group:memberView */
-values (444562356788634, 53255425315633); /* scheduleRecord:view */
+values (444562356788634, 73468932467853), /* group:memberView */
+       (444562356788634, 53255425315633); /* scheduleRecord:view */

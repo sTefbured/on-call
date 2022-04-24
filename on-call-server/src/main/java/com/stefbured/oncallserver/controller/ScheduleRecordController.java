@@ -21,6 +21,8 @@ import java.net.URI;
 import java.time.LocalDateTime;
 
 import static com.stefbured.oncallserver.OnCallConstants.*;
+import static com.stefbured.oncallserver.config.OnCallPermissionEvaluator.GLOBAL_TARGET_TYPE;
+import static com.stefbured.oncallserver.config.OnCallPermissionEvaluator.GROUP_TARGET_TYPE;
 import static com.stefbured.oncallserver.mapper.ScheduleRecordModelMapper.*;
 
 @RestController
@@ -38,8 +40,8 @@ public class ScheduleRecordController {
 
     @PostMapping
     @PreAuthorize("authentication.details.equals(#scheduleRecord?.user?.id) " +
-            "|| hasPermission(#scheduleRecord?.group?.id, 'group', '" + SCHEDULE_RECORD_CREATE + "') " +
-            "|| hasPermission(null, 'global', '" + SCHEDULE_RECORD_CREATE + "')")
+            "|| hasPermission(#scheduleRecord?.group?.id, '" + GROUP_TARGET_TYPE + "', '" + SCHEDULE_RECORD_CREATE + "') " +
+            "|| hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + SCHEDULE_RECORD_CREATE + "')")
     public ResponseEntity<ScheduleRecordDTO> addScheduleRecord(@RequestBody @Valid ScheduleRecordDTO scheduleRecord,
                                                                HttpServletRequest request) {
         var recordEntity = new ScheduleRecord();
@@ -55,8 +57,8 @@ public class ScheduleRecordController {
 
     @GetMapping("{recordId}")
     @PreAuthorize("isAuthenticated()")
-    @PostAuthorize("hasPermission(null, 'global', '" + SCHEDULE_RECORD_VIEW + "') " +
-            "|| (hasPermission(returnObject.body?.group?.id, 'group', '" + SCHEDULE_RECORD_VIEW + "')) " +
+    @PostAuthorize("hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + SCHEDULE_RECORD_VIEW + "') " +
+            "|| (hasPermission(returnObject.body?.group?.id, '" + GROUP_TARGET_TYPE + "', '" + SCHEDULE_RECORD_VIEW + "')) " +
             "|| (authentication.details.equals(returnObject.body?.user?.id))")
     public ResponseEntity<ScheduleRecordDTO> getScheduleRecord(@PathVariable Long recordId) {
         var queriedRecord = scheduleRecordService.getScheduleRecordById(recordId);
@@ -65,8 +67,8 @@ public class ScheduleRecordController {
     }
 
     @GetMapping("group/{groupId}")
-    @PreAuthorize("hasPermission(#groupId, 'group', '" + SCHEDULE_RECORD_VIEW + "') " +
-            "|| hasPermission(null, 'global', '" + SCHEDULE_RECORD_VIEW + "')")
+    @PreAuthorize("hasPermission(#groupId, '" + GROUP_TARGET_TYPE + "', '" + SCHEDULE_RECORD_VIEW + "') " +
+            "|| hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + SCHEDULE_RECORD_VIEW + "')")
     public ResponseEntity<Iterable<ScheduleRecordDTO>> getGroupScheduleRecords(@PathVariable Long groupId,
                                                                                @RequestParam LocalDateTime from,
                                                                                @RequestParam LocalDateTime to) {
@@ -76,7 +78,8 @@ public class ScheduleRecordController {
     }
 
     @GetMapping("user/{userId}")
-    @PreAuthorize("#userId.equals(authentication.details) || hasPermission(null, 'global', '" + SCHEDULE_RECORD_VIEW + "')")
+    @PreAuthorize("#userId.equals(authentication.details) " +
+            "|| hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + SCHEDULE_RECORD_VIEW + "')")
     public ResponseEntity<Iterable<ScheduleRecordDTO>> getUserScheduleRecords(@PathVariable Long userId,
                                                                               @RequestParam LocalDateTime from,
                                                                               @RequestParam LocalDateTime to) {
@@ -87,7 +90,7 @@ public class ScheduleRecordController {
 
     @PutMapping
     @PreAuthorize("#scheduleRecord.creator.id.equals(authentication.details) " +
-            "|| hasPermission(null, 'global', '" + SCHEDULE_RECORD_EDIT + "')")
+            "|| hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + SCHEDULE_RECORD_EDIT + "')")
     public ResponseEntity<Object> editScheduleRecord(@RequestBody ScheduleRecordDTO scheduleRecord) {
         var queriedRecord = scheduleRecordService.getScheduleRecordById(scheduleRecord.getId());
         if (!queriedRecord.getCreator().getId().equals(scheduleRecord.getCreator().getId())) {
@@ -104,7 +107,6 @@ public class ScheduleRecordController {
     }
 
     @DeleteMapping("{recordId}")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> deleteScheduleRecord(@PathVariable Long recordId) {
         var queriedRecord = scheduleRecordService.getScheduleRecordById(recordId);
         if (!isPermittedToDeleteRecord(queriedRecord)) {
@@ -116,10 +118,9 @@ public class ScheduleRecordController {
 
     private boolean isPermittedToDeleteRecord(ScheduleRecord scheduleRecord) {
         var userId = SecurityContextHolder.getContext().getAuthentication().getDetails();
-        var permissionEvaluator = OnCallPermissionEvaluator.getInstance();
         var groupId = scheduleRecord.getGroup() != null ? scheduleRecord.getGroup().getId() : null;
         return userId.equals(scheduleRecord.getCreator().getId())
-                || permissionEvaluator.hasPermission("global", SCHEDULE_RECORD_DELETE)
-                || permissionEvaluator.hasPermission(groupId, "group", SCHEDULE_RECORD_DELETE);
+                || OnCallPermissionEvaluator.hasPermission(GLOBAL_TARGET_TYPE, SCHEDULE_RECORD_DELETE)
+                || OnCallPermissionEvaluator.hasPermission(groupId, GROUP_TARGET_TYPE, SCHEDULE_RECORD_DELETE);
     }
 }

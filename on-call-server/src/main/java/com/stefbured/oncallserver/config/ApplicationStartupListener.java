@@ -36,8 +36,7 @@ public class ApplicationStartupListener implements ApplicationRunner {
                 runQueries(TEST_USERS_QUERY_PATH);
                 runQueries(TEST_GROUPS_QUERY_PATH);
                 runQueries(TEST_GRANTS_QUERY_PATH);
-//                TODO: uncomment when test queries will be added
-//                runQueries(TEST_SCHEDULE_RECORDS_QUERY_PATH);
+                runQueries(TEST_SCHEDULE_RECORDS_QUERY_PATH);
             } else {
                 runQueries(PRODUCTION_INIT_QUERY_PATH);
             }

@@ -5,6 +5,7 @@ import com.stefbured.oncallserver.jwt.JwtUsernamePasswordAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -38,8 +39,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtUsernamePasswordAuthFilter(authenticationManager(), jwtConfiguration))
                 .addFilterAfter(jwtTokenVerifierFilter(), JwtUsernamePasswordAuthFilter.class)
                 .authorizeRequests()
-                .antMatchers("/api/v1/user/**").permitAll()
-                .antMatchers("/api/v1/db/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/user/").permitAll()
                 .anyRequest()
                 .authenticated();
     }

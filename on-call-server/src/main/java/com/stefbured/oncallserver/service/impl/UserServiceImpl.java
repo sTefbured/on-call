@@ -124,46 +124,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Deprecated
-    public void deleteUserById(Long userId) {
-        userRepository.deleteById(userId);
-    }
-
-    @Override
-    @Deprecated
-    public boolean userHasAnyAuthority(String username, String... authorities) {
-        var user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
-        return Collections.disjoint(user.getAuthorityNames(), Arrays.asList(authorities));
-    }
-
-    @Override
-    @Deprecated
-    public boolean userHasGlobalAuthority(String username, String authority) {
-        var user = getUserByUsername(username);
-        return user.getGrants().stream()
-                .filter(UserGrant::isGlobal)
-                .flatMap(grant -> grant.getRole().getPermissions().stream())
-                .anyMatch(permission -> authority.equals(permission.getAuthority()));
-    }
-
-    @Override
     public boolean userHasGlobalAuthority(Long userId, String authority) {
         var user = getUserById(userId);
         return user.getGrants().stream()
                 .filter(UserGrant::isGlobal)
-                .flatMap(grant -> grant.getRole().getPermissions().stream())
-                .anyMatch(permission -> authority.equals(permission.getAuthority()));
-    }
-
-    @Override
-    @Deprecated
-    public boolean userHasAuthorityForGroup(String username, Long groupId, String authority) {
-        var user = getUserByUsername(username);
-        return user.getGrants().stream()
-                .filter(grant -> {
-                    var group = grant.getGroup();
-                    return group != null && groupId.equals(group.getId());
-                })
                 .flatMap(grant -> grant.getRole().getPermissions().stream())
                 .anyMatch(permission -> authority.equals(permission.getAuthority()));
     }
@@ -175,19 +139,6 @@ public class UserServiceImpl implements UserService {
                 .filter(grant -> {
                     var group = grant.getGroup();
                     return group != null && groupId.equals(group.getId());
-                })
-                .flatMap(grant -> grant.getRole().getPermissions().stream())
-                .anyMatch(permission -> authority.equals(permission.getAuthority()));
-    }
-
-    @Override
-    @Deprecated
-    public boolean userHasAuthorityForChat(String username, Long chatId, String authority) {
-        var user = getUserByUsername(username);
-        return user.getGrants().stream()
-                .filter(grant -> {
-                    var chat = grant.getChat();
-                    return chat != null && chatId.equals(chat.getId());
                 })
                 .flatMap(grant -> grant.getRole().getPermissions().stream())
                 .anyMatch(permission -> authority.equals(permission.getAuthority()));

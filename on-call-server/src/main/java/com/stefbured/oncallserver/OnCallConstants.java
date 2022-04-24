@@ -32,6 +32,12 @@ public final class OnCallConstants {
     public static final String SCHEDULE_RECORD_EDIT = "scheduleRecord:edit";
     public static final String SCHEDULE_RECORD_DELETE = "scheduleRecord:delete";
 
+    // Roles
+    public static final Long ON_CALL_ADMINISTRATOR = 784532567455345L;
+    public static final Long ON_CALL_USER = 345765242562356L;
+    public static final Long GROUP_ADMINISTRATOR = 335652845749234L;
+    public static final Long GROUP_MEMBER = 444562356788634L;
+
     private OnCallConstants() {
     }
 }

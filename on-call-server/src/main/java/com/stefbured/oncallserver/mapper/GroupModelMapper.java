@@ -28,7 +28,7 @@ public class GroupModelMapper extends OnCallModelMapper {
     }
 
     @Autowired
-    @Qualifier(GROUP_TO_PREVIEW_DTO)
+    @Qualifier(GROUP_TO_ADMIN_VIEW_DTO)
     public void setGroupToAdminViewDtoConverter(Converter<Group, GroupDTO> converter) {
         createTypeMap(Group.class, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO).setConverter(converter);
     }

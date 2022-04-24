@@ -9,6 +9,7 @@ public interface GroupService {
     Group getById(Long groupId);
     Group getByGroupSequence(String[] pathPieces);
     Set<User> getGroupMembers(Long groupId, int page, int pageSize);
+    Long getGroupMembersCount(Long groupId);
     Group create(Group group);
     Group update(Group group);
     void delete(Long groupId);

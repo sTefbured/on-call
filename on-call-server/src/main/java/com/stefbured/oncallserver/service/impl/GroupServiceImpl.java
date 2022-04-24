@@ -31,23 +31,47 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Group getById(Long groupId) {
-        return groupRepository.findById(groupId).orElseThrow(GroupNotFoundException::new);
+        var group = groupRepository.findById(groupId).orElseThrow(GroupNotFoundException::new);
+        var currentGroup = group;
+        var fullIdTagBuilder = new StringBuilder();
+        do {
+            fullIdTagBuilder.insert(0, '/' + currentGroup.getIdTag());
+            currentGroup = currentGroup.getParentGroup();
+        } while (currentGroup != null);
+        group.setIdTag(fullIdTagBuilder.toString());
+        return group;
     }
 
     @Override
     public Group getByGroupSequence(String[] pathPieces) {
         Group currentGroup = null;
+        StringBuilder fullIdTagBuilder = new StringBuilder();
         for (var pathPiece : pathPieces) {
             currentGroup = groupRepository.findByParentGroupAndIdTag(currentGroup, pathPiece)
                     .orElseThrow(GroupNotFoundException::new);
+            fullIdTagBuilder.append("/").append(currentGroup.getIdTag());
         }
+        if (currentGroup == null) {
+            throw new GroupNotFoundException();
+        }
+        currentGroup.setIdTag(fullIdTagBuilder.toString());
         return currentGroup;
     }
 
     @Override
     public Set<User> getGroupMembers(Long groupId, int page, int pageSize) {
-        var group = groupRepository.getById(groupId);
-        return userRepository.getGroupMembers(group.getId(), Pageable.ofSize(pageSize).withPage(page)).toSet();
+        if (!groupRepository.existsById(groupId)) {
+            throw new GroupNotFoundException();
+        }
+        return userRepository.getGroupMembers(groupId, Pageable.ofSize(pageSize).withPage(page)).toSet();
+    }
+
+    @Override
+    public Long getGroupMembersCount(Long groupId) {
+        if (!groupRepository.existsById(groupId)) {
+            throw new GroupNotFoundException();
+        }
+        return userRepository.getGroupMembersCount(groupId);
     }
 
     @Override
@@ -71,6 +95,9 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void delete(Long groupId) {
+        if (!groupRepository.existsById(groupId)) {
+            throw new GroupNotFoundException();
+        }
         groupRepository.deleteById(groupId);
     }
 }

@@ -23,6 +23,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "where g.id = ?1", nativeQuery = true)
     Page<User> getGroupMembers(Long groupId, Pageable page);
 
+    @Query(value = "select count(*) " +
+            "from users u, user_grants ug, groups g " +
+            "where ug.user_id = u.id and g.id = ug.group_id and g.id = ?1", nativeQuery = true)
+    Long getGroupMembersCount(Long groupId);
+
     @Query(value = "select id from users where username = ?1", nativeQuery = true)
     Long getUserIdByUsername(String username);
 }

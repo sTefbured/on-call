@@ -42,19 +42,15 @@ public class OnCallPermissionEvaluator implements PermissionEvaluator {
         };
     }
 
-    public boolean hasPermission(Serializable targetId, String contextType, Object permission) {
+    public static boolean hasPermission(Long targetId, String contextType, String permission) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        return hasPermission(authentication, targetId, contextType, permission);
-    }
-
-    public boolean hasPermission(String contextType, Object permission) {
-        return hasPermission((Serializable) null, contextType, permission);
-    }
-
-    public static OnCallPermissionEvaluator getInstance() {
         if (instance == null) {
-            instance = SpringContextHolder.getInstance().getContext().getBean(OnCallPermissionEvaluator.class);
+            instance = SpringContextHolder.getContext().getBean(OnCallPermissionEvaluator.class);
         }
-        return instance;
+        return instance.hasPermission(authentication, targetId, contextType, permission);
+    }
+
+    public static boolean hasPermission(String contextType, String permission) {
+        return hasPermission((Long) null, contextType, permission);
     }
 }
