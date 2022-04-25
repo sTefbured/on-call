@@ -18,7 +18,12 @@ values (12321324655323, 'database:access', 'Allows to run direct queries to data
        (12670987654342, 'scheduleRecord:create', 'Allows to create schedule records'),
        (53255425315633, 'scheduleRecord:view', 'Allows to view schedule records'),
        (99326954523576, 'scheduleRecord:edit', 'Allows to edit schedule records'),
-       (33325124635736, 'scheduleRecord:delete', 'Allows to delete schedule records');
+       (33325124635736, 'scheduleRecord:delete', 'Allows to delete schedule records'),
+       (12344223441245, 'chat:create', 'Allows to create chats'),
+       (23512122457000, 'chat:view', 'Allows to view chat'),
+       (14668732800753, 'chat:edit', 'Allows to edit chat'),
+       (22341245870053, 'chat:delete', 'Allows to delete chat'),
+       (34129460043004, 'groupChat:create', 'Allows to create group chats');
 
 /* default role types */
 insert into role_types(id, name)
@@ -31,7 +36,9 @@ insert into roles(id, description, name, role_type_id)
 values (784532567455345, 'Administrator of the website', 'On-call administrator', 75454522355345),
        (345765242562356, 'A regular user of the website', 'On-call user', 75454522355345),
        (335652845749234, 'Administrator of the group', 'Group administrator', 42353246553234),
-       (444562356788634, 'Regular group member', 'Group member', 42353246553234);
+       (444562356788634, 'Regular group member', 'Group member', 42353246553234),
+       (644563246436574, 'Administrator of the chat', 'Chat administrator', 44236577853424),
+       (933456323690086, 'Regular chat member', 'Chat member', 44236577853424);
 
 /* default role-permission connections for 'On-call administrator' */
 insert into roles_permissions (role_id, permission_id)
@@ -51,11 +58,16 @@ values (784532567455345, 12321324655323), /* database:access */
        (784532567455345, 12670987654342), /* scheduleRecord:create */
        (784532567455345, 53255425315633), /* scheduleRecord:view */
        (784532567455345, 99326954523576), /* scheduleRecord:edit */
-       (784532567455345, 33325124635736); /* scheduleRecord:delete */
+       (784532567455345, 33325124635736), /* scheduleRecord:delete */
+       (784532567455345, 12344223441245), /* chat:create */
+       (784532567455345, 14668732800753), /* chat:edit */
+       (784532567455345, 22341245870053), /* chat:delete */
+       (784532567455345, 34129460043004); /* groupChat:create */
 
 /* default role-permission connections for 'On-call user' */
 insert into roles_permissions (role_id, permission_id)
-values (345765242562356, 76543265436431); /* user:publicInfoView */
+values (345765242562356, 76543265436431), /* user:publicInfoView */
+       (345765242562356, 12344223441245); /* chat:create */
 
 /* default role-permission connections for 'Group administrator' */
 insert into roles_permissions (role_id, permission_id)
@@ -69,9 +81,19 @@ values (335652845749234, 62535625772466), /* group:adminView */
        (335652845749234, 12670987654342), /* scheduleRecord:create */
        (335652845749234, 53255425315633), /* scheduleRecord:view */
        (335652845749234, 99326954523576), /* scheduleRecord:edit */
-       (335652845749234, 33325124635736); /* scheduleRecord:delete */
+       (335652845749234, 33325124635736), /* scheduleRecord:delete */
+       (335652845749234, 34129460043004); /* groupChat:create */
 
 /* default role-permission connections for 'Group user' */
 insert into roles_permissions (role_id, permission_id)
 values (444562356788634, 73468932467853), /* group:memberView */
        (444562356788634, 53255425315633); /* scheduleRecord:view */
+
+/* default role-permission connections for 'Chat administrator' */
+insert into roles_permissions (role_id, permission_id)
+values (644563246436574, 23512122457000), /* chat:view */
+       (644563246436574, 14668732800753), /* chat:edit */
+       (644563246436574, 22341245870053); /* chat:delete */
+/* default role-permission connections for 'Chat member' */
+insert into roles_permissions (role_id, permission_id)
+values (933456323690086, 23512122457000); /* chat:view */

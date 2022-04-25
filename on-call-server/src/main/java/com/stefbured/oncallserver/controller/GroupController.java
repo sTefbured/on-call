@@ -76,18 +76,20 @@ public class GroupController {
                 .body(result);
     }
 
+    // TODO: consider changing like in ChatController
     @PostMapping
     @PreAuthorize("hasPermission(#group.parentGroup?.id, '" + GROUP_TARGET_TYPE + "', '" + GROUP_CREATE + "') " +
             "|| hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + GROUP_CREATE + "')")
     public ResponseEntity<GroupDTO> createGroup(@RequestBody GroupDTO group, HttpServletRequest request) {
         var groupEntity = new Group();
-        groupMapper.mapSkippingNullValues(group, groupEntity);
-        var createdGroup = groupService.create(groupEntity);
-        var userGrant = new UserGrant();
-        userGrant.setGroup(createdGroup);
         var userId = (Long) SecurityContextHolder.getContext().getAuthentication().getDetails();
         var user = new User();
         user.setId(userId);
+        groupMapper.mapSkippingNullValues(group, groupEntity);
+        groupEntity.setCreator(user);
+        var createdGroup = groupService.create(groupEntity);
+        var userGrant = new UserGrant();
+        userGrant.setGroup(createdGroup);
         userGrant.setUser(user);
         var role = new Role();
         role.setId(GROUP_ADMINISTRATOR);

@@ -32,11 +32,20 @@ public final class OnCallConstants {
     public static final String SCHEDULE_RECORD_EDIT = "scheduleRecord:edit";
     public static final String SCHEDULE_RECORD_DELETE = "scheduleRecord:delete";
 
+    // Chat permissions
+    public static final String CHAT_CREATE = "chat:create";
+    public static final String CHAT_VIEW = "chat:view";
+    public static final String CHAT_EDIT = "chat:edit";
+    public static final String CHAT_DELETE = "chat:delete";
+    public static final String GROUP_CHAT_CREATE = "groupChat:create";
+
     // Roles
     public static final Long ON_CALL_ADMINISTRATOR = 784532567455345L;
     public static final Long ON_CALL_USER = 345765242562356L;
     public static final Long GROUP_ADMINISTRATOR = 335652845749234L;
     public static final Long GROUP_MEMBER = 444562356788634L;
+    public static final Long CHAT_ADMINISTRATOR = 644563246436574L;
+    public static final Long CHAT_MEMBER = 933456323690086L;
 
     private OnCallConstants() {
     }
