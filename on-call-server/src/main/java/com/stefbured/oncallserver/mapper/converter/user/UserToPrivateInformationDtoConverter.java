@@ -1,11 +1,15 @@
 package com.stefbured.oncallserver.mapper.converter.user;
 
 import com.stefbured.oncallserver.mapper.util.OnCallMappingContext;
+import com.stefbured.oncallserver.model.dto.ScheduleRecordDTO;
+import com.stefbured.oncallserver.model.dto.chat.ChatDTO;
 import com.stefbured.oncallserver.model.dto.group.GroupDTO;
 import com.stefbured.oncallserver.model.dto.role.UserGrantDTO;
 import com.stefbured.oncallserver.model.dto.user.UserDTO;
+import com.stefbured.oncallserver.model.entity.chat.Chat;
 import com.stefbured.oncallserver.model.entity.group.Group;
 import com.stefbured.oncallserver.model.entity.role.UserGrant;
+import com.stefbured.oncallserver.model.entity.schedule.ScheduleRecord;
 import com.stefbured.oncallserver.model.entity.user.User;
 import org.modelmapper.Converter;
 import org.modelmapper.spi.MappingContext;
@@ -15,7 +19,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
+import static com.stefbured.oncallserver.mapper.ChatModelMapper.CHAT_TO_ID_DTO;
 import static com.stefbured.oncallserver.mapper.GroupModelMapper.GROUP_TO_PREVIEW_DTO;
+import static com.stefbured.oncallserver.mapper.ScheduleRecordModelMapper.SCHEDULE_RECORD_TO_PREVIEW_DTO;
 import static com.stefbured.oncallserver.mapper.UserGrantModelMapper.USER_GRANT_TO_SHORT_DTO_FOR_USER;
 import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_TO_PRIVATE_INFORMATION_DTO;
 
@@ -23,6 +29,8 @@ import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_TO_PRIVATE_
 public class UserToPrivateInformationDtoConverter implements Converter<User, UserDTO> {
     private Converter<UserGrant, UserGrantDTO> userGrantToShortDtoForUserConverter;
     private Converter<Group, GroupDTO> groupToPreviewDtoConverter;
+    private Converter<ScheduleRecord, ScheduleRecordDTO> scheduleRecordToPreviewDtoConverter;
+    private Converter<Chat, ChatDTO> chatToIdDtoConverter;
 
     @Override
     public UserDTO convert(MappingContext<User, UserDTO> context) {
@@ -55,7 +63,22 @@ public class UserToPrivateInformationDtoConverter implements Converter<User, Use
                     })
                     .collect(Collectors.toSet()));
         }
-        //TODO: add schedule records and created chats
+        if (source.getCreatedScheduleRecords() != null) {
+            destination.setCreatedScheduleRecords(source.getCreatedScheduleRecords().stream()
+                    .map(sr -> {
+                        var recordContext = new OnCallMappingContext<ScheduleRecord, ScheduleRecordDTO>(sr);
+                        return scheduleRecordToPreviewDtoConverter.convert(recordContext);
+                    })
+                    .collect(Collectors.toSet()));
+        }
+        if (source.getCreatedChats() != null) {
+            destination.setCreatedChats(source.getCreatedChats().stream()
+                    .map(chat -> {
+                        var chatContext = new OnCallMappingContext<Chat, ChatDTO>(chat);
+                        return chatToIdDtoConverter.convert(chatContext);
+                    })
+                    .collect(Collectors.toSet()));
+        }
         return destination;
     }
 
@@ -69,5 +92,17 @@ public class UserToPrivateInformationDtoConverter implements Converter<User, Use
     @Qualifier(GROUP_TO_PREVIEW_DTO)
     public void setGroupToPreviewDtoConverter(Converter<Group, GroupDTO> converter) {
         this.groupToPreviewDtoConverter = converter;
+    }
+
+    @Autowired
+    @Qualifier(SCHEDULE_RECORD_TO_PREVIEW_DTO)
+    public void setScheduleRecordToPreviewDtoConverter(Converter<ScheduleRecord, ScheduleRecordDTO> converter) {
+        this.scheduleRecordToPreviewDtoConverter = converter;
+    }
+
+    @Autowired
+    @Qualifier(CHAT_TO_ID_DTO)
+    public void setChatToIdDtoConverter(Converter<Chat, ChatDTO> converter) {
+        this.chatToIdDtoConverter = converter;
     }
 }
