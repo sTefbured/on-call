@@ -38,6 +38,8 @@ public final class OnCallConstants {
     public static final String CHAT_EDIT = "chat:edit";
     public static final String CHAT_DELETE = "chat:delete";
     public static final String GROUP_CHAT_CREATE = "groupChat:create";
+    public static final String MESSAGE_SEND = "message:send";
+    public static final String MESSAGE_VIEW = "message:view";
 
     // Roles
     public static final Long ON_CALL_ADMINISTRATOR = 784532567455345L;

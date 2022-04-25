@@ -23,7 +23,9 @@ values (12321324655323, 'database:access', 'Allows to run direct queries to data
        (23512122457000, 'chat:view', 'Allows to view chat'),
        (14668732800753, 'chat:edit', 'Allows to edit chat'),
        (22341245870053, 'chat:delete', 'Allows to delete chat'),
-       (34129460043004, 'groupChat:create', 'Allows to create group chats');
+       (34129460043004, 'groupChat:create', 'Allows to create group chats'),
+       (22456211589043, 'message:send', 'Allows to send messages'),
+       (10003134992874, 'message:view', 'Allows to view messages');
 
 /* default role types */
 insert into role_types(id, name)
@@ -96,4 +98,6 @@ values (644563246436574, 23512122457000), /* chat:view */
        (644563246436574, 22341245870053); /* chat:delete */
 /* default role-permission connections for 'Chat member' */
 insert into roles_permissions (role_id, permission_id)
-values (933456323690086, 23512122457000); /* chat:view */
+values (933456323690086, 23512122457000), /* chat:view */
+       (933456323690086, 22456211589043), /* message:send */
+       (933456323690086, 10003134992874); /* message:view */
