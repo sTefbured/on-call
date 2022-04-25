@@ -6,4 +6,5 @@ public interface UserGrantService {
     UserGrant createUserGrant(UserGrant userGrant);
     UserGrant getUserGrantById(Long userGrantId);
     void deleteUserGrantById(Long userGrantId);
+    void deleteUserGrantByChatIdAndUserId(Long chatId, Long userId);
 }

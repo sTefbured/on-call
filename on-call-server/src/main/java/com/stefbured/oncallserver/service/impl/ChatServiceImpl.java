@@ -3,9 +3,11 @@ package com.stefbured.oncallserver.service.impl;
 import com.stefbured.oncallserver.model.entity.chat.Chat;
 import com.stefbured.oncallserver.model.entity.role.Role;
 import com.stefbured.oncallserver.model.entity.role.UserGrant;
+import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.repository.ChatRepository;
 import com.stefbured.oncallserver.service.ChatService;
 import com.stefbured.oncallserver.service.UserGrantService;
+import com.stefbured.oncallserver.service.UserService;
 import com.stefbured.oncallserver.utils.LongPrimaryKeyGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,19 +15,23 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 import static com.stefbured.oncallserver.OnCallConstants.CHAT_ADMINISTRATOR;
+import static com.stefbured.oncallserver.OnCallConstants.CHAT_MEMBER;
 
 @Service
 public class ChatServiceImpl implements ChatService {
     private final UserGrantService userGrantService;
     private final ChatRepository chatRepository;
+    private final UserService userService;
     private final LongPrimaryKeyGenerator primaryKeyGenerator;
 
     @Autowired
     public ChatServiceImpl(UserGrantService userGrantService,
                            ChatRepository chatRepository,
+                           UserService userService,
                            LongPrimaryKeyGenerator primaryKeyGenerator) {
         this.userGrantService = userGrantService;
         this.chatRepository = chatRepository;
+        this.userService = userService;
         this.primaryKeyGenerator = primaryKeyGenerator;
     }
 
@@ -42,6 +48,20 @@ public class ChatServiceImpl implements ChatService {
         userGrant.setChat(createdChat);
         userGrantService.createUserGrant(userGrant);
         return createdChat;
+    }
+
+    @Override
+    public User addMemberById(Long chatId, Long userId) {
+        var chat = chatRepository.findById(chatId).orElseThrow();
+        var userGrant = new UserGrant();
+        userGrant.setChat(chat);
+        var role = new Role();
+        role.setId(CHAT_MEMBER);
+        userGrant.setRole(role);
+        var user = userService.getUserById(userId);
+        userGrant.setUser(user);
+        userGrantService.createUserGrant(userGrant);
+        return user;
     }
 
     @Override
@@ -63,5 +83,10 @@ public class ChatServiceImpl implements ChatService {
             throw new NullPointerException("Chat with id '" + chatId + "' doesn't exist");
         }
         chatRepository.deleteById(chatId);
+    }
+
+    @Override
+    public void removeMemberById(Long chatId, Long userId) {
+        userGrantService.deleteUserGrantByChatIdAndUserId(chatId, userId);
     }
 }

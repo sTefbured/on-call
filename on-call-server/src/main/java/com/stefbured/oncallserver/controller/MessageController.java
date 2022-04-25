@@ -35,7 +35,7 @@ public class MessageController {
     }
 
     @PostMapping
-    @PreAuthorize("hasPermission(#message.chat, '" + CHAT_TARGET_TYPE + "', '" + MESSAGE_SEND + "')")
+    @PreAuthorize("hasPermission(#message.chat.id, '" + CHAT_TARGET_TYPE + "', '" + MESSAGE_SEND + "')")
     public ResponseEntity<MessageDTO> sendMessage(@RequestBody MessageDTO message) {
         var messageEntity = new Message();
         messageMapper.mapSkippingNullValues(message, messageEntity);

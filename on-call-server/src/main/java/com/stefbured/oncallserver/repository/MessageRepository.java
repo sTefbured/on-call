@@ -4,8 +4,8 @@ import com.stefbured.oncallserver.model.entity.chat.Message;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    Collection<Message> getAllByChatId(Long chatId, Pageable pageable);
+    List<Message> getAllByChatId(Long chatId, Pageable pageable);
 }

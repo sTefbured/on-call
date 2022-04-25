@@ -37,6 +37,8 @@ public final class OnCallConstants {
     public static final String CHAT_VIEW = "chat:view";
     public static final String CHAT_EDIT = "chat:edit";
     public static final String CHAT_DELETE = "chat:delete";
+    public static final String CHAT_ADD_MEMBER = "chat:addMember";
+    public static final String CHAT_REMOVE_MEMBER = "chat:removeMember";
     public static final String GROUP_CHAT_CREATE = "groupChat:create";
     public static final String MESSAGE_SEND = "message:send";
     public static final String MESSAGE_VIEW = "message:view";

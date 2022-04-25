@@ -2,6 +2,7 @@ package com.stefbured.oncallserver.controller;
 
 import com.stefbured.oncallserver.mapper.OnCallModelMapper;
 import com.stefbured.oncallserver.model.dto.chat.ChatDTO;
+import com.stefbured.oncallserver.model.dto.user.UserDTO;
 import com.stefbured.oncallserver.model.entity.chat.Chat;
 import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.service.ChatService;
@@ -20,18 +21,23 @@ import static com.stefbured.oncallserver.OnCallConstants.*;
 import static com.stefbured.oncallserver.config.OnCallPermissionEvaluator.*;
 import static com.stefbured.oncallserver.mapper.ChatModelMapper.CHAT_MODEL_MAPPER;
 import static com.stefbured.oncallserver.mapper.ChatModelMapper.CHAT_TO_VIEW_DTO;
+import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_MODEL_MAPPER;
+import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_TO_PREVIEW_DTO;
 
 @RestController
 @RequestMapping("api/v1/chat")
 public class ChatController {
     private final ChatService chatService;
     private final OnCallModelMapper chatModelMapper;
+    private final OnCallModelMapper userModelMapper;
 
     @Autowired
     public ChatController(ChatService chatService,
-                          @Qualifier(CHAT_MODEL_MAPPER) OnCallModelMapper chatModelMapper) {
+                          @Qualifier(CHAT_MODEL_MAPPER) OnCallModelMapper chatModelMapper,
+                          @Qualifier(USER_MODEL_MAPPER) OnCallModelMapper userModelMapper) {
         this.chatService = chatService;
         this.chatModelMapper = chatModelMapper;
+        this.userModelMapper = userModelMapper;
     }
 
     @PostMapping
@@ -49,6 +55,14 @@ public class ChatController {
         var result = chatModelMapper.map(createdChat, ChatDTO.class, CHAT_TO_VIEW_DTO);
         var locationUri = URI.create(request.getRequestURI()).resolve(result.getId().toString());
         return ResponseEntity.created(locationUri).body(result);
+    }
+
+    @PostMapping("{chatId}/member/{userId}")
+    @PreAuthorize("hasPermission(#chatId, '" + CHAT_TARGET_TYPE + "', '" + CHAT_ADD_MEMBER + "')")
+    public ResponseEntity<UserDTO> addMember(@PathVariable Long chatId, @PathVariable Long userId) {
+        var addedMember = chatService.addMemberById(chatId, userId);
+        var result = userModelMapper.map(addedMember, UserDTO.class, USER_TO_PREVIEW_DTO);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("{chatId}")
@@ -81,5 +95,11 @@ public class ChatController {
             "|| hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + CHAT_DELETE + "')")
     public void deleteChatById(@PathVariable Long chatId) {
         chatService.deleteChatById(chatId);
+    }
+
+    @DeleteMapping("{chatId}/member/{userId}")
+    @PreAuthorize("hasPermission(#chatId, '" + CHAT_TARGET_TYPE + "', '" + CHAT_REMOVE_MEMBER + "')")
+    public void removeUserFromChat(@PathVariable Long chatId, @PathVariable Long userId) {
+        chatService.removeMemberById(chatId, userId);
     }
 }

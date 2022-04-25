@@ -33,4 +33,9 @@ public class UserGrantServiceImpl implements UserGrantService {
     public void deleteUserGrantById(Long userGrantId) {
         userGrantRepository.deleteById(userGrantId);
     }
+
+    @Override
+    public void deleteUserGrantByChatIdAndUserId(Long chatId, Long userId) {
+        userGrantRepository.deleteByChatIdAndUserId(chatId, userId);
+    }
 }

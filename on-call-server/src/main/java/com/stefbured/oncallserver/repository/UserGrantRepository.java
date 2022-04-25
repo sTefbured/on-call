@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserGrantRepository extends JpaRepository<UserGrant, Long> {
+    void deleteByChatIdAndUserId(Long chatId, Long userId);
 }
