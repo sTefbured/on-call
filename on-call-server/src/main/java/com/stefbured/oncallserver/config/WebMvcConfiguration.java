@@ -3,6 +3,7 @@ package com.stefbured.oncallserver.config;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -19,6 +20,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         String[] allowedOrigins = allowedOriginsCombined.split(ALLOWED_ORIGINS_DELIMITER);
         registry.addMapping("/**")
                 .allowedOrigins(allowedOrigins)
-                .allowedMethods("GET", "POST", "PUT", "DELETE");
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .exposedHeaders(HttpHeaders.LOCATION, HttpHeaders.CONTENT_RANGE);
     }
 }

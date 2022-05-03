@@ -98,7 +98,8 @@ public class ChatController {
     }
 
     @DeleteMapping("{chatId}/member/{userId}")
-    @PreAuthorize("hasPermission(#chatId, '" + CHAT_TARGET_TYPE + "', '" + CHAT_REMOVE_MEMBER + "')")
+    @PreAuthorize("authentication.details.equals(#userId) " +
+            "|| hasPermission(#chatId, '" + CHAT_TARGET_TYPE + "', '" + CHAT_REMOVE_MEMBER + "')")
     public void removeUserFromChat(@PathVariable Long chatId, @PathVariable Long userId) {
         chatService.removeMemberById(chatId, userId);
     }
