@@ -13,6 +13,7 @@ import java.util.Random;
 public class LongPrimaryKeyGenerator {
     private static final String REPOSITORY_PACKAGE = "com.stefbured.oncallserver.repository.";
     private static final String REPOSITORY_STRING = "Repository";
+    private static final long MAX_ID_VALUE = 9007199254740992L; // added due to JS limit of 2^53
     private static final long GENERATION_TIMEOUT = 5000L;
 
     private final Random random;
@@ -26,7 +27,7 @@ public class LongPrimaryKeyGenerator {
         long primaryKey;
         long start = System.currentTimeMillis();
         do {
-            primaryKey = random.nextLong(0, Long.MAX_VALUE) + 1;
+            primaryKey = random.nextLong(0, MAX_ID_VALUE) + 1;
             if (System.currentTimeMillis() - start > GENERATION_TIMEOUT) {
                 throw new PrimaryKeyGenerationTimeoutException();
             }
