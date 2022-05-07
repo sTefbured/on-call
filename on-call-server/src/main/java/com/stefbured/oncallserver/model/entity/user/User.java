@@ -42,6 +42,18 @@ public class User {
     @Column(name = "last_name", length = MAX_NAME_LENGTH)
     private String lastName;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    @Column(name = "avatar_thumbnail_url")
+    private String avatarThumbnailUrl;
+
+    @Column(name = "medium_avatar_url")
+    private String mediumAvatarUrl;
+
+    @Column(name = "delete_avatar_url")
+    private String deleteAvatarUrl;
+
     @Column(name = "birth_date")
     private LocalDate birthDate;
 

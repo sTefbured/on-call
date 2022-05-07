@@ -18,6 +18,7 @@ public class UserToPreviewDtoConverter implements Converter<User, UserDTO> {
         destination.setUsername(source.getUsername());
         destination.setFirstName(source.getFirstName());
         destination.setLastName(source.getLastName());
+        destination.setAvatarUrl(source.getAvatarUrl());
         return destination;
     }
 }

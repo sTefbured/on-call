@@ -41,6 +41,14 @@ public class UserDTO {
     @Size(max = MAX_NAME_LENGTH, message = LAST_NAME_LENGTH_ERROR_MESSAGE)
     private String lastName;
 
+    private String avatarUrl;
+
+    private String avatarThumbnailUrl;
+
+    private String mediumAvatarUrl;
+
+    private String deleteAvatarUrl;
+
     @Past(message = BIRTH_DATE_IN_FUTURE_ERROR_MESSAGE)
     private LocalDate birthDate;
 

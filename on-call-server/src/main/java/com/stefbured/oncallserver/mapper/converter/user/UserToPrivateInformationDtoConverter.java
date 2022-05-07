@@ -47,6 +47,7 @@ public class UserToPrivateInformationDtoConverter implements Converter<User, Use
         destination.setPasswordExpirationDate(source.getPasswordExpirationDate());
         destination.setIsBanned(source.isBanned());
         destination.setIsEnabled(source.isEnabled());
+        destination.setAvatarUrl(source.getAvatarUrl());
         if (source.getGrants() != null) {
             destination.setGrants(source.getGrants().stream()
                     .map(grant -> {

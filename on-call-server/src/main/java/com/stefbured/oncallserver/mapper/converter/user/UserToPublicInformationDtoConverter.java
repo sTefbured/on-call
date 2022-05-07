@@ -22,6 +22,7 @@ public class UserToPublicInformationDtoConverter implements Converter<User, User
         destination.setRegistrationDateTime(source.getRegistrationDateTime());
         destination.setLastVisitDateTime(source.getLastVisitDateTime());
         destination.setIsBanned(source.isBanned());
+        destination.setAvatarUrl(source.getAvatarUrl());
         return destination;
     }
 }

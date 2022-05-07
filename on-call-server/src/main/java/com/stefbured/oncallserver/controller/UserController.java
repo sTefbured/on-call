@@ -5,6 +5,7 @@ import com.stefbured.oncallserver.exception.user.UserException;
 import com.stefbured.oncallserver.exception.user.UserNotFoundException;
 import com.stefbured.oncallserver.model.dto.user.UserDTO;
 import com.stefbured.oncallserver.model.entity.user.User;
+import com.stefbured.oncallserver.service.ImageUploadingService;
 import com.stefbured.oncallserver.service.UserService;
 import com.stefbured.oncallserver.mapper.OnCallModelMapper;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -33,11 +35,15 @@ public class UserController {
     private static final Logger LOGGER = LogManager.getLogger(UserController.class);
 
     private final UserService userService;
+    private final ImageUploadingService imageUploadingService;
     private final OnCallModelMapper modelMapper;
 
     @Autowired
-    public UserController(UserService userService, @Qualifier(USER_MODEL_MAPPER) OnCallModelMapper modelMapper) {
+    public UserController(UserService userService,
+                          ImageUploadingService imageUploadingService,
+                          @Qualifier(USER_MODEL_MAPPER) OnCallModelMapper modelMapper) {
         this.userService = userService;
+        this.imageUploadingService = imageUploadingService;
         this.modelMapper = modelMapper;
     }
 
@@ -77,11 +83,20 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("isAnonymous() || hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + USER_REGISTER + "')")
-    public ResponseEntity<Object> registerUser(@RequestBody @Valid UserDTO user, HttpServletRequest request) {
+    public ResponseEntity<Object> registerUser(@RequestPart(required = false) MultipartFile avatar,
+                                               @RequestPart @Valid UserDTO user,
+                                               HttpServletRequest request) {
         LOGGER.info("Performing single user registration: username={}", user.getUsername());
         try {
             if (SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken) {
                 user.setGrants(null);
+            }
+            if (avatar != null) {
+                var avatarUrls = imageUploadingService.loadImage(avatar);
+                user.setAvatarUrl(avatarUrls.getImageUrl());
+                user.setAvatarThumbnailUrl(avatarUrls.getImageThumbnailUrl());
+                user.setMediumAvatarUrl(avatarUrls.getMediumImageUrl());
+                user.setDeleteAvatarUrl(avatarUrls.getDeleteImageUrl());
             }
             var userEntity = new User();
             modelMapper.mapSkippingNullValues(user, userEntity);
