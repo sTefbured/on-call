@@ -118,4 +118,4 @@ dependency-reduced-pom.xml
 buildNumber.properties
 
 # Local configuration properties
-/**/resources/config/local/
+**/private.properties
