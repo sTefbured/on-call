@@ -1,0 +1,31 @@
+.pageNumber {
+  cursor: pointer;
+}
+
+.currentPage {
+  font-weight: bold;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  justify-items: flex-start;
+}
+
+.list__row {
+  min-width: 200px;
+  min-height: 200px;
+  background-color: azure;
+  border: 1px solid black;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 3px 3px black;
+  margin: 0 5px 10px 5px;
+  text-align: center;
+}
+
+.avatar {
+  max-width: 300px;
+  margin: 0 0 20px 0
+}
