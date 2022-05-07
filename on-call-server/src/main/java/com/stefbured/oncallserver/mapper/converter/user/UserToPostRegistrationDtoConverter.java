@@ -23,6 +23,9 @@ public class UserToPostRegistrationDtoConverter implements Converter<User, UserD
         destination.setRegistrationDateTime(source.getRegistrationDateTime());
         destination.setPasswordExpirationDate(source.getPasswordExpirationDate());
         destination.setAvatarUrl(source.getAvatarUrl());
+        destination.setMediumAvatarUrl(source.getMediumAvatarUrl());
+        destination.setAvatarThumbnailUrl(source.getAvatarThumbnailUrl());
+        destination.setDeleteAvatarUrl(source.getDeleteAvatarUrl());
         return destination;
     }
 }

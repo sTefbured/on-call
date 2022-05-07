@@ -24,7 +24,7 @@ import java.util.Date;
 import static com.stefbured.oncallserver.jwt.JwtConstants.AUTH_COOKIE_NAME;
 
 public class JwtUsernamePasswordAuthFilter extends UsernamePasswordAuthenticationFilter {
-    private static final RequestMatcher AUTH_REQUEST_MATCHER = new AntPathRequestMatcher("/api/v1/login", "POST");
+    private static final RequestMatcher AUTH_REQUEST_MATCHER = new AntPathRequestMatcher("/api/v1/user/login", "POST");
 
     private final AuthenticationManager authenticationManager;
     private final JwtConfiguration jwtConfiguration;
