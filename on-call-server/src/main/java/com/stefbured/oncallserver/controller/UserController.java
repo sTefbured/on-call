@@ -21,13 +21,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Collection;
 
 import static com.stefbured.oncallserver.OnCallConstants.*;
 import static com.stefbured.oncallserver.config.OnCallPermissionEvaluator.GLOBAL_TARGET_TYPE;
+import static com.stefbured.oncallserver.jwt.JwtConstants.AUTH_COOKIE_NAME;
 import static com.stefbured.oncallserver.mapper.UserModelMapper.*;
 
 @RestController
@@ -137,6 +140,13 @@ public class UserController {
         if (authentication instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("logout")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        response.addCookie(new Cookie(AUTH_COOKIE_NAME, ""));
         return ResponseEntity.ok().build();
     }
 }
