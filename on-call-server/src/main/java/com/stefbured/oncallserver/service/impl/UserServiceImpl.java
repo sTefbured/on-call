@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -106,8 +107,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Set<User> getUsers(int page, int pageSize) {
-        return userRepository.findAll(Pageable.ofSize(pageSize).withPage(page)).toSet();
+    public Collection<User> getUsers(int page, int pageSize) {
+        return userRepository.findAllByOrderByUsername(Pageable.ofSize(pageSize).withPage(page));
     }
 
     @Override
@@ -154,6 +155,12 @@ public class UserServiceImpl implements UserService {
                 })
                 .flatMap(grant -> grant.getRole().getPermissions().stream())
                 .anyMatch(permission -> authority.equals(permission.getAuthority()));
+    }
+
+    @Override
+    @Transactional
+    public Collection<String> getAuthorityNamesForUserId(Long id) {
+        return getUserById(id).getAuthorityNames();
     }
 
     @Override

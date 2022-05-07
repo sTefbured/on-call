@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,6 +23,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "join groups g on g.id = ug.group_id " +
             "where g.id = ?1", nativeQuery = true)
     Page<User> getGroupMembers(Long groupId, Pageable page);
+
+    List<User> findAllByOrderByUsername(Pageable page);
 
     @Query(value = "select count(*) " +
             "from users u, user_grants ug, groups g " +

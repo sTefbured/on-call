@@ -9,19 +9,23 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import javax.servlet.FilterChain;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Date;
 
-import static com.stefbured.oncallserver.jwt.JwtConstants.AUTHORITIES_CLAIM_NAME;
+import static com.stefbured.oncallserver.jwt.JwtConstants.AUTH_COOKIE_NAME;
 
 public class JwtUsernamePasswordAuthFilter extends UsernamePasswordAuthenticationFilter {
+    private static final RequestMatcher AUTH_REQUEST_MATCHER = new AntPathRequestMatcher("/api/v1/login", "POST");
+
     private final AuthenticationManager authenticationManager;
     private final JwtConfiguration jwtConfiguration;
 
@@ -29,6 +33,7 @@ public class JwtUsernamePasswordAuthFilter extends UsernamePasswordAuthenticatio
                                          JwtConfiguration jwtConfiguration) {
         this.authenticationManager = authenticationManager;
         this.jwtConfiguration = jwtConfiguration;
+        setRequiresAuthenticationRequestMatcher(AUTH_REQUEST_MATCHER);
     }
 
     @Override
@@ -51,13 +56,12 @@ public class JwtUsernamePasswordAuthFilter extends UsernamePasswordAuthenticatio
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) {
-        var authorities = authResult.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         var token = JWT.create()
                 .withSubject(authResult.getName())
-                .withClaim(AUTHORITIES_CLAIM_NAME, authorities)
                 .withIssuedAt(new Date())
                 .withExpiresAt(java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfiguration.getTokenExpirationAfterDays())))
                 .sign(jwtConfiguration.getAlgorithm());
         response.addHeader(jwtConfiguration.getAuthorizationHeader(), jwtConfiguration.getTokenPrefix() + ' ' + token);
+        response.addCookie(new Cookie(AUTH_COOKIE_NAME, token));
     }
 }

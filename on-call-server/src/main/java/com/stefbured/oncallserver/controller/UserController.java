@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -127,5 +128,15 @@ public class UserController {
         var updatedUser = userService.updateUser(userEntity);
         var result = modelMapper.map(updatedUser, UserDTO.class, USER_TO_PRIVATE_INFORMATION_DTO);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("me")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<Void> me() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok().build();
     }
 }

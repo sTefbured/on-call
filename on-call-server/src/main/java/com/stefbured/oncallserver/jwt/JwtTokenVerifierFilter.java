@@ -2,7 +2,7 @@ package com.stefbured.oncallserver.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.stefbured.oncallserver.config.JwtConfiguration;
 import com.stefbured.oncallserver.exception.user.UserNotFoundException;
 import com.stefbured.oncallserver.service.UserService;
@@ -18,13 +18,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static com.stefbured.oncallserver.jwt.JwtConstants.AUTHORITIES_CLAIM_NAME;
+import static com.stefbured.oncallserver.jwt.JwtConstants.AUTH_COOKIE_NAME;
 
 public class JwtTokenVerifierFilter extends OncePerRequestFilter {
     private static final Logger LOGGER = LogManager.getLogger(JwtTokenVerifierFilter.class);
@@ -38,18 +39,32 @@ public class JwtTokenVerifierFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        var authorizationHeader = request.getHeader(jwtConfiguration.getAuthorizationHeader());
-        if (Strings.isEmpty(authorizationHeader) || !authorizationHeader.startsWith(jwtConfiguration.getTokenPrefix())) {
+        var authorizationToken = getTokenFromRequest(request);
+        if (authorizationToken.isEmpty()) {
             filterChain.doFilter(request, response);
             return;
         }
-        var token = authorizationHeader.replace(jwtConfiguration.getTokenPrefix() + ' ', "");
         var algorithm = jwtConfiguration.getAlgorithm();
-        verifyToken(token, algorithm);
+        verifyToken(authorizationToken, algorithm);
         filterChain.doFilter(request, response);
+    }
+
+    private String getTokenFromRequest(HttpServletRequest request) {
+        var header = request.getHeader(jwtConfiguration.getAuthorizationHeader());
+        if (!Strings.isEmpty(header) && header.startsWith(jwtConfiguration.getTokenPrefix())) {
+            return header.replaceFirst(jwtConfiguration.getTokenPrefix() + ' ', "");
+        }
+        if (request.getCookies() == null) {
+            return "";
+        }
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> AUTH_COOKIE_NAME.equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElse("");
     }
 
     private void verifyToken(String token, Algorithm algorithm) {
@@ -61,15 +76,15 @@ public class JwtTokenVerifierFilter extends OncePerRequestFilter {
             if (Boolean.TRUE.equals(queriedUser.isBanned())) {
                 return;
             }
-            var authorities = decodedToken.getClaim(AUTHORITIES_CLAIM_NAME).asArray(String.class);
-            var grantedAuthorities = Arrays.stream(authorities)
+            var authorities = userService.getAuthorityNamesForUserId(queriedUser.getId());
+            var grantedAuthorities = authorities.stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toSet());
             var authentication = new UsernamePasswordAuthenticationToken(username, null, grantedAuthorities);
             authentication.setDetails(queriedUser.getId());
             SecurityContextHolder.getContext().setAuthentication(authentication);
             LOGGER.debug("Token verification success: authentication={}", authentication);
-        } catch (SignatureVerificationException | UserNotFoundException exception) {
+        } catch (UserNotFoundException | JWTVerificationException exception) {
             LOGGER.debug("Failed to verify JWT token: exception={}", exception.getMessage());
         }
     }
