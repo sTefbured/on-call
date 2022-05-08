@@ -62,6 +62,8 @@ public class JwtUsernamePasswordAuthFilter extends UsernamePasswordAuthenticatio
                 .withExpiresAt(java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfiguration.getTokenExpirationAfterDays())))
                 .sign(jwtConfiguration.getAlgorithm());
         response.addHeader(jwtConfiguration.getAuthorizationHeader(), jwtConfiguration.getTokenPrefix() + ' ' + token);
-        response.addCookie(new Cookie(AUTH_COOKIE_NAME, token));
+        var cookie = new Cookie(AUTH_COOKIE_NAME, token);
+        cookie.setSecure(true);
+        response.addCookie(cookie);
     }
 }

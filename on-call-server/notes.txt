@@ -1,0 +1,2 @@
+1. Make sure on-call.web.mvc.allowedOriginsCombined includes both http://** and https://** patterns or
+only one of them will be used, otherwise some requests will end up with 403 status.

@@ -146,7 +146,9 @@ public class UserController {
     @PostMapping("logout")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        response.addCookie(new Cookie(AUTH_COOKIE_NAME, ""));
+        var cookie = new Cookie(AUTH_COOKIE_NAME, "");
+        cookie.setSecure(true);
+        response.addCookie(cookie);
         return ResponseEntity.ok().build();
     }
 }
