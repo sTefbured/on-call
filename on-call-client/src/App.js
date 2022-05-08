@@ -14,8 +14,8 @@ const App = () => {
         <div className={styles.wrapper}>
             <BrowserRouter>
                 <HeaderContainer/>
-            <div className={styles.content}>
-                <div className={styles.container}>
+                <div className={styles.content}>
+                    <div className={styles.container}>
                         <Routes>
                             <Route path='/' element={<LoginFormContainer/>}/>
                             <Route path='/register' element={<Registration/>}/>
@@ -24,9 +24,9 @@ const App = () => {
                             <Route path='/users/:id' element={<UserProfileContainer/>}/>
                             <Route path='/login' element={<LoginFormContainer/>}/>
                         </Routes>
+                    </div>
                 </div>
-            </div>
-            <Footer/>
+                <Footer/>
             </BrowserRouter>
         </div>
     );

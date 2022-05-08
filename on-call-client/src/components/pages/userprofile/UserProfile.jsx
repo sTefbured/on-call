@@ -3,7 +3,7 @@ import {useEffect} from "react";
 
 const UserProfile = (props) => {
     let params = useParams();
-    useEffect(() => props.getUserById(params.id), []);
+    useEffect(() => props.getUserById(params.id), [params]);
     return !props.user
         ? <></>
         : (
