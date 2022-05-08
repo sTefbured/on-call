@@ -48,6 +48,8 @@ public class UserToPrivateInformationDtoConverter implements Converter<User, Use
         destination.setIsBanned(source.isBanned());
         destination.setIsEnabled(source.isEnabled());
         destination.setAvatarUrl(source.getAvatarUrl());
+        destination.setAvatarThumbnailUrl(source.getAvatarThumbnailUrl());
+        destination.setMediumAvatarUrl(source.getMediumAvatarUrl());
         if (source.getGrants() != null) {
             destination.setGrants(source.getGrants().stream()
                     .map(grant -> {

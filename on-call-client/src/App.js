@@ -12,10 +12,10 @@ import HeaderContainer from "./components/common/header/HeaderContainer";
 const App = () => {
     return (
         <div className={styles.wrapper}>
-            <HeaderContainer/>
+            <BrowserRouter>
+                <HeaderContainer/>
             <div className={styles.content}>
                 <div className={styles.container}>
-                    <BrowserRouter>
                         <Routes>
                             <Route path='/' element={<LoginFormContainer/>}/>
                             <Route path='/register' element={<Registration/>}/>
@@ -24,10 +24,10 @@ const App = () => {
                             <Route path='/users/:id' element={<UserProfileContainer/>}/>
                             <Route path='/login' element={<LoginFormContainer/>}/>
                         </Routes>
-                    </BrowserRouter>
                 </div>
             </div>
             <Footer/>
+            </BrowserRouter>
         </div>
     );
 }

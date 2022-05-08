@@ -16,7 +16,6 @@ const UsersList = (props) => {
         <div>
             <div>{pageNumbers}</div>
             <div className={styles.list}>{userComponents}</div>
-            <button onClick={props.logout}>Logout</button>
         </div>
     )
 }
