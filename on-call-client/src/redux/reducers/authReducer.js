@@ -2,11 +2,12 @@ import {userApi} from "../../api/api";
 
 export const SET_USERNAME = "SET_USERNAME";
 export const SET_PASSWORD = "SET_PASSWORD";
-export const SET_IS_AUTHORIZED = "SET_IS_AUTHORIZED";
+export const SET_AUTHORIZED_USER_DATA = "SET_AUTHORIZED_USER_DATA";
 
 let initialState = {
     username: "",
     password: "",
+    user: null,
     isAuthorized: false
 }
 
@@ -18,8 +19,8 @@ const authReducer = (state = initialState, action) => {
         case SET_PASSWORD: {
             return setPasswordAction(state, action);
         }
-        case SET_IS_AUTHORIZED: {
-            return setIsAuthorizedAction(state, action);
+        case SET_AUTHORIZED_USER_DATA: {
+            return setAuthorizedUserDataAction(state, action);
         }
         default: {
             return state;
@@ -41,9 +42,10 @@ const setPasswordAction = (state, action) => {
     }
 }
 
-const setIsAuthorizedAction = (state, action) => {
+const setAuthorizedUserDataAction = (state, action) => {
     return {
         ...state,
+        user: action.user,
         isAuthorized: action.isAuthorized
     }
 }
@@ -58,9 +60,10 @@ export const setPassword = (password) => ({
     password
 });
 
-export const setIsAuthorized = (isAuthorized) => ({
-    type: SET_IS_AUTHORIZED,
-    isAuthorized
+export const setAuthorizedUserData = (isAuthorized, user) => ({
+    type: SET_AUTHORIZED_USER_DATA,
+    isAuthorized,
+    user
 });
 
 export const login = (username, password) => (dispatch) => {
@@ -71,19 +74,19 @@ export const login = (username, password) => (dispatch) => {
                 dispatch(setUsername(""));
                 dispatch(setPassword(""));
             }
-            dispatch(setIsAuthorized(isSuccessful));
+            dispatch(setAuthorizedUserData(isSuccessful, response.data || null));
         })
-        .catch(() => dispatch(setIsAuthorized(false)))
+        .catch(() => dispatch(setAuthorizedUserData(false, null)))
 }
 
 export const me = () => (dispatch) => {
     userApi.me()
         .then(response => {
-            dispatch(setIsAuthorized(response.status === 200))
+            dispatch(setAuthorizedUserData(response.status === 200, response.data || null))
         })
         .catch(error => {
             if (error.response.status === 401) {
-                dispatch(setIsAuthorized(false));
+                dispatch(setAuthorizedUserData(false, null));
             }
         });
 }
@@ -91,7 +94,7 @@ export const me = () => (dispatch) => {
 export const logout = () => (dispatch) => {
     userApi.logout()
         .then(() => {
-            dispatch(setIsAuthorized(false));
+            dispatch(setAuthorizedUserData(false, null));
         })
 }
 

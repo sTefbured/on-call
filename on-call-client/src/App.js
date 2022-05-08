@@ -4,19 +4,20 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import VideoConference from "./components/pages/videoconference/VideoConference";
 import Registration from "./components/pages/registration/Registration";
 import Users from "./components/pages/users/Users";
-import Header from "./components/common/header/Header";
 import Footer from "./components/common/footer/Footer";
 import UserProfileContainer from "./components/pages/userprofile/UserProfileContainer";
 import LoginFormContainer from "./components/pages/login/LoginFormContainer";
+import HeaderContainer from "./components/common/header/HeaderContainer";
 
 const App = () => {
     return (
         <div className={styles.wrapper}>
-            <Header/>
+            <HeaderContainer/>
             <div className={styles.content}>
                 <div className={styles.container}>
                     <BrowserRouter>
                         <Routes>
+                            <Route path='/' element={<LoginFormContainer/>}/>
                             <Route path='/register' element={<Registration/>}/>
                             <Route path='/users' element={<Users/>}/>
                             <Route path='/conference' element={<VideoConference/>}/>
