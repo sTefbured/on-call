@@ -135,12 +135,14 @@ public class UserController {
 
     @GetMapping("me")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<Void> me() {
+    public ResponseEntity<UserDTO> me() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.ok().build();
+        var queriedUser = userService.getUserById((Long) authentication.getDetails());
+        var userDto = modelMapper.map(queriedUser, UserDTO.class, USER_TO_PRIVATE_INFORMATION_DTO);
+        return ResponseEntity.ok(userDto);
     }
 
     @PostMapping("logout")
