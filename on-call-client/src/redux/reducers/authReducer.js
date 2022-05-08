@@ -74,7 +74,7 @@ export const login = (username, password) => (dispatch) => {
                 dispatch(setUsername(""));
                 dispatch(setPassword(""));
             }
-            dispatch(setAuthorizedUserData(isSuccessful, response.data || null));
+            me()(dispatch);
         })
         .catch(() => dispatch(setAuthorizedUserData(false, null)))
 }
