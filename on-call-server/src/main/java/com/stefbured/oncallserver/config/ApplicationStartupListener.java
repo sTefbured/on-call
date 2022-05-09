@@ -13,12 +13,17 @@ import java.util.Scanner;
 @Component
 public class ApplicationStartupListener implements ApplicationRunner {
     private static final String DROP_TABLES_QUERY_PATH = "db/clear_tables.sql";
-    private static final String DEFAULTS_QUERY_PATH = "db/defaults.sql";
     private static final String TEST_GRANTS_QUERY_PATH = "db/test/test_grants.sql";
     private static final String TEST_GROUPS_QUERY_PATH = "db/test/test_groups.sql";
     private static final String TEST_USERS_QUERY_PATH = "db/test/test_users.sql";
     private static final String TEST_SCHEDULE_RECORDS_QUERY_PATH = "db/test/test_schedule_records.sql";
     private static final String PRODUCTION_INIT_QUERY_PATH = "db/production_init.sql";
+
+    // Defaults
+    private static final String NOTIFICATION_TYPES_DEFAULTS = "db/defaults/notification_types.sql";
+    private static final String ROLE_TYPES_DEFAULTS = "db/defaults/role_types.sql";
+    private static final String PERMISSIONS_DEFAULTS = "db/defaults/permissions.sql";
+    private static final String ROLES_DEFAULTS = "db/defaults/roles.sql";
 
     private final SessionFactory sessionFactory;
 
@@ -32,7 +37,7 @@ public class ApplicationStartupListener implements ApplicationRunner {
         if (args.containsOption("dbreload")) {
             if (args.containsOption("test")) {
                 runQueries(DROP_TABLES_QUERY_PATH);
-                runQueries(DEFAULTS_QUERY_PATH);
+                initializeDefaults();
                 runQueries(TEST_USERS_QUERY_PATH);
                 runQueries(TEST_GROUPS_QUERY_PATH);
                 runQueries(TEST_GRANTS_QUERY_PATH);
@@ -41,6 +46,14 @@ public class ApplicationStartupListener implements ApplicationRunner {
                 runQueries(PRODUCTION_INIT_QUERY_PATH);
             }
         }
+    }
+
+    // The order is important! Be careful.
+    private void initializeDefaults() {
+        runQueries(NOTIFICATION_TYPES_DEFAULTS);
+        runQueries(ROLE_TYPES_DEFAULTS);
+        runQueries(PERMISSIONS_DEFAULTS);
+        runQueries(ROLES_DEFAULTS);
     }
 
     private void runQueries(String queryPath) {
