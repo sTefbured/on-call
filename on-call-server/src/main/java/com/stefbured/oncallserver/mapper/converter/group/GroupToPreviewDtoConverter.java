@@ -18,6 +18,8 @@ public class GroupToPreviewDtoConverter implements Converter<Group, GroupDTO> {
         destination.setIdTag(source.getIdTag());
         destination.setName(source.getName());
         destination.setDescription(source.getDescription());
+        destination.setMediumAvatarUrl(source.getMediumAvatarUrl());
+        destination.setAvatarThumbnailUrl(source.getAvatarThumbnailUrl());
         return destination;
     }
 }

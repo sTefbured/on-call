@@ -15,6 +15,7 @@ values (12321324655323, 'database:access', 'Allows to run direct queries to data
        (10458224573824, 'group:edit', 'Allows to edit groups'),
        (32465425653256, 'group:delete', 'Allows to delete groups'),
        (61119559324084, 'group:addMember', 'Allows to add group members'),
+       (51923288243959, 'group:createJoinRequest', 'Allows to create join requests'),
        (34129460043004, 'groupChat:create', 'Allows to create group chats'),
 
        (84357654276542, 'userGrant:create', 'Allows to add grants to users'),

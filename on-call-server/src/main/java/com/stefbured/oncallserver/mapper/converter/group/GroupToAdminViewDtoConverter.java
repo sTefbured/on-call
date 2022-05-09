@@ -51,6 +51,9 @@ public class GroupToAdminViewDtoConverter implements Converter<Group, GroupDTO> 
         destination.setCreator(creator);
         destination.setParentGroup(parentGroup);
         destination.setChildGroups(childGroups);
+        destination.setAvatarUrl(source.getAvatarUrl());
+        destination.setMediumAvatarUrl(source.getMediumAvatarUrl());
+        destination.setAvatarThumbnailUrl(source.getAvatarThumbnailUrl());
         return destination;
     }
 

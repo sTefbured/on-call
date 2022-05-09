@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Table(name = "groups")
+@Table(name = "join_group_requests")
 public class JoinGroupRequest {
     @Id
     private Long id;

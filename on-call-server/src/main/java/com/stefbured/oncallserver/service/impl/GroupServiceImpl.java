@@ -2,10 +2,13 @@ package com.stefbured.oncallserver.service.impl;
 
 import com.stefbured.oncallserver.exception.GroupNotFoundException;
 import com.stefbured.oncallserver.model.entity.group.Group;
+import com.stefbured.oncallserver.model.entity.group.JoinGroupRequest;
 import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.repository.GroupRepository;
+import com.stefbured.oncallserver.repository.JoinGroupRequestRepository;
 import com.stefbured.oncallserver.repository.UserRepository;
 import com.stefbured.oncallserver.service.GroupService;
+import com.stefbured.oncallserver.service.NotificationService;
 import com.stefbured.oncallserver.utils.LongPrimaryKeyGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -15,17 +18,26 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
 
+import static com.stefbured.oncallserver.OnCallConstants.GROUP_ADD_MEMBER;
+import static com.stefbured.oncallserver.OnCallConstants.NotificationTypes.JOIN_GROUP_REQUEST;
+
 @Service
 public class GroupServiceImpl implements GroupService {
+    private final NotificationService notificationService;
     private final GroupRepository groupRepository;
+    private final JoinGroupRequestRepository joinGroupRequestRepository;
     private final UserRepository userRepository;
     private final LongPrimaryKeyGenerator primaryKeyGenerator;
 
     @Autowired
-    public GroupServiceImpl(GroupRepository groupRepository,
+    public GroupServiceImpl(NotificationService notificationService,
+                            GroupRepository groupRepository,
+                            JoinGroupRequestRepository joinGroupRequestRepository,
                             UserRepository userRepository,
                             LongPrimaryKeyGenerator primaryKeyGenerator) {
+        this.notificationService = notificationService;
         this.groupRepository = groupRepository;
+        this.joinGroupRequestRepository = joinGroupRequestRepository;
         this.userRepository = userRepository;
         this.primaryKeyGenerator = primaryKeyGenerator;
     }
@@ -83,6 +95,20 @@ public class GroupServiceImpl implements GroupService {
             throw new GroupNotFoundException();
         }
         return userRepository.getGroupMembersCount(groupId);
+    }
+
+    @Override
+    public JoinGroupRequest createJoinRequest(JoinGroupRequest request) {
+        var creator = request.getUser();
+        if (request.getUser() == null) {
+            throw new NullPointerException();
+        }
+        request.setCreationDate(LocalDateTime.now());
+        var result = joinGroupRequestRepository.save(request);
+        var approvers = groupRepository.findAllGroupMembersByPermission(result.getGroup().getId(), GROUP_ADD_MEMBER);
+        approvers.forEach(approver ->
+                notificationService.createNotification(creator.getId(), result.getId(), JOIN_GROUP_REQUEST, approver.getId()));
+        return result;
     }
 
     @Override

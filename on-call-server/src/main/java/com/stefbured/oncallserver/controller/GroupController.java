@@ -2,8 +2,10 @@ package com.stefbured.oncallserver.controller;
 
 import com.stefbured.oncallserver.config.OnCallPermissionEvaluator;
 import com.stefbured.oncallserver.model.dto.group.GroupDTO;
+import com.stefbured.oncallserver.model.dto.group.JoinGroupRequestDTO;
 import com.stefbured.oncallserver.model.dto.user.UserDTO;
 import com.stefbured.oncallserver.model.entity.group.Group;
+import com.stefbured.oncallserver.model.entity.group.JoinGroupRequest;
 import com.stefbured.oncallserver.model.entity.role.Role;
 import com.stefbured.oncallserver.model.entity.role.UserGrant;
 import com.stefbured.oncallserver.model.entity.user.User;
@@ -50,8 +52,7 @@ public class GroupController {
     }
 
     @GetMapping("all")
-//    @PreAuthorize("hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + USER_PUBLIC_INFO_VIEW + "') " +
-//            "|| hasPermission(null , '" + GLOBAL_TARGET_TYPE + "', '" + USER_PRIVATE_INFO_VIEW + "')")
+    @PreAuthorize("hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + GROUP_PUBLIC_INFO_VIEW + "')")
     public ResponseEntity<Iterable<GroupDTO>> getFirstLevelGroupsList(@RequestParam int page, @RequestParam int pageSize) {
         var groups = groupService.getFirstLevelGroups(page, pageSize);
         var result = groupMapper.mapCollection(groups, GroupDTO.class, GROUP_TO_PREVIEW_DTO);
@@ -61,6 +62,7 @@ public class GroupController {
                 .body(result);
     }
 
+    // Security validation is performed in createResponseForGetGroupOperation() method
     @GetMapping("seq/**")
     public ResponseEntity<GroupDTO> getGroupByTagSequence(HttpServletRequest request) {
         var tagSequence = request.getRequestURI().replaceFirst("/api/v1/group/seq", "").split("/");
@@ -68,6 +70,7 @@ public class GroupController {
         return createResponseForGetGroupOperation(queriedGroup);
     }
 
+    // Security validation is performed in createResponseForGetGroupOperation() method
     @GetMapping("{groupId}")
     public ResponseEntity<GroupDTO> getGroupById(@PathVariable long groupId) {
         var queriedGroup = groupService.getById(groupId);
@@ -75,8 +78,8 @@ public class GroupController {
     }
 
     @GetMapping("members")
-    @PreAuthorize("hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + USER_PUBLIC_INFO_VIEW + "') " +
-            "|| hasPermission(null , '" + GLOBAL_TARGET_TYPE + "', '" + USER_PRIVATE_INFO_VIEW + "')")
+    @PreAuthorize("hasPermission(null, '" + GROUP_TARGET_TYPE + "', '" + GROUP_MEMBER_VIEW + "') " +
+            "&& hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + USER_PUBLIC_INFO_VIEW + "')")
     public ResponseEntity<Collection<UserDTO>> getGroupMembers(@RequestParam long groupId,
                                                                @RequestParam int page,
                                                                @RequestParam int pageSize) {
@@ -90,8 +93,9 @@ public class GroupController {
 
     // TODO: consider changing like in ChatController
     @PostMapping
-    @PreAuthorize("hasPermission(#group.parentGroup?.id, '" + GROUP_TARGET_TYPE + "', '" + GROUP_CREATE + "') " +
-            "|| hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + GROUP_CREATE + "')")
+    @PreAuthorize("#group.parentGroup == null " +
+            "? hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + GROUP_CREATE + "') " +
+            ": hasPermission(#group.parentGroup.id, '" + GROUP_TARGET_TYPE + "', '" + GROUP_CREATE + "')")
     public ResponseEntity<GroupDTO> createGroup(@RequestBody GroupDTO group, HttpServletRequest request) {
         var groupEntity = new Group();
         var userId = (Long) SecurityContextHolder.getContext().getAuthentication().getDetails();
@@ -109,8 +113,26 @@ public class GroupController {
         userGrantService.createUserGrant(userGrant);
         var grantedGroup = groupService.getById(createdGroup.getId());
         var result = groupMapper.map(grantedGroup, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO);
-        var locationUri = URI.create(request.getRequestURI()).resolve(result.getId().toString());
+        var locationUri = URI.create(request.getRequestURI()).resolve(result.getIdTag());
         return ResponseEntity.created(locationUri).body(result);
+    }
+
+    @PostMapping("join")
+    @PreAuthorize("#request.group != null && (#request.group.parentGroup == null " +
+            "? hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + GROUP_CREATE_JOIN_REQUEST + "') " +
+            ": hasPermission(#request.group.parentGroup.id, '" + GROUP_TARGET_TYPE + "', '" + GROUP_CREATE_JOIN_REQUEST + "'))")
+    public ResponseEntity<JoinGroupRequestDTO> createJoinRequest(@RequestBody JoinGroupRequestDTO request) {
+        var group = request.getGroup();
+        var queriedGroup = groupService.getById(group.getId());
+        if (queriedGroup.getParentGroup() != null && group.getParentGroup() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        var requestEntity = new JoinGroupRequest();
+        groupMapper.mapSkippingNullValues(request, requestEntity);
+        var createdRequest = groupService.createJoinRequest(requestEntity);
+        var result = new JoinGroupRequestDTO();
+        groupMapper.mapSkippingNullValues(createdRequest, result);
+        return ResponseEntity.accepted().body(result);
     }
 
     @PutMapping
@@ -143,6 +165,8 @@ public class GroupController {
         } else if (OnCallPermissionEvaluator.hasPermission(group.getId(), GROUP_TARGET_TYPE, GROUP_MEMBER_VIEW)
                 || OnCallPermissionEvaluator.hasPermission(GLOBAL_TARGET_TYPE, GROUP_MEMBER_VIEW)) {
             result = groupMapper.map(group, GroupDTO.class, GROUP_TO_MEMBER_VIEW_DTO);
+        } else if (OnCallPermissionEvaluator.hasPermission(GLOBAL_TARGET_TYPE, GROUP_PUBLIC_INFO_VIEW)) {
+            result = groupMapper.map(group, GroupDTO.class, GROUP_TO_PREVIEW_DTO);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

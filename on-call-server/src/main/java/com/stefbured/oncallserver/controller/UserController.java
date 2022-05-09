@@ -74,8 +74,7 @@ public class UserController {
     }
 
     @GetMapping("all")
-    @PreAuthorize("hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + USER_PUBLIC_INFO_VIEW + "') " +
-            "|| hasPermission(null , '" + GLOBAL_TARGET_TYPE + "', '" + USER_PRIVATE_INFO_VIEW + "')")
+    @PreAuthorize("hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + USER_PUBLIC_INFO_VIEW + "')")
     public ResponseEntity<Collection<UserDTO>> getUsersList(@RequestParam int page, @RequestParam int pageSize) {
         var users = userService.getUsers(page, pageSize);
         var result = modelMapper.mapCollection(users, UserDTO.class, USER_TO_PREVIEW_DTO);

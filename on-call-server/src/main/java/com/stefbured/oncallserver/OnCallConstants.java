@@ -23,6 +23,7 @@ public final class OnCallConstants {
     public static final String GROUP_EDIT = "group:edit";
     public static final String GROUP_DELETE = "group:delete";
     public static final String GROUP_ADD_MEMBER = "group:addMember";
+    public static final String GROUP_CREATE_JOIN_REQUEST = "group:createJoinRequest";
     public static final String GROUP_CHAT_CREATE = "groupChat:create";
 
     // UserGrant permissions
@@ -53,6 +54,16 @@ public final class OnCallConstants {
     public static final Long GROUP_MEMBER = 444562356788634L;
     public static final Long CHAT_ADMINISTRATOR = 644563246436574L;
     public static final Long CHAT_MEMBER = 933456323690086L;
+
+    // Notification types
+    public static class NotificationTypes {
+        public static final Long MESSAGE = 4623541702391519L;
+        public static final Long JOIN_GROUP_REQUEST = 3426346757643803L;
+        public static final Long SCHEDULED_EVENT = 6802542684664664L;
+
+        private NotificationTypes() {
+        }
+    }
 
     private OnCallConstants() {
     }

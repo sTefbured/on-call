@@ -17,18 +17,20 @@ values (784532567455345, 12321324655323), /* database:access */
        (784532567455345, 42134563414523), /* user:edit */
        (784532567455345, 63442674246236), /* user:ban */
        (784532567455345, 56852268965535), /* moderator:ban */
+       (784532567455345, 22965454094518), /* group:publicInfoView */
        (784532567455345, 73468932467853), /* group:memberView */
        (784532567455345, 62535625772466), /* group:adminView */
        (784532567455345, 86423664324692), /* group:create */
        (784532567455345, 10458224573824), /* group:edit */
        (784532567455345, 32465425653256), /* group:delete */
+       (784532567455345, 61119559324084), /* group:addMember */
+       (784532567455345, 51923288243959), /* group:createJoinRequest */
        (784532567455345, 34129460043004), /* groupChat:create */
        (784532567455345, 84357654276542), /* userGrant:create */
        (784532567455345, 22355436897676), /* userGrant:view */
        (784532567455345, 88632678876478), /* userGrant:delete */
        (784532567455345, 12670987654342), /* scheduleRecord:create */
-       (784532567455345, 12344223441245), /* chat:create */
-       (784532567455345, 22341245870053); /* chat:delete */
+       (784532567455345, 12344223441245); /* chat:create */
 
 /* default role-permission connections for 'On-call user' */
 insert into roles_permissions (role_id, permission_id)
@@ -59,6 +61,7 @@ values (335652845749234, 22965454094518), /* group:publicInfoView */
 insert into roles_permissions (role_id, permission_id)
 values (444562356788634, 22965454094518), /* group:publicInfoView */
        (444562356788634, 73468932467853), /* group:memberView */
+       (444562356788634, 51923288243959), /* group:createJoinRequest */
        (444562356788634, 53255425315633); /* scheduleRecord:view */
 
 /* default role-permission connections for 'Chat administrator' */
