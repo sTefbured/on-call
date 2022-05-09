@@ -43,6 +43,8 @@ public class GroupDTO {
 
     private GroupDTO parentGroup;
 
+    private Boolean isMember = null;
+
     private Set<UserGrantDTO> userGrants;
 
     private Set<GroupDTO> childGroups;

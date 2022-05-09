@@ -65,7 +65,7 @@ public class GroupController {
     // Security validation is performed in createResponseForGetGroupOperation() method
     @GetMapping("seq/**")
     public ResponseEntity<GroupDTO> getGroupByTagSequence(HttpServletRequest request) {
-        var tagSequence = request.getRequestURI().replaceFirst("/api/v1/group/seq", "").split("/");
+        var tagSequence = request.getRequestURI().replaceFirst("/api/v1/group/seq/", "").split("/");
         var queriedGroup = groupService.getByGroupSequence(tagSequence);
         return createResponseForGetGroupOperation(queriedGroup);
     }
@@ -162,11 +162,14 @@ public class GroupController {
         if (OnCallPermissionEvaluator.hasPermission(group.getId(), GROUP_TARGET_TYPE, GROUP_ADMIN_VIEW)
                 || OnCallPermissionEvaluator.hasPermission(GLOBAL_TARGET_TYPE, GROUP_ADMIN_VIEW)) {
             result = groupMapper.map(group, GroupDTO.class, GROUP_TO_ADMIN_VIEW_DTO);
+            result.setIsMember(true);
         } else if (OnCallPermissionEvaluator.hasPermission(group.getId(), GROUP_TARGET_TYPE, GROUP_MEMBER_VIEW)
                 || OnCallPermissionEvaluator.hasPermission(GLOBAL_TARGET_TYPE, GROUP_MEMBER_VIEW)) {
             result = groupMapper.map(group, GroupDTO.class, GROUP_TO_MEMBER_VIEW_DTO);
+            result.setIsMember(true);
         } else if (OnCallPermissionEvaluator.hasPermission(GLOBAL_TARGET_TYPE, GROUP_PUBLIC_INFO_VIEW)) {
             result = groupMapper.map(group, GroupDTO.class, GROUP_TO_PREVIEW_DTO);
+            result.setIsMember(false);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

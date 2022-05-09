@@ -8,3 +8,6 @@ delete from roles;
 delete from role_types;
 delete from schedule_records;
 delete from users;
+delete from join_group_requests;
+delete from notification_types;
+delete from notifications;
