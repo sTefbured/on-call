@@ -1,7 +1,7 @@
 import styles from "./userslist.module.css"
 import {NavLink} from "react-router-dom";
 
-const UserInfoRow = (props) => {
+const UserInfoCard = (props) => {
     let UserLink = (prop) => {
         return <NavLink to={"/users/" + props.user.id}>{prop.children}</NavLink>
     }
@@ -14,4 +14,4 @@ const UserInfoRow = (props) => {
     );
 }
 
-export default UserInfoRow;
+export default UserInfoCard;

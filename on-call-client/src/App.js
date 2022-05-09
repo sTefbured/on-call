@@ -8,6 +8,7 @@ import Footer from "./components/common/footer/Footer";
 import UserProfileContainer from "./components/pages/userprofile/UserProfileContainer";
 import LoginFormContainer from "./components/pages/login/LoginFormContainer";
 import HeaderContainer from "./components/common/header/HeaderContainer";
+import Groups from "./components/pages/groups/all/Groups";
 
 const App = () => {
     return (
@@ -17,12 +18,15 @@ const App = () => {
                 <div className={styles.content}>
                     <div className={styles.container}>
                         <Routes>
-                            <Route path='/' element={<LoginFormContainer/>}/>
+                            <Route path='/login' element={<LoginFormContainer/>}/>
                             <Route path='/register' element={<Registration/>}/>
                             <Route path='/users' element={<Users/>}/>
-                            <Route path='/conference' element={<VideoConference/>}/>
                             <Route path='/users/:id' element={<UserProfileContainer/>}/>
-                            <Route path='/login' element={<LoginFormContainer/>}/>
+                            {/*<Route path='/users/:id/groups' element={<UserProfileContainer/>}/> //TODO*/}
+                            <Route path='/groups' element={<Groups/>}/>
+                            {/*<Route path='/groups/:id' element={<LoginFormContainer/>}/> //TODO*/}
+                            <Route path='/conference' element={<VideoConference/>}/>
+                            <Route path='/*' element={<LoginFormContainer/>}/>
                         </Routes>
                     </div>
                 </div>

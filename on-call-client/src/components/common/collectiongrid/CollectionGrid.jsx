@@ -1,8 +1,7 @@
-import styles from "./userslist.module.css";
+import styles from "./collectiongrid.module.css";
 import React from "react";
-import UserInfoRow from "./UserInfoRow";
 
-const UsersList = (props) => {
+const CollectionGrid = (props) => {
     let pagesCount = Math.ceil(props.totalCount / props.pageSize);
     let pageNumbers = [];
     for (let i = 0; i < pagesCount; i++) {
@@ -11,13 +10,12 @@ const UsersList = (props) => {
         let pageNumber = <div onClick={() => {props.onPageChanged(i)}} key={i} className={className}>{i + 1}</div>;
         pageNumbers = [...pageNumbers, pageNumber];
     }
-    let userComponents = props.users.map(user => (<div key={user.id}><UserInfoRow user={user} /></div>));
     return (
         <div>
             <div>{pageNumbers}</div>
-            <div className={styles.list}>{userComponents}</div>
+            <div className={styles.list}>{props.children}</div>
         </div>
     )
 }
 
-export default UsersList;
+export default CollectionGrid;

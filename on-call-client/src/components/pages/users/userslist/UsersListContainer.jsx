@@ -1,8 +1,8 @@
 import {connect} from "react-redux";
 import {getAllUsers, setCurrentPage} from "../../../../redux/reducers/usersReducer";
 import React from "react";
-import UsersList from "../../../common/userslist/UsersList";
-import {logout} from "../../../../redux/reducers/authReducer";
+import CollectionGrid from "../../../common/collectiongrid/CollectionGrid";
+import UserInfoCard from "./UserInfoCard";
 
 class UsersListContainer extends React.Component {
     componentDidMount() {
@@ -15,12 +15,15 @@ class UsersListContainer extends React.Component {
     }
 
     render() {
-        return <UsersList totalCount={this.props.totalCount}
-                          pageSize={this.props.pageSize}
-                          currentPage={this.props.currentPage}
-                          users={this.props.users}
-                          onPageChanged={n => this.onPageChanged(n)}
-        logout={this.props.logout}/>;
+        let userComponents = this.props.users.map(user => (<div key={user.id}><UserInfoCard user={user}/></div>));
+        return (
+            <CollectionGrid totalCount={this.props.totalCount}
+                            pageSize={this.props.pageSize}
+                            currentPage={this.props.currentPage}
+                            onPageChanged={n => this.onPageChanged(n)}>
+                {userComponents}
+            </CollectionGrid>
+        );
     }
 }
 
@@ -35,6 +38,5 @@ let mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
     getAllUsers,
-    setCurrentPage,
-    logout
+    setCurrentPage
 })(UsersListContainer);
