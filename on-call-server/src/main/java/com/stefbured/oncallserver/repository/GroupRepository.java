@@ -28,10 +28,10 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
             "       u.medium_avatar_url, u.password, u.password_expiration_date, " +
             "       u.registration_date_time, u.username " +
             "from users u " +
-            "join user_grants ug on u.id = ug.user_id and ug.group_id = :1 " +
+            "join user_grants ug on u.id = ug.user_id and ug.group_id = ?1 " +
             "join roles_permissions rp on ug.role_id = rp.role_id " +
             "join permissions p on rp.permission_id = p.id " +
-            "where p.name = :2", nativeQuery = true)
+            "where p.name = ?2", nativeQuery = true)
     Collection<User> findAllGroupMembersByPermission(Long groupId, String permission);
 
 //    @Query(value = "" +
