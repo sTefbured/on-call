@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Set;
 
 @Service
@@ -27,6 +28,16 @@ public class GroupServiceImpl implements GroupService {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.primaryKeyGenerator = primaryKeyGenerator;
+    }
+
+    @Override
+    public Collection<Group> getFirstLevelGroups(int page, int pageSize) {
+        return groupRepository.findAllFirstLevel(Pageable.ofSize(pageSize).withPage(page)).toList();
+    }
+
+    @Override
+    public long getFirstLevelGroupsCount() {
+        return groupRepository.findAllFirstLevelCount();
     }
 
     @Override

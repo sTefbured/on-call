@@ -31,7 +31,7 @@ import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_MODEL_MAPPE
 import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_TO_PREVIEW_DTO;
 
 @RestController
-@RequestMapping("api/v1/group/")
+@RequestMapping("api/v1/group")
 public class GroupController {
     private final GroupService groupService;
     private final UserGrantService userGrantService;
@@ -47,6 +47,18 @@ public class GroupController {
         this.userGrantService = userGrantService;
         this.groupMapper = groupMapper;
         this.userMapper = userMapper;
+    }
+
+    @GetMapping("all")
+//    @PreAuthorize("hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + USER_PUBLIC_INFO_VIEW + "') " +
+//            "|| hasPermission(null , '" + GLOBAL_TARGET_TYPE + "', '" + USER_PRIVATE_INFO_VIEW + "')")
+    public ResponseEntity<Iterable<GroupDTO>> getFirstLevelGroupsList(@RequestParam int page, @RequestParam int pageSize) {
+        var groups = groupService.getFirstLevelGroups(page, pageSize);
+        var result = groupMapper.mapCollection(groups, GroupDTO.class, GROUP_TO_PREVIEW_DTO);
+        var totalGroupsCount = groupService.getFirstLevelGroupsCount();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_RANGE, String.valueOf(totalGroupsCount))
+                .body(result);
     }
 
     @GetMapping("seq/**")
