@@ -11,50 +11,54 @@ values (784532567455345, 'Administrator of the website', 'On-call administrator'
 /* default role-permission connections for 'On-call administrator' */
 insert into roles_permissions (role_id, permission_id)
 values (784532567455345, 12321324655323), /* database:access */
-       (784532567455345, 63442674246236), /* user:ban */
-       (784532567455345, 53135653436991), /* user:privateInfoView */
        (784532567455345, 73235634574521), /* user:register */
+       (784532567455345, 76543265436431), /* user:publicInfoView */
+       (784532567455345, 53135653436991), /* user:privateInfoView */
        (784532567455345, 42134563414523), /* user:edit */
+       (784532567455345, 63442674246236), /* user:ban */
        (784532567455345, 56852268965535), /* moderator:ban */
+       (784532567455345, 73468932467853), /* group:memberView */
        (784532567455345, 62535625772466), /* group:adminView */
        (784532567455345, 86423664324692), /* group:create */
        (784532567455345, 10458224573824), /* group:edit */
        (784532567455345, 32465425653256), /* group:delete */
+       (784532567455345, 34129460043004), /* groupChat:create */
        (784532567455345, 84357654276542), /* userGrant:create */
        (784532567455345, 22355436897676), /* userGrant:view */
        (784532567455345, 88632678876478), /* userGrant:delete */
        (784532567455345, 12670987654342), /* scheduleRecord:create */
-       (784532567455345, 53255425315633), /* scheduleRecord:view */
-       (784532567455345, 99326954523576), /* scheduleRecord:edit */
-       (784532567455345, 33325124635736), /* scheduleRecord:delete */
        (784532567455345, 12344223441245), /* chat:create */
-       (784532567455345, 14668732800753), /* chat:edit */
-       (784532567455345, 22341245870053), /* chat:delete */
-       (784532567455345, 34129460043004); /* groupChat:create */
+       (784532567455345, 22341245870053); /* chat:delete */
 
 /* default role-permission connections for 'On-call user' */
 insert into roles_permissions (role_id, permission_id)
 values (345765242562356, 76543265436431), /* user:publicInfoView */
+       (345765242562356, 22965454094518), /* group:publicInfoView */
+       (345765242562356, 86423664324692), /* group:create */
        (345765242562356, 12344223441245); /* chat:create */
 
 /* default role-permission connections for 'Group administrator' */
 insert into roles_permissions (role_id, permission_id)
-values (335652845749234, 62535625772466), /* group:adminView */
+values (335652845749234, 22965454094518), /* group:publicInfoView */
+       (335652845749234, 73468932467853), /* group:memberView */
+       (335652845749234, 62535625772466), /* group:adminView */
        (335652845749234, 86423664324692), /* group:create */
        (335652845749234, 10458224573824), /* group:edit */
        (335652845749234, 32465425653256), /* group:delete */
+       (335652845749234, 61119559324084), /* group:addMember */
+       (335652845749234, 34129460043004), /* groupChat:create */
        (335652845749234, 84357654276542), /* userGrant:create */
        (335652845749234, 22355436897676), /* userGrant:view */
        (335652845749234, 88632678876478), /* userGrant:delete */
        (335652845749234, 12670987654342), /* scheduleRecord:create */
        (335652845749234, 53255425315633), /* scheduleRecord:view */
        (335652845749234, 99326954523576), /* scheduleRecord:edit */
-       (335652845749234, 33325124635736), /* scheduleRecord:delete */
-       (335652845749234, 34129460043004); /* groupChat:create */
+       (335652845749234, 33325124635736); /* scheduleRecord:delete */
 
-/* default role-permission connections for 'Group user' */
+/* default role-permission connections for 'Group member' */
 insert into roles_permissions (role_id, permission_id)
-values (444562356788634, 73468932467853), /* group:memberView */
+values (444562356788634, 22965454094518), /* group:publicInfoView */
+       (444562356788634, 73468932467853), /* group:memberView */
        (444562356788634, 53255425315633); /* scheduleRecord:view */
 
 /* default role-permission connections for 'Chat administrator' */

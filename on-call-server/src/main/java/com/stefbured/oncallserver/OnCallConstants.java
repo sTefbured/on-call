@@ -9,18 +9,21 @@ public final class OnCallConstants {
 
     // User permissions
     public static final String USER_REGISTER = "user:register";
-    public static final String USER_BAN = "user:ban";
     public static final String USER_PUBLIC_INFO_VIEW = "user:publicInfoView";
     public static final String USER_PRIVATE_INFO_VIEW = "user:privateInfoView";
     public static final String USER_EDIT = "user:edit";
+    public static final String USER_BAN = "user:ban";
     public static final String MODERATOR_BAN = "moderator:ban";
 
     // Group permissions
+    public static final String GROUP_PUBLIC_INFO_VIEW = "group:publicInfoView";
     public static final String GROUP_MEMBER_VIEW = "group:memberView";
     public static final String GROUP_ADMIN_VIEW = "group:adminView";
     public static final String GROUP_CREATE = "group:create";
     public static final String GROUP_EDIT = "group:edit";
     public static final String GROUP_DELETE = "group:delete";
+    public static final String GROUP_ADD_MEMBER = "group:addMember";
+    public static final String GROUP_CHAT_CREATE = "groupChat:create";
 
     // UserGrant permissions
     public static final String USER_GRANT_CREATE = "userGrant:create";
@@ -40,7 +43,6 @@ public final class OnCallConstants {
     public static final String CHAT_DELETE = "chat:delete";
     public static final String CHAT_ADD_MEMBER = "chat:addMember";
     public static final String CHAT_REMOVE_MEMBER = "chat:removeMember";
-    public static final String GROUP_CHAT_CREATE = "groupChat:create";
     public static final String MESSAGE_SEND = "message:send";
     public static final String MESSAGE_VIEW = "message:view";
 
