@@ -8,11 +8,13 @@ import org.springframework.boot.web.embedded.tomcat.TomcatContextCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Setter
 @Configuration
+@EnableScheduling
 @ConfigurationProperties(prefix = "on-call.web.mvc")
 public class WebMvcConfiguration implements WebMvcConfigurer {
     private static final String ALLOWED_ORIGINS_DELIMITER = ";";

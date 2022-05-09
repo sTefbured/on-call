@@ -2,6 +2,7 @@ package com.stefbured.oncallserver;
 
 public final class OnCallConstants {
     public static final long ON_CALL_USER_ROLE_ID = 345765242562356L;
+    public static final long NON_ACTIVE_NOTIFICATION_LIFE_TIME_DAYS = 1;
 
 
     public static final String DATABASE_ACCESS = "database:access";
