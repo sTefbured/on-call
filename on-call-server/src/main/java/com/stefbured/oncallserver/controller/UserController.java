@@ -21,11 +21,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collection;
 
 import static com.stefbured.oncallserver.OnCallConstants.*;
@@ -147,10 +147,16 @@ public class UserController {
 
     @PostMapping("logout")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
-        var cookie = new Cookie(AUTH_COOKIE_NAME, "");
-        cookie.setSecure(true);
-        response.addCookie(cookie);
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        var cookies = Arrays.stream(request.getCookies())
+                .filter(cookie -> AUTH_COOKIE_NAME.equals(cookie.getName()))
+                .toList();
+        cookies.forEach(cookie -> {
+            cookie.setMaxAge(0);
+            cookie.setPath("/");
+            cookie.setSecure(true);
+            response.addCookie(cookie);
+        });
         return ResponseEntity.ok().build();
     }
 }
