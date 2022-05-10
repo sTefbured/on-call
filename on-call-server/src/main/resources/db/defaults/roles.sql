@@ -37,6 +37,7 @@ insert into roles_permissions (role_id, permission_id)
 values (345765242562356, 76543265436431), /* user:publicInfoView */
        (345765242562356, 22965454094518), /* group:publicInfoView */
        (345765242562356, 86423664324692), /* group:create */
+       (345765242562356, 51923288243959), /* group:createJoinRequest */
        (345765242562356, 12344223441245); /* chat:create */
 
 /* default role-permission connections for 'Group administrator' */

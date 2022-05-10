@@ -1,8 +1,7 @@
 package com.stefbured.oncallserver.model.dto.group;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.stefbured.oncallserver.model.entity.group.Group;
-import com.stefbured.oncallserver.model.entity.user.User;
+import com.stefbured.oncallserver.model.dto.user.UserDTO;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -16,7 +15,7 @@ public class JoinGroupRequestDTO {
 
     private LocalDateTime creationDate;
 
-    private User user;
+    private UserDTO user;
 
-    private Group group;
+    private GroupDTO group;
 }

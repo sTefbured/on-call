@@ -61,8 +61,9 @@ public class GroupServiceImpl implements GroupService {
             fullIdTagBuilder.insert(0, '/' + currentGroup.getIdTag());
             currentGroup = currentGroup.getParentGroup();
         } while (currentGroup != null);
-        group.setIdTag(fullIdTagBuilder.toString());
-        return group;
+        var detachedGroup = getGroupCopy(group);
+        detachedGroup.setIdTag(fullIdTagBuilder.toString());
+        return detachedGroup;
     }
 
     @Override
@@ -103,6 +104,7 @@ public class GroupServiceImpl implements GroupService {
         if (request.getUser() == null) {
             throw new NullPointerException();
         }
+        request.setId(primaryKeyGenerator.generatePk(JoinGroupRequest.class));
         request.setCreationDate(LocalDateTime.now());
         var result = joinGroupRequestRepository.save(request);
         var approvers = groupRepository.findAllGroupMembersByPermission(result.getGroup().getId(), GROUP_ADD_MEMBER);
@@ -136,5 +138,25 @@ public class GroupServiceImpl implements GroupService {
             throw new GroupNotFoundException();
         }
         groupRepository.deleteById(groupId);
+    }
+
+    private Group getGroupCopy(Group group) {
+        var result = new Group();
+        result.setId(group.getId());
+        result.setIdTag(group.getIdTag());
+        result.setName(group.getName());
+        result.setDescription(group.getDescription());
+        result.setCreationDateTime(group.getCreationDateTime());
+        result.setAvatarUrl(group.getAvatarUrl());
+        result.setAvatarThumbnailUrl(group.getAvatarThumbnailUrl());
+        result.setMediumAvatarUrl(group.getMediumAvatarUrl());
+        result.setDeleteAvatarUrl(group.getDeleteAvatarUrl());
+        result.setCreator(group.getCreator());
+        result.setParentGroup(group.getParentGroup());
+        result.setUserGrants(group.getUserGrants());
+        result.setChildGroups(group.getChildGroups());
+        result.setScheduleRecords(group.getScheduleRecords());
+        result.setChats(group.getChats());
+        return result;
     }
 }

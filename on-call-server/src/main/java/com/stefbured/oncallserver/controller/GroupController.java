@@ -29,6 +29,8 @@ import static com.stefbured.oncallserver.OnCallConstants.*;
 import static com.stefbured.oncallserver.config.OnCallPermissionEvaluator.GLOBAL_TARGET_TYPE;
 import static com.stefbured.oncallserver.config.OnCallPermissionEvaluator.GROUP_TARGET_TYPE;
 import static com.stefbured.oncallserver.mapper.GroupModelMapper.*;
+import static com.stefbured.oncallserver.mapper.JoinGroupRequestModelMapper.JOIN_GROUP_REQUEST_MODEL_MAPPER;
+import static com.stefbured.oncallserver.mapper.JoinGroupRequestModelMapper.JOIN_GROUP_REQUEST_TO_FULL_DTO;
 import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_MODEL_MAPPER;
 import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_TO_PREVIEW_DTO;
 
@@ -39,16 +41,19 @@ public class GroupController {
     private final UserGrantService userGrantService;
     private final OnCallModelMapper groupMapper;
     private final OnCallModelMapper userMapper;
+    private final OnCallModelMapper joinGroupRequestMapper;
 
     @Autowired
     public GroupController(GroupService groupService,
                            UserGrantService userGrantService,
                            @Qualifier(GROUP_MODEL_MAPPER) OnCallModelMapper groupMapper,
-                           @Qualifier(USER_MODEL_MAPPER) OnCallModelMapper userMapper) {
+                           @Qualifier(USER_MODEL_MAPPER) OnCallModelMapper userMapper,
+                           @Qualifier(JOIN_GROUP_REQUEST_MODEL_MAPPER) OnCallModelMapper joinGroupRequestMapper) {
         this.groupService = groupService;
         this.userGrantService = userGrantService;
         this.groupMapper = groupMapper;
         this.userMapper = userMapper;
+        this.joinGroupRequestMapper = joinGroupRequestMapper;
     }
 
     @GetMapping("all")
@@ -128,10 +133,9 @@ public class GroupController {
             return ResponseEntity.badRequest().build();
         }
         var requestEntity = new JoinGroupRequest();
-        groupMapper.mapSkippingNullValues(request, requestEntity);
+        joinGroupRequestMapper.mapSkippingNullValues(request, requestEntity);
         var createdRequest = groupService.createJoinRequest(requestEntity);
-        var result = new JoinGroupRequestDTO();
-        groupMapper.mapSkippingNullValues(createdRequest, result);
+        var result = joinGroupRequestMapper.map(createdRequest, JoinGroupRequestDTO.class, JOIN_GROUP_REQUEST_TO_FULL_DTO);
         return ResponseEntity.accepted().body(result);
     }
 
