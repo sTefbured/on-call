@@ -9,6 +9,7 @@ import UserProfileContainer from "./components/pages/userprofile/UserProfileCont
 import LoginFormContainer from "./components/pages/login/LoginFormContainer";
 import HeaderContainer from "./components/common/header/HeaderContainer";
 import Groups from "./components/pages/groups/all/Groups";
+import Group from "./components/pages/group/Group";
 
 const App = () => {
     return (
@@ -24,7 +25,7 @@ const App = () => {
                             <Route path='/users/:id' element={<UserProfileContainer/>}/>
                             {/*<Route path='/users/:id/groups' element={<UserProfileContainer/>}/> //TODO*/}
                             <Route path='/groups' element={<Groups/>}/>
-                            {/*<Route path='/groups/:id' element={<LoginFormContainer/>}/> //TODO*/}
+                            <Route path='/groups/*' element={<Group/>}/>
                             <Route path='/conference' element={<VideoConference/>}/>
                             <Route path='/*' element={<LoginFormContainer/>}/>
                         </Routes>

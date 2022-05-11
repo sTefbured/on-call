@@ -8,8 +8,8 @@ const GroupLink = (props) => {
 const GroupInfoCard = (props) => {
     return (
         <div className={styles.listRow}>
-            <GroupLink id={props.group.id}><img className={styles.avatar} src={props.group.avatarUrl} alt=""/></GroupLink>
-            <GroupLink id={props.group.id}><div>{props.group.name}</div></GroupLink>
+            <GroupLink id={props.group.idTag}><img className={styles.avatar} src={props.group.avatarUrl} alt=""/></GroupLink>
+            <GroupLink id={props.group.idTag}><div>{props.group.name}</div></GroupLink>
         </div>
     );
 }

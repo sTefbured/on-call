@@ -13,5 +13,13 @@ export const groupApi = {
             },
             withCredentials: true
         })
+    },
+
+    getGroupByTagSequence(tagSequence) {
+        return axiosInstance.get('/group/seq/' + tagSequence);
+    },
+
+    createJoinRequest(joinRequest) {
+        return axiosInstance.post('/group/join', joinRequest);
     }
 }

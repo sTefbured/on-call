@@ -1,0 +1,10 @@
+.input {
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 5px 10px;
+  font-size: 16px;
+  max-width: 60%;
+  &:focus {
+    border: 2px solid blue;
+  }
+}
