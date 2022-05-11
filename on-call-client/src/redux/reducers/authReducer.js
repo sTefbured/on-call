@@ -7,7 +7,7 @@ export const SET_AUTHORIZED_USER_DATA = "SET_AUTHORIZED_USER_DATA";
 let initialState = {
     username: "",
     password: "",
-    user: null,
+    user: {},
     isAuthorized: false
 }
 

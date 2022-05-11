@@ -6,6 +6,7 @@ import userProfileReducer from "./reducers/userProfileReducer";
 import authReducer from "./reducers/authReducer";
 import groupsReducer from "./reducers/groupsReducer";
 import notificationsReducer from "./reducers/notificationsReducer";
+import scheduleReducer from "./reducers/scheduleReducer";
 
 let reducers = combineReducers({
     registrationPage: registrationReducer,
@@ -13,7 +14,8 @@ let reducers = combineReducers({
     userProfilePage: userProfileReducer,
     auth: authReducer,
     group: groupsReducer,
-    notifications: notificationsReducer
+    notifications: notificationsReducer,
+    schedule: scheduleReducer
 });
 let store = createStore(reducers, applyMiddleware(thunkMiddleware));
 

@@ -10,6 +10,7 @@ import LoginFormContainer from "./components/pages/login/LoginFormContainer";
 import HeaderContainer from "./components/common/header/HeaderContainer";
 import Groups from "./components/pages/groups/all/Groups";
 import Group from "./components/pages/group/Group";
+import Schedule from "./components/pages/schedule/Schedule";
 
 const App = () => {
     return (
@@ -21,6 +22,7 @@ const App = () => {
                         <Routes>
                             <Route path='/login' element={<LoginFormContainer/>}/>
                             <Route path='/register' element={<Registration/>}/>
+                            <Route path='/schedule' element={<Schedule/>}/>
                             <Route path='/users' element={<Users/>}/>
                             <Route path='/users/:id' element={<UserProfileContainer/>}/>
                             {/*<Route path='/users/:id/groups' element={<UserProfileContainer/>}/> //TODO*/}

@@ -31,9 +31,10 @@ class UserMenu extends React.Component {
                 </div>
                 <div className={styles.listWrapper}>
                     <div className={styles.list}>
-                        <NavLink className={styles.listItem} to={"/users/" + this.props.user.id}>My Profile</NavLink>
+                        <NavLink className={styles.listItem} to={"/users/" + this.props.user.id}>My profile</NavLink>
                         <NavLink className={styles.listItem}
                                  to={"/users/" + this.props.user.id + "/groups"}>My groups</NavLink>
+                        <NavLink className={styles.listItem} to={"/schedule"}>My schedule</NavLink>
                         <div className={styles.listItem}>Settings</div>
                         <div className={styles.listItem} onClick={this.props.logout}>Log out</div>
                     </div>
