@@ -12,6 +12,12 @@ class ScheduleListContainer extends React.Component{
         this.setState({isRecordOpened: isRecordOpened});
     }
 
+    componentDidMount() {
+        if (this.props.authorizedUser?.id) {
+            this.props.getUserScheduleRecords(this.props.authorizedUser.id, this.props.from);
+        }
+    }
+
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.from !== this.props.from || prevProps.authorizedUser.id !== this.props.authorizedUser.id) {
             this.props.getUserScheduleRecords(this.props.authorizedUser.id, this.props.from);
