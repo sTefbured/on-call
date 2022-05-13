@@ -8,6 +8,7 @@ import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.service.ScheduleRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -81,8 +82,8 @@ public class ScheduleRecordController {
     @PreAuthorize("#userId.equals(authentication.details) " +
             "|| hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + SCHEDULE_RECORD_VIEW + "')")
     public ResponseEntity<Iterable<ScheduleRecordDTO>> getUserScheduleRecords(@PathVariable Long userId,
-                                                                              @RequestParam LocalDateTime from,
-                                                                              @RequestParam LocalDateTime to) {
+                                                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS") LocalDateTime from,
+                                                                              @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS") LocalDateTime to) {
         var queriedRecords = scheduleRecordService.getAllScheduleRecordsForUser(userId, from, to);
         var result = scheduleRecordMapper.mapCollection(queriedRecords, ScheduleRecordDTO.class, SCHEDULE_RECORD_TO_PREVIEW_DTO);
         return ResponseEntity.ok(result);

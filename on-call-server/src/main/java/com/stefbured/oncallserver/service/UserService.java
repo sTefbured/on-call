@@ -16,4 +16,5 @@ public interface UserService {
     boolean userHasAuthorityForChat(Long userId, Long chatId, String authority);
     Long getUserIdByUsername(String username);
     Collection<String> getAuthorityNamesForUserId(Long id);
+    boolean isUserExists(Long userId);
 }

@@ -167,4 +167,9 @@ public class UserServiceImpl implements UserService {
     public Long getUserIdByUsername(String username) {
         return userRepository.getUserIdByUsername(username);
     }
+
+    @Override
+    public boolean isUserExists(Long userId) {
+        return userRepository.existsById(userId);
+    }
 }
