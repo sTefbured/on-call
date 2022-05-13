@@ -1,22 +1,21 @@
 import React from "react";
 import {connect} from "react-redux";
 import {
-    addScheduleRecord,
+    createScheduleRecord,
     setDescription,
     setEventDateTime,
-    setName,
-    setUser
+    setName
 } from "../../../../../redux/reducers/scheduleReducer";
 import ScheduleRecordCreationDialog from "./ScheduleRecordCreationDialog";
 
 let mapStateToProps = (state) => ({
-    scheduleRecord: state.schedule.scheduleRecord
+    scheduleRecord: state.schedule.scheduleRecord,
+    from: state.schedule.from,
 });
 
 export default connect(mapStateToProps, {
     setName,
     setDescription,
     setEventDateTime,
-    setUser,
-    addScheduleRecord
+    createScheduleRecord
 })(ScheduleRecordCreationDialog);

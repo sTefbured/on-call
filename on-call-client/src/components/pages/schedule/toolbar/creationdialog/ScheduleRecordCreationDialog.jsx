@@ -3,10 +3,8 @@ import styles from "../scheduletoolbar.module.css"
 import TextInput from "../../../../common/textinput/TextInput";
 import Button from "../../../../common/button/Button";
 import TextArea from "../../../../common/textarea/TextArea";
-import {useEffect} from "react";
 
 const ScheduleRecordCreationDialog = (props) => {
-    useEffect(() => {props.setUser(props.authorizedUser.id)}, [props.authorizedUser.id]);
     return (
         <DialogPopup isActive={props.isActive}
                      setIsActive={props.setIsActive}
@@ -32,7 +30,10 @@ const ScheduleRecordCreationDialog = (props) => {
                                onChange={(e) => props.setEventDateTime(e.target.value)}
                                type='datetime-local'/>
                 </div>
-                <Button onClick={() => props.addScheduleRecord(props.scheduleRecord)}>Create</Button>
+                <Button onClick={() => {
+                    props.createScheduleRecord(props.scheduleRecord, props.authorizedUser.id, props.from);
+                    props.setIsActive(false);
+                }}>Create</Button>
             </div>
         </DialogPopup>
     );
