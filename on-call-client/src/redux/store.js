@@ -7,6 +7,7 @@ import authReducer from "./reducers/authReducer";
 import groupsReducer from "./reducers/groupsReducer";
 import notificationsReducer from "./reducers/notificationsReducer";
 import scheduleReducer from "./reducers/scheduleReducer";
+import videoconferenceReducer from "./reducers/videoconferenceReducer";
 
 let reducers = combineReducers({
     registrationPage: registrationReducer,
@@ -15,7 +16,8 @@ let reducers = combineReducers({
     auth: authReducer,
     group: groupsReducer,
     notifications: notificationsReducer,
-    schedule: scheduleReducer
+    schedule: scheduleReducer,
+    videoconference: videoconferenceReducer
 });
 let store = createStore(reducers, applyMiddleware(thunkMiddleware));
 

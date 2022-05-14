@@ -11,6 +11,7 @@ import HeaderContainer from "./components/common/header/HeaderContainer";
 import Groups from "./components/pages/groups/all/Groups";
 import Group from "./components/pages/group/Group";
 import Schedule from "./components/pages/schedule/Schedule";
+import UserVideoconferenceRooms from "./components/pages/videoconferencerooms/user/UserVideoconferenceRooms";
 
 const App = () => {
     return (
@@ -23,6 +24,7 @@ const App = () => {
                             <Route path='/login' element={<LoginFormContainer/>}/>
                             <Route path='/register' element={<Registration/>}/>
                             <Route path='/schedule' element={<Schedule/>}/>
+                            <Route path='/conferences' element={<UserVideoconferenceRooms/>}/>
                             <Route path='/users' element={<Users/>}/>
                             <Route path='/users/:id' element={<UserProfileContainer/>}/>
                             {/*<Route path='/users/:id/groups' element={<UserProfileContainer/>}/> //TODO*/}
