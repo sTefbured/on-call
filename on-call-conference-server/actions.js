@@ -1,0 +1,11 @@
+const ACTIONS = {
+    JOIN_ROOM: "JOIN_ROOM",
+    JOINED: "JOINED",
+    ICE_CANDIDATE: "ICE_CANDIDATE",
+    LEAVE_ROOM: "LEAVE_ROOM",
+    ADD_PEER: "ADD_PEER",
+    REMOVE_PEER: "REMOVE_PEER",
+    SEND_ICE: "SEND_ICE"
+}
+
+module.exports = ACTIONS;

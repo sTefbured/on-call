@@ -25,12 +25,12 @@ const App = () => {
                             <Route path='/register' element={<Registration/>}/>
                             <Route path='/schedule' element={<Schedule/>}/>
                             <Route path='/conferences' element={<UserVideoconferenceRooms/>}/>
+                            <Route path='/conferences/:id' element={<VideoConference/>}/>
                             <Route path='/users' element={<Users/>}/>
                             <Route path='/users/:id' element={<UserProfileContainer/>}/>
                             {/*<Route path='/users/:id/groups' element={<UserProfileContainer/>}/> //TODO*/}
                             <Route path='/groups' element={<Groups/>}/>
                             <Route path='/groups/*' element={<Group/>}/>
-                            <Route path='/conference' element={<VideoConference/>}/>
                             <Route path='/*' element={<LoginFormContainer/>}/>
                         </Routes>
                     </div>
