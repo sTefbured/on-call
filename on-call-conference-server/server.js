@@ -4,11 +4,9 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const webrtc = require('wrtc');
 
-
 const ACTIONS = require("./actions");
-const {api} = require("./api");
-const {use} = require("express/lib/router");
 const PORT = process.env.PORT || 3001
+const PEER_CONNECTION_CONFIGURATION = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
 
 // let conferenceRoom = {
 //     id: 0,
@@ -17,22 +15,12 @@ const PORT = process.env.PORT || 3001
 //             id: 0,
 //             socket: null,
 //             inputPeerConnection: null,
-//             outputPeerConnection: null,
+//             outputPeerConnections: {},
 //             stream: []
 //         }
 //     ]
 // }
 let conferenceRooms = [];
-
-const getPeerConnectionConfiguration = () => {
-    // let stunServers = api.getStunServers();
-    // let urls = stunServers.map(stunServer => {
-    //     return {"urls": stunServer};
-    // });
-    // return {"iceServers": [...urls]};
-    // return {'iceServers': [{'urls': 'stun:stun.services.mozilla.com'}, {'urls': 'stun:stun.l.google.com:19302'}]};
-    return {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]};
-};
 
 const getOrCreateConferenceRoom = (roomId) => {
     let foundRoom = conferenceRooms.find(room => room.id === roomId);
@@ -46,48 +34,43 @@ const getOrCreateConferenceRoom = (roomId) => {
     return foundRoom;
 }
 
-const addClientsTracks = (peerConnection, room, userId) => {
-    for (let user of room.users) {
-        if (user.id === userId) {
+const createOutputConnectionOfAllCompanions = (user, room) => {
+    for (let u of room.users) {
+        if (u.id === user.id) {
             continue;
         }
-
-        user.stream.getTracks().forEach(s => {
-            peerConnection.addTrack(s, user.stream);
-        });
+        createOutputConnection(user, room, u);
     }
 }
 
-const notifyRoomMembers = (room) => {
+const notifyRoomMembers = (room, newUser) => {
     room.users.forEach(user => {
-        let oldPeerConnection = createOutputConnection(user, room);
-        if (oldPeerConnection) {
-            oldPeerConnection.close();
+        if (user.id === newUser.id) {
+            return;
         }
+        createOutputConnection(user, room, newUser)
     });
 }
 
-const createOutputConnection = (user, room) => {
-    let socket = user.socket;
+const createOutputConnection = (destinationUser, room, sourceUser) => {
+    let socket = destinationUser.socket;
     if (!socket) {
-        return console.warn(`User ${user.id} is not connected.`);
+        return console.warn(`User ${destinationUser.id} is not connected.`);
     }
-    let outputPeerConnection = new webrtc.RTCPeerConnection(getPeerConnectionConfiguration());
-    let oldOutputPeerConnection = user.outputPeerConnection;
-    user.outputPeerConnection = outputPeerConnection;
-    addClientsTracks(outputPeerConnection, room, user.id);
+    let outputPeerConnection = new webrtc.RTCPeerConnection(PEER_CONNECTION_CONFIGURATION);
+    destinationUser.outputPeerConnections.set(sourceUser.id, outputPeerConnection);
+    sourceUser.stream.getTracks().forEach(track => outputPeerConnection.addTrack(track, sourceUser.stream));
     outputPeerConnection.onicecandidate = e => {
         if (e.candidate) {
-            socket.emit(ACTIONS.GET_REMOTES__ICE_CANDIDATE, e.candidate);
+            socket.emit(ACTIONS.GET_REMOTES__ICE_CANDIDATE, sourceUser.id, e.candidate);
         }
     }
 
     outputPeerConnection.onnegotiationneeded = async () => {
         const offer = await outputPeerConnection.createOffer();
         await outputPeerConnection.setLocalDescription(offer);
-        socket.emit(ACTIONS.GET_REMOTES__JOIN, offer);
+        socket.emit(ACTIONS.GET_REMOTES__JOIN, offer, sourceUser.id);
     }
-    return oldOutputPeerConnection;
 }
 
 const handleInputTrack = (peerConnection, room, socket) => {
@@ -99,7 +82,8 @@ const handleInputTrack = (peerConnection, room, socket) => {
             let user = room.users.find(user => user.id === socket.id);
             if (user) {
                 user.stream = e.streams[0];
-                notifyRoomMembers(room);
+                notifyRoomMembers(room, user);
+                createOutputConnectionOfAllCompanions(user, room);
             }
         }
     }
@@ -112,9 +96,15 @@ const handleJoinRoomAction = async (sdp, roomId, userId, socket) => {
     }
     socket.join(roomId);
     let room = getOrCreateConferenceRoom(roomId);
-    let peerConnection = new webrtc.RTCPeerConnection(getPeerConnectionConfiguration());
+    let peerConnection = new webrtc.RTCPeerConnection(PEER_CONNECTION_CONFIGURATION);
     if (!room.users.find(user => user.id === socket.id)) {
-        room.users.push({id: socket.id, socket:socket, inputPeerConnection: peerConnection, stream: null});
+        room.users.push({
+            id: socket.id,
+            socket:socket,
+            inputPeerConnection: peerConnection,
+            outputPeerConnections: new Map(),
+            stream: null
+        });
     }
     handleInputTrack(peerConnection, room, socket);
 
@@ -140,6 +130,18 @@ const leaveRooms = (socket) => {
         let foundRoom = conferenceRooms[foundRoomIndex];
         if (foundRoom) {
             let index = foundRoom.users.findIndex(u => u.id === socket.id);
+            let userToRemove = foundRoom.users[index];
+            foundRoom.users.forEach(u => {
+                if (u.id === userToRemove.id) {
+                    return;
+                }
+                u.outputPeerConnections.get(userToRemove.id).close();
+                u.socket.emit(ACTIONS.GET_REMOTES__USER_LEFT, socket.id);
+            })
+            userToRemove.inputPeerConnection.close();
+            for (let peerConnection of userToRemove.outputPeerConnections.values()) {
+                peerConnection.close();
+            }
             foundRoom.users.splice(index, 1);
         }
         if (foundRoom.users.length === 0) {
@@ -164,16 +166,16 @@ io.on("connection", socket => {
         peer.addIceCandidate(new webrtc.RTCIceCandidate(candidate));
     });
 
-    socket.on(ACTIONS.GET_REMOTES__ICE_CANDIDATE, (roomId, candidate) => {
+    socket.on(ACTIONS.GET_REMOTES__ICE_CANDIDATE, (roomId, userId, candidate) => {
         let peer = conferenceRooms.find(room => room.id === roomId).users
             .find(user => user.id === socket.id)
-            .outputPeerConnection;
+            .outputPeerConnections.get(userId);
         peer.addIceCandidate(new webrtc.RTCIceCandidate(candidate));
     })
 
-    socket.on(ACTIONS.GET_REMOTES__JOINED, (roomId, sdp) => {
+    socket.on(ACTIONS.GET_REMOTES__JOINED, (roomId, userId, sdp) => {
         let user = conferenceRooms.find(room => room.id === roomId).users.find(user => user.id === socket.id);
-        user.outputPeerConnection.setRemoteDescription(new webrtc.RTCSessionDescription(sdp));
+        user.outputPeerConnections.get(userId).setRemoteDescription(new webrtc.RTCSessionDescription(sdp));
     })
 
     socket.on("disconnecting", () => {
@@ -185,7 +187,7 @@ io.on("connection", socket => {
 })
 
 // Endpoint to check all active rooms with their members
-app.get("/rooms", (request, response) => {
+app.get("/", (request, response) => {
     let rooms = [];
     for (let room of conferenceRooms) {
         let roomDto = {

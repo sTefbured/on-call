@@ -28,16 +28,32 @@ class ConferenceRoom extends React.Component {
         super(props);
         this.localMediaStream = React.createRef();
         this.companionMediaStreams = React.createRef();
-        this.companionMediaStreams.current = [];
+        this.companionMediaStreams.current = new Map();
+        this.companionPeers = React.createRef();
+        this.companionPeers.current = new Map();
     }
 
     setLocalStream(stream) {
         this.localMediaStream.current = stream;
     }
 
-    addCompanionMediaStream(stream) {
-        this.companionMediaStreams.current.push(stream);
+    addCompanionMediaStream(userId, stream) {
+        this.companionMediaStreams.current.set(userId, stream);
         this.setState({clientsCount: this.state.clientsCount + 1});
+    }
+
+    removeCompanionMediaStream(userId) {
+        this.companionMediaStreams.current.get(userId).getTracks().forEach(track => track.stop());
+        this.companionMediaStreams.current.delete(userId);
+        this.setState({clientsCount: this.state.clientsCount - 1});
+    }
+
+    addCompanionPeer(userId, peer) {
+        this.companionPeers.current.set(userId, peer);
+    }
+
+    removeCompanionPeer(userId) {
+        this.companionPeers.current.delete(userId);
     }
 
     async createOutputConnection() {
@@ -68,28 +84,36 @@ class ConferenceRoom extends React.Component {
     }
 
     async addInputHandlers() {
-        socket.on(SOCKET_ACTIONS.GET_REMOTES__JOIN, async sdp => {
+        socket.on(SOCKET_ACTIONS.GET_REMOTES__JOIN, async (sdp, userId) => {
             let peerConnection = new RTCPeerConnection(getPeerConnectionConfiguration());
+            this.addCompanionPeer(userId, peerConnection);
             let tracksCount = 0;
             peerConnection.ontrack = e => {
                 tracksCount++;
                 if (tracksCount === 2) {
-                    this.addCompanionMediaStream(e.streams[(tracksCount / 2) - 1]);
+                    tracksCount = 0;
+                    this.addCompanionMediaStream(userId, e.streams[0]);
                 }
             }
-            socket.on(SOCKET_ACTIONS.GET_REMOTES__ICE_CANDIDATE, candidate => {
-                peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+            socket.on(SOCKET_ACTIONS.GET_REMOTES__ICE_CANDIDATE, (userId, candidate) => {
+                if (candidate && candidate.candidate) {
+                    this.companionPeers.current.get(userId).addIceCandidate(new RTCIceCandidate(candidate));
+                }
             });
             peerConnection.onicecandidate = e => {
                 if (e.candidate && e.candidate.candidate) {
-                    socket.emit(SOCKET_ACTIONS.GET_REMOTES__ICE_CANDIDATE, this.props.roomId, e.candidate);
+                    socket.emit(SOCKET_ACTIONS.GET_REMOTES__ICE_CANDIDATE, this.props.roomId, userId, e.candidate);
                 }
             }
             const remoteDescription = new RTCSessionDescription(sdp);
             await peerConnection.setRemoteDescription(remoteDescription);
             let answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
-            socket.emit(SOCKET_ACTIONS.GET_REMOTES__JOINED, this.props.roomId, peerConnection.localDescription);
+            socket.emit(SOCKET_ACTIONS.GET_REMOTES__JOINED, this.props.roomId, userId, peerConnection.localDescription);
+        });
+        socket.on(SOCKET_ACTIONS.GET_REMOTES__USER_LEFT, userId => {
+            this.removeCompanionPeer(userId);
+            this.removeCompanionMediaStream(userId);
         });
     }
 
@@ -105,16 +129,16 @@ class ConferenceRoom extends React.Component {
         }
     }
 
-    componentWillUnmount() {
+    async componentWillUnmount() {
         this.localMediaStream.current.getTracks().forEach(track => track.stop());
-        socket.emit(SOCKET_ACTIONS.SEND_LOCAL__LEAVE_ROOM);
-        socket.off(SOCKET_ACTIONS.SEND_LOCAL__JOINED);
-        socket.off(SOCKET_ACTIONS.SEND_LOCAL__ICE_CANDIDATE);
+        await socket.emit(SOCKET_ACTIONS.SEND_LOCAL__LEAVE_ROOM);
+        socket.removeAllListeners();
     }
 
     render() {
-        let videoElements = this.companionMediaStreams.current.map(stream => {
-            return <Video key={stream.id} videoStream={stream}/>
+        let videoElements = [];
+        this.companionMediaStreams.current.forEach((stream, userId) => {
+            videoElements.push(<Video key={userId} videoStream={stream}/>);
         });
         return (
             <div>
