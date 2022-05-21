@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 import java.net.URI;
+import java.util.Collection;
 
 import static com.stefbured.oncallserver.OnCallConstants.*;
 import static com.stefbured.oncallserver.config.OnCallPermissionEvaluator.*;
@@ -71,6 +72,16 @@ public class ChatController {
     public ResponseEntity<ChatDTO> getChatById(@PathVariable Long chatId) {
         var queriedChat = chatService.getChatById(chatId);
         var result = chatModelMapper.map(queriedChat, ChatDTO.class, CHAT_TO_VIEW_DTO);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("user/{userId}")
+    @PreAuthorize("#userId.equals(authentication.details)")
+    public ResponseEntity<Collection<ChatDTO>> getUserChats(@PathVariable Long userId,
+                                                            @RequestParam(defaultValue = "0") int page,
+                                                            @RequestParam(defaultValue = "20") int pageSize) {
+        var queriedChats = chatService.getAllForUser(userId, page, pageSize);
+        var result = chatModelMapper.mapCollection(queriedChats, ChatDTO.class, CHAT_TO_VIEW_DTO);
         return ResponseEntity.ok(result);
     }
 

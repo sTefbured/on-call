@@ -12,6 +12,8 @@ import Groups from "./components/pages/groups/all/Groups";
 import Group from "./components/pages/group/Group";
 import Schedule from "./components/pages/schedule/Schedule";
 import UserVideoconferenceRooms from "./components/pages/videoconferencerooms/user/UserVideoconferenceRooms";
+import ChatContainer from "./components/pages/chat/ChatContainer";
+import UserChatsContainer from "./components/pages/chats/UserChatsContainer";
 
 const App = () => {
     return (
@@ -31,6 +33,8 @@ const App = () => {
                             {/*<Route path='/users/:id/groups' element={<UserProfileContainer/>}/> //TODO*/}
                             <Route path='/groups' element={<Groups/>}/>
                             <Route path='/groups/*' element={<Group/>}/>
+                            <Route path='/chats/:id' element={<ChatContainer/>}/>
+                            <Route path='/chats/' element={<UserChatsContainer/>}/>
                             <Route path='/*' element={<LoginFormContainer/>}/>
                         </Routes>
                     </div>

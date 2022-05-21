@@ -1,0 +1,95 @@
+.chat {
+  height: 100%;
+  width: 80%;
+  margin: 0 auto 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  align-self: flex-start;
+  max-width: 100%;
+  border: 1px solid #000000;
+  border-radius: 10px;
+  background-color: #ffffff;
+  padding: 10px;
+  display: flex;
+
+  .avatarThumbnail {
+    margin: 0 20px 0 0;
+
+    img {
+      height: 50px;
+      border-radius: 50%;
+    }
+  }
+
+  &.sentByCurrentUser {
+    align-self: flex-end;
+
+    .avatarThumbnail {
+      order: 2;
+      margin: 0 0 0 20px;
+    }
+  }
+}
+
+.messageContent {
+  min-width: 0;
+}
+
+.messageText {
+  overflow-wrap: break-word;
+}
+
+.messagesContainerWrapper {
+  position: relative;
+  flex-grow: 1;
+}
+
+.messagesContainer {
+  background-color: #888888;
+  border-radius: 10px 10px 0 0;
+
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.chatToolbar {
+  background-color: #fff;
+  padding: 20px;
+}
+
+.inputPanel {
+  border-radius: 0 0 10px 10px;
+  overflow: hidden;
+  background-color: #3a3a3a;
+  padding: 10px;
+  height: fit-content;
+}
+
+.messageInfo {
+  span {
+    margin: 0 0 0 10px;
+    color: #666666;
+  }
+}
+
+.messageInput {
+  width: 100%;
+}
+
+.chatContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}

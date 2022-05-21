@@ -1,5 +1,5 @@
 import React from "react";
-import socket from "../../../socket";
+import createSocketIoConnection from "../../../socket";
 import {SOCKET_ACTIONS} from "../../../socket/socketActions";
 import Video from "./video/Video";
 
@@ -18,6 +18,8 @@ const getPeerConnectionConfiguration = () => {
     // return {'iceServers': [{'urls': 'stun:stun.services.mozilla.com'}, {'urls': 'stun:stun.l.google.com:19302'}]}
     return {'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]};
 }
+
+let socket = null;
 
 class ConferenceRoom extends React.Component {
     state = {
@@ -118,6 +120,7 @@ class ConferenceRoom extends React.Component {
     }
 
     async componentDidMount() {
+        socket = createSocketIoConnection();
         if (socket && this.props.isAuthorized) {
             await this.createOutputConnection();
         }
@@ -131,8 +134,10 @@ class ConferenceRoom extends React.Component {
 
     async componentWillUnmount() {
         this.localMediaStream.current.getTracks().forEach(track => track.stop());
-        await socket.emit(SOCKET_ACTIONS.SEND_LOCAL__LEAVE_ROOM);
-        socket.removeAllListeners();
+        if (socket) {
+            await socket.emit(SOCKET_ACTIONS.SEND_LOCAL__LEAVE_ROOM);
+            socket.removeAllListeners();
+        }
     }
 
     render() {

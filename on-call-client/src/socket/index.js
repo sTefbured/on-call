@@ -9,6 +9,8 @@ const options = {
     transports: ["websocket"]
 }
 
-const socket = io(VIDEOCONFERENCE_SERVER_URL, options);
+const createSocketIoConnection = () => {
+    return io(VIDEOCONFERENCE_SERVER_URL, options);
+}
 
-export default socket;
+export default createSocketIoConnection;

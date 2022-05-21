@@ -8,6 +8,7 @@ import groupsReducer from "./reducers/groupsReducer";
 import notificationsReducer from "./reducers/notificationsReducer";
 import scheduleReducer from "./reducers/scheduleReducer";
 import videoconferenceReducer from "./reducers/videoconferenceReducer";
+import chatReducer from "./reducers/chatReducer";
 
 let reducers = combineReducers({
     registrationPage: registrationReducer,
@@ -17,7 +18,8 @@ let reducers = combineReducers({
     group: groupsReducer,
     notifications: notificationsReducer,
     schedule: scheduleReducer,
-    videoconference: videoconferenceReducer
+    videoconference: videoconferenceReducer,
+    chat: chatReducer
 });
 let store = createStore(reducers, applyMiddleware(thunkMiddleware));
 
