@@ -52,18 +52,16 @@ export const loadNotifications = (userId) => (dispatch) => {
         });
 }
 
-export const readAllNotifications = (notifications) => (dispatch) => {
+export const readAllNotifications = (notifications) => async (dispatch) => {
     dispatch(clearNotifications());
-    notifications.forEach(notification => {
+    for (let notification of notifications) {
         if (notification.isActive) {
-            notificationApi.readNotification(notification)
-                .then(response => {
-                    dispatch(addNotifications([response.data], true));
-                });
+            let response = await notificationApi.readNotification(notification);
+            dispatch(addNotifications([response.data], true));
         } else {
             dispatch(addNotifications([notification], true));
         }
-    })
+    }
 }
 
 export default notificationsReducer;
