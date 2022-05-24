@@ -73,7 +73,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public Collection<Notification> getAllNotificationsForUser(Long userId) {
-        return notificationRepository.findAllByTargetUserId(userId);
+        return notificationRepository.findAllByTargetUserIdOrderByCreationDateDesc(userId);
     }
 
     @Override

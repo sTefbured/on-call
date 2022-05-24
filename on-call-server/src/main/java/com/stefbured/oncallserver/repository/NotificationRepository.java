@@ -10,5 +10,5 @@ import java.util.Collection;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     void deleteAllByIsActiveFalseAndStatusChangeDateBefore(LocalDateTime statusChangeDate);
-    Collection<Notification> findAllByTargetUserId(Long targetUserId);
+    Collection<Notification> findAllByTargetUserIdOrderByCreationDateDesc(Long targetUserId);
 }

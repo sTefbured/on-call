@@ -6,7 +6,7 @@ import {useEffect, useState} from "react";
 const Notifications = (props) => {
     let [isNotifying, setIsNotifying] = useState(false);
     useEffect(() => {
-        setIsNotifying(props.notifications.some(n => n.isActive) && !isNotifying);
+        setIsNotifying(props.notifications.some(n => n.isActive));
     }, [props.notifications]);
 
     let notificationElements = props.notifications.map(notification =>

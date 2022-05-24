@@ -12,4 +12,5 @@ public interface ScheduleRecordService {
     ScheduleRecord createScheduleRecord(ScheduleRecord scheduleRecord);
     ScheduleRecord editScheduleRecord(ScheduleRecord scheduleRecord);
     void deleteScheduleRecordById(Long recordId);
+    void sendNotificationsForActiveEvents();
 }

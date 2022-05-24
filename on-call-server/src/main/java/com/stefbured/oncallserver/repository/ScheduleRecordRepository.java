@@ -11,4 +11,5 @@ import java.util.Collection;
 public interface ScheduleRecordRepository extends JpaRepository<ScheduleRecord, Long> {
     Collection<ScheduleRecord> findAllByUserIdAndEventDateTimeBetween(Long userId, LocalDateTime from, LocalDateTime to);
     Collection<ScheduleRecord> findAllByGroupIdAndEventDateTimeBetween(Long groupId, LocalDateTime from, LocalDateTime to);
+    Collection<ScheduleRecord> findAllByEventDateTimeBetween(LocalDateTime from, LocalDateTime to);
 }

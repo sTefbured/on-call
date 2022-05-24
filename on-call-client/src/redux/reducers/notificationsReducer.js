@@ -24,7 +24,9 @@ const notificationsReducer = (state = initialState, action) => {
 const addNotificationsAction = (state, action) => {
     return {
         ...state,
-        notifications: [...action.notifications, ...state.notifications]
+        notifications: action.isAppend
+            ? [...state.notifications, ...action.notifications]
+            : [...action.notifications, ...state.notifications]
     }
 }
 
@@ -33,9 +35,10 @@ const clearNotificationsAction = (state) => ({
     notifications: []
 });
 
-export const addNotifications = (notifications) => ({
+export const addNotifications = (notifications, isAppend) => ({
     type: ADD_NOTIFICATIONS,
-    notifications
+    notifications,
+    isAppend
 });
 
 export const clearNotifications = () => ({
@@ -45,7 +48,7 @@ export const clearNotifications = () => ({
 export const loadNotifications = (userId) => (dispatch) => {
     notificationApi.getAllNotifications(userId)
         .then(response => {
-            dispatch(addNotifications(response.data));
+            dispatch(addNotifications(response.data, true));
         });
 }
 
@@ -55,10 +58,10 @@ export const readAllNotifications = (notifications) => (dispatch) => {
         if (notification.isActive) {
             notificationApi.readNotification(notification)
                 .then(response => {
-                    dispatch(addNotifications([response.data]));
+                    dispatch(addNotifications([response.data], true));
                 });
         } else {
-            dispatch(addNotifications([notification]));
+            dispatch(addNotifications([notification], true));
         }
     })
 }

@@ -21,7 +21,7 @@ const NotificationsContainer = (props) => {
         if (props.stompClient) {
             let subscription = props.stompClient.subscribe(`/user/${props.authorizedUser.id}/notification`, notification => {
                 let notificationObject = JSON.parse(notification.body);
-                props.addNotifications([notificationObject]);
+                props.addNotifications([notificationObject], false);
             });
             return () => {
                 subscription.unsubscribe();
