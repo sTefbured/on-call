@@ -3,12 +3,13 @@ import Message from "./Message";
 import TextInput from "../../common/textinput/TextInput";
 import {useEffect, useRef, useState} from "react";
 
-const Chat = (props) => {
+const Chat = ({messages, messageText, authorizedUser, currentPage, pageSize, chat, setCurrentPage,
+                  loadMessages, setMessageText, onInputKeyPress}) => {
     let [isHandlingScroll, setIsHandlingScroll] = useState(false);
     let bottomRef = useRef();
     let scrollableElementRef = useRef();
-    let messages = props.messages.map(message => (
-        <Message key={message.id} message={message} authorizedUser={props.authorizedUser}/>
+    let messagesElements = messages.map(message => (
+        <Message key={message.id} message={message} authorizedUser={authorizedUser}/>
     ));
     const scrollToBottom = () => {
         bottomRef.current.scrollIntoView({behavior: "smooth"});
@@ -17,32 +18,32 @@ const Chat = (props) => {
     const scrollHandler = () => {
         if (scrollableElementRef.current.scrollTop === 0 && !isHandlingScroll) {
             setIsHandlingScroll(true);
-            props.setCurrentPage(props.currentPage + 1);
-            props.loadMessages(props.chat.id, props.currentPage + 1, props.pageSize)
+            setCurrentPage(currentPage + 1);
+            loadMessages(chat.id, currentPage + 1, pageSize)
                 .then(() => setIsHandlingScroll(false));
         }
     }
 
     useEffect(() => {
         scrollToBottom()
-    }, [props.messages]);
+    }, [messages]);
     return (
         <div className={styles.chat}>
             <div className={styles.chatToolbar}>
-                <h1>{props.chat.name}</h1>
+                <h1>{chat.name}</h1>
             </div>
             <div className={styles.chatContainer}>
                 <div className={styles.messagesContainerWrapper}>
                     <div className={styles.messagesContainer} onScroll={scrollHandler} ref={scrollableElementRef}>
-                        {messages}
+                        {messagesElements}
                         <div ref={bottomRef}/>
                     </div>
                 </div>
                 <div className={styles.inputPanel}>
                     <TextInput className={styles.messageInput}
-                               value={props.messageText}
-                               onChange={(e) => props.setMessageText(e.target.value)}
-                               onKeyPress={e => props.onInputKeyPress(e)}/>
+                               value={messageText}
+                               onChange={(e) => setMessageText(e.target.value)}
+                               onKeyPress={e => onInputKeyPress(e)}/>
                 </div>
             </div>
         </div>

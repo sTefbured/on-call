@@ -10,7 +10,7 @@ const LOGO_PATH = "https://placekitten.com/100/100";
 const Header = (props) => {
     let authorizedComponent = (
         <div>
-            {/*<NotificationsContainer/>*/}
+            <NotificationsContainer/>
             <Menu/>
             <UserMenuContainer {...props.user}/>
         </div>

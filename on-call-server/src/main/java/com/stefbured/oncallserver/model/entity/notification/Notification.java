@@ -25,11 +25,15 @@ public class Notification {
     @Getter(AccessLevel.NONE)
     private Boolean isActive;
 
-    @Column(name = "source_id")
-    private Long sourceId;
+    @Column(name = "notification_text")
+    private String notificationText;
 
-    @Column(name = "target_id")
-    private Long targetId;
+    @Column(name = "source_object_id")
+    private Long sourceObjectId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id")
+    private User creator;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notification_type_id")
@@ -38,4 +42,8 @@ public class Notification {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_user_id")
     private User targetUser;
+
+    public Boolean isActive() {
+        return isActive;
+    }
 }

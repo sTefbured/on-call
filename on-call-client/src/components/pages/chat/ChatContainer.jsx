@@ -9,72 +9,54 @@ import {
 } from "../../../redux/reducers/chatReducer";
 import {useParams} from "react-router-dom";
 import React, {useEffect, useState} from "react";
-import SockJs from "sockjs-client";
-import {Stomp} from "@stomp/stompjs";
+import {initializeStompClient} from "../../../redux/reducers/stompReducer";
 
-const WEBSOCKET_ADDRESS = "http://localhost:8080/ws";
-
-let stompClient = null;
-
-const ChatContainer = (props) => {
-    let [isWebsocketConnected, setIsWebsocketConnected] = useState(false);
+const ChatContainer = ({isAuthorized, messages, authorizedUser, currentPage, pageSize, chat, requestChatInfo, addMessages,
+                           clearMessages, stompClient, initializeStompClient, setCurrentPage, loadMessages}) => {
     let [messageText, setMessageText] = useState("");
     let {id: chatId} = useParams();
     useEffect(() => {
-        if (props.isAuthorized) {
-            props.requestChatInfo(chatId);
+        if (isAuthorized) {
+            requestChatInfo(chatId);
         }
         return () => {
-            props.clearMessages();
+            clearMessages();
         }
-    }, [props.isAuthorized]);
+    }, [isAuthorized]);
 
     useEffect(() => {
-        if (props.isAuthorized && !isWebsocketConnected) {
-            createWebsocketConnection();
-        }
-        return () => {
-            disconnectFromWebsocket();
-        }
-    }, [props.chat]);
+        return stompClient
+            ? configureStomp()
+            : initializeStompClient();
+    }, [stompClient]);
 
-    const createWebsocketConnection = () => {
-        stompClient = Stomp.over(() => {
-            return new SockJs(WEBSOCKET_ADDRESS);
+    const configureStomp = () => {
+        let subscription = stompClient.subscribe(`/user/${authorizedUser.id}/message`, message => {
+            let messageObject = JSON.parse(message.body);
+            if (messageObject.fieldName) {
+                console.warn(messageObject.message);
+                return;
+            }
+            if (messageObject.sender.id === authorizedUser.id) {
+                setMessageText("");
+            }
+            addMessages([messageObject], true);
         });
-        stompClient.debug = () => {};
-        stompClient.connect({}, () => {
-            setIsWebsocketConnected(true);
-            stompClient.subscribe(`/user/${props.authorizedUser.id}/message`, message => {
-                let messageObject = JSON.parse(message.body);
-                if (messageObject.fieldName) {
-                    console.warn(messageObject.message);
-                    return;
-                }
-                if (messageObject.sender.id === props.authorizedUser.id) {
-                    setMessageText("");
-                }
-                props.addMessages([messageObject], true);
-            });
-        })
+        return () => {
+            subscription.unsubscribe();
+        };
     }
 
     const sendMessage = () => {
         stompClient.send("/app/message", {}, JSON.stringify({
             text: messageText,
             sender: {
-                id: props.authorizedUser.id //FIXME: bad, server should do that
+                id: authorizedUser.id //FIXME: bad, server should do that
             },
             chat: {
                 id: chatId
             }
         }));
-    }
-
-    const disconnectFromWebsocket = () => {
-        if (stompClient) {
-            stompClient.disconnect();
-        }
     }
 
     const onInputKeyPress = (event) => {
@@ -83,14 +65,20 @@ const ChatContainer = (props) => {
         }
     }
 
-    if (!props.chat) {
+    if (!chat) {
         return (
             <div>Loading...</div>
         );
     }
     return (
-        <Chat {...props}
+        <Chat messages={messages}
               messageText={messageText}
+              authorizedUser={authorizedUser}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              chat={chat}
+              setCurrentPage={setCurrentPage}
+              loadMessages={loadMessages}
               setMessageText={text => setMessageText(text)}
               onInputKeyPress={(e) => onInputKeyPress(e)}/>
     );
@@ -102,7 +90,8 @@ let mapStateToProps = (state) => ({
     currentPage: state.chat.currentPage,
     pageSize: state.chat.defaultPageSize,
     authorizedUser: state.auth.user,
-    isAuthorized: state.auth.isAuthorized
+    isAuthorized: state.auth.isAuthorized,
+    stompClient: state.stomp.stompClient
 });
 
 export default connect(mapStateToProps, {
@@ -110,5 +99,6 @@ export default connect(mapStateToProps, {
     loadMessages,
     clearMessages,
     setCurrentPage,
-    addMessages
+    addMessages,
+    initializeStompClient
 })(ChatContainer);

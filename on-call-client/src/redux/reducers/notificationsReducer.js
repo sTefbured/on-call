@@ -1,8 +1,7 @@
-import SockJs from "sockjs-client";
-import {Stomp} from "@stomp/stompjs";
 import {notificationApi} from "../../api/notificationApi";
 
 export const ADD_NOTIFICATIONS = "ADD_NOTIFICATIONS";
+export const CLEAR_NOTIFICATIONS = "CLEAR_NOTIFICATIONS";
 
 let initialState = {
     notifications: [],
@@ -12,6 +11,9 @@ const notificationsReducer = (state = initialState, action) => {
     switch (action.type) {
         case ADD_NOTIFICATIONS: {
             return addNotificationsAction(state, action);
+        }
+        case CLEAR_NOTIFICATIONS: {
+            return clearNotificationsAction(state, action);
         }
         default: {
             return state;
@@ -26,21 +28,39 @@ const addNotificationsAction = (state, action) => {
     }
 }
 
+const clearNotificationsAction = (state) => ({
+    ...state,
+    notifications: []
+});
+
 export const addNotifications = (notifications) => ({
     type: ADD_NOTIFICATIONS,
     notifications
 });
 
-// export const connectViaWebSocket = (userId) => (dispatch) => {
-//     let socket = new SockJs('http://localhost:8080/notification');
-//     let stompClient = Stomp.over(socket);
-//     stompClient.connect({}, () => {
-//         notificationApi.getAllNotifications(userId)
-//             .then(response => {
-//                 // stompClient.subscribe('/')
-//                 dispatch(addNotifications(response.data));
-//             });
-//     })
-// }
+export const clearNotifications = () => ({
+    type: CLEAR_NOTIFICATIONS
+});
+
+export const loadNotifications = (userId) => (dispatch) => {
+    notificationApi.getAllNotifications(userId)
+        .then(response => {
+            dispatch(addNotifications(response.data));
+        });
+}
+
+export const readAllNotifications = (notifications) => (dispatch) => {
+    dispatch(clearNotifications());
+    notifications.forEach(notification => {
+        if (notification.isActive) {
+            notificationApi.readNotification(notification)
+                .then(response => {
+                    dispatch(addNotifications([response.data]));
+                });
+        } else {
+            dispatch(addNotifications([notification]));
+        }
+    })
+}
 
 export default notificationsReducer;
