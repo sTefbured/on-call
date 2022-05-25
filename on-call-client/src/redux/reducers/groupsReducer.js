@@ -5,10 +5,13 @@ export const SET_GROUP = "SET_GROUP";
 export const SET_CURRENT_PAGE = "SET_CURRENT_PAGE";
 export const SET_IS_MEMBER = "SET_IS_MEMBER";
 export const SET_JOIN_REQUEST_MESSAGE = "SET_JOIN_REQUEST_MESSAGE";
+export const SET_JOIN_GROUP_REQUESTS = "SET_JOIN_GROUP_REQUESTS";
+export const SET_TOTAL_COUNT = "SET_TOTAL_COUNT";
 
 let initialState = {
     groups: [],
     group: null,
+    joinGroupRequests: [],
     joinGroupRequest: {
         message: ""
     },
@@ -34,6 +37,12 @@ const groupsReducer = (state = initialState, action) => {
         }
         case SET_JOIN_REQUEST_MESSAGE: {
             return setJoinRequestMessageAction(state, action);
+        }
+        case SET_JOIN_GROUP_REQUESTS: {
+            return setJoinGroupRequestsAction(state, action);
+        }
+        case SET_TOTAL_COUNT: {
+            return setTotalCountAction(state, action);
         }
         default: {
             return state;
@@ -79,6 +88,16 @@ const setJoinRequestMessageAction = (state, action) => {
     }
 }
 
+const setJoinGroupRequestsAction = (state, action) => ({
+    ...state,
+    joinGroupRequests: action.joinGroupRequests
+});
+
+const setTotalCountAction = (state, action) => ({
+    ...state,
+    totalCount: action.totalCount
+});
+
 export const setGroups = (groups, totalCount) => ({
     type: SET_GROUPS,
     groups,
@@ -105,6 +124,16 @@ export const setJoinRequestMessage = (message) => ({
     message
 });
 
+export const setJoinGroupRequests = (joinGroupRequests) => ({
+    type: SET_JOIN_GROUP_REQUESTS,
+    joinGroupRequests
+});
+
+export const setTotalCount = (totalCount) => ({
+    type: SET_TOTAL_COUNT,
+    totalCount
+});
+
 export const getAllGroups = (page, pageSize) => (dispatch) => {
     groupApi.getFirstLevelGroups(page, pageSize)
         .then(response => {
@@ -129,6 +158,21 @@ export const createJoinRequest = (groupId, user, message) => () => {
         }
     }
     groupApi.createJoinRequest(request);
+}
+
+export const getAllJoinRequests = (groupId, page, pageSize) => (dispatch) => {
+    groupApi.getAllJoinRequests(groupId, page, pageSize)
+        .then(response => {
+            dispatch(setTotalCount(response.headers["content-range"]));
+            dispatch(setJoinGroupRequests(response.data));
+        });
+}
+
+export const approveJoinRequest = (request, currentPage, pageSize) => (dispatch) => {
+    groupApi.approveJoinRequest(request)
+        .then(() => {
+            dispatch(getAllJoinRequests(request.group.id, currentPage, pageSize));
+        });
 }
 
 export default groupsReducer;

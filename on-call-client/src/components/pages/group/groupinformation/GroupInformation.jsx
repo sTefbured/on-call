@@ -1,13 +1,9 @@
-import {useEffect, useState} from "react";
-import {useLocation} from "react-router-dom";
+import {useState} from "react";
 import Button from "../../../common/button/Button";
 import styles from "../group.module.css"
 import CreateJoinRequestDialogContainer from "./createjoinrequestdialog/CreateJoinRequestDialogContainer";
 
 const GroupInformation = (props) => {
-    let params = useLocation()
-    let tagSequence = params.pathname.replace('/groups/', '');
-    useEffect(() => props.getGroupByTagSequence(tagSequence), [params]);
     const [isCreateJoinRequestDialogActive, setIsCreateJoinRequestDialogActive] = useState(false);
     if (props.group) {
         return (

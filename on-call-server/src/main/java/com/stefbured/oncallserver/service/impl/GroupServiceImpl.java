@@ -99,6 +99,16 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public Collection<JoinGroupRequest> getJoinRequests(Long groupId, int page, int pageSize) {
+        return joinGroupRequestRepository.findAllByGroupId(groupId, Pageable.ofSize(pageSize).withPage(page)).toList();
+    }
+
+    @Override
+    public long getJoinRequestsCount(Long groupId) {
+        return joinGroupRequestRepository.countAllByGroupId(groupId);
+    }
+
+    @Override
     public JoinGroupRequest createJoinRequest(JoinGroupRequest request) {
         var creator = request.getUser();
         if (request.getUser() == null) {
@@ -139,6 +149,11 @@ public class GroupServiceImpl implements GroupService {
             throw new GroupNotFoundException();
         }
         groupRepository.deleteById(groupId);
+    }
+
+    @Override
+    public void deleteJoinRequestsForUserAndGroup(Long userId, Long groupId) {
+        joinGroupRequestRepository.deleteAllByUserIdAndGroupId(userId, groupId);
     }
 
     private Group getGroupCopy(Group group) {

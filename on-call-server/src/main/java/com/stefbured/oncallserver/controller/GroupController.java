@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -82,6 +83,20 @@ public class GroupController {
         return createResponseForGetGroupOperation(queriedGroup);
     }
 
+    @GetMapping("{groupId}/join")
+    @PreAuthorize("hasPermission(#groupId, '" + GROUP_TARGET_TYPE + "', '" + GROUP_ADD_MEMBER + "')")
+    public ResponseEntity<Collection<JoinGroupRequestDTO>> getAllJoinRequests(@PathVariable Long groupId,
+                                                                              @RequestParam int page,
+                                                                              @RequestParam int pageSize) {
+        var queriedRequests = groupService.getJoinRequests(groupId, page, pageSize);
+        var result = joinGroupRequestMapper.mapCollection(queriedRequests, JoinGroupRequestDTO.class, JOIN_GROUP_REQUEST_TO_FULL_DTO);
+        var totalRequestsCount = groupService.getJoinRequestsCount(groupId);
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.CONTENT_RANGE, String.valueOf(totalRequestsCount))
+                .body(result);
+    }
+
     @GetMapping("members")
     @PreAuthorize("hasPermission(null, '" + GROUP_TARGET_TYPE + "', '" + GROUP_MEMBER_VIEW + "') " +
             "&& hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + USER_PUBLIC_INFO_VIEW + "')")
@@ -137,6 +152,23 @@ public class GroupController {
         var createdRequest = groupService.createJoinRequest(requestEntity);
         var result = joinGroupRequestMapper.map(createdRequest, JoinGroupRequestDTO.class, JOIN_GROUP_REQUEST_TO_FULL_DTO);
         return ResponseEntity.accepted().body(result);
+    }
+
+    @PostMapping("join/approve")
+    @Transactional
+    @PreAuthorize("hasPermission(#request.group.id, '" + GROUP_TARGET_TYPE + "', '" + GROUP_ADD_MEMBER + "')")
+    public void approveJoinRequest(@RequestBody JoinGroupRequestDTO request) {
+        var queriedGroup = groupService.getById(request.getGroup().getId());
+        var userGrant = new UserGrant();
+        userGrant.setGroup(queriedGroup);
+        var user = new User();
+        user.setId(request.getUser().getId());
+        userGrant.setUser(user);
+        var role = new Role();
+        role.setId(GROUP_MEMBER);
+        userGrant.setRole(role);
+        userGrantService.createUserGrant(userGrant);
+        groupService.deleteJoinRequestsForUserAndGroup(request.getUser().getId(), request.getGroup().getId());
     }
 
     @PutMapping

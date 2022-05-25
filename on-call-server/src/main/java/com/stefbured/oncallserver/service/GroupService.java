@@ -14,8 +14,11 @@ public interface GroupService {
     Group getByGroupSequence(String[] pathPieces);
     Set<User> getGroupMembers(Long groupId, int page, int pageSize);
     Long getGroupMembersCount(Long groupId);
+    Collection<JoinGroupRequest> getJoinRequests(Long groupId, int page, int pageSize);
+    long getJoinRequestsCount(Long groupId);
     JoinGroupRequest createJoinRequest(JoinGroupRequest request);
     Group create(Group group);
     Group update(Group group);
     void delete(Long groupId);
+    void deleteJoinRequestsForUserAndGroup(Long userId, Long groupId);
 }

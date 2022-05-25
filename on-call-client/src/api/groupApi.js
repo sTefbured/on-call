@@ -21,5 +21,18 @@ export const groupApi = {
 
     createJoinRequest(joinRequest) {
         return axiosInstance.post('/group/join', joinRequest);
+    },
+
+    getAllJoinRequests(groupId, page, pageSize) {
+        return axiosInstance.get("/group/" + groupId + "/join", {
+            params: {
+                page,
+                pageSize
+            }
+        });
+    },
+
+    approveJoinRequest(request) {
+        return axiosInstance.post("/group/join/approve", request);
     }
 }

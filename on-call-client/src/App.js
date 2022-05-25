@@ -9,7 +9,7 @@ import UserProfileContainer from "./components/pages/userprofile/UserProfileCont
 import LoginFormContainer from "./components/pages/login/LoginFormContainer";
 import HeaderContainer from "./components/common/header/HeaderContainer";
 import Groups from "./components/pages/groups/all/Groups";
-import Group from "./components/pages/group/Group";
+import GroupContainer from "./components/pages/group/GroupContainer";
 import Schedule from "./components/pages/schedule/Schedule";
 import UserVideoconferenceRooms from "./components/pages/videoconferencerooms/user/UserVideoconferenceRooms";
 import ChatContainer from "./components/pages/chat/ChatContainer";
@@ -32,7 +32,7 @@ const App = () => {
                             <Route path='/users/:id' element={<UserProfileContainer/>}/>
                             {/*<Route path='/users/:id/groups' element={<UserProfileContainer/>}/> //TODO*/}
                             <Route path='/groups' element={<Groups/>}/>
-                            <Route path='/groups/*' element={<Group/>}/>
+                            <Route path='/groups/*' element={<GroupContainer/>}/>
                             <Route path='/chats/:id' element={<ChatContainer/>}/>
                             <Route path='/chats/' element={<UserChatsContainer/>}/>
                             <Route path='/*' element={<LoginFormContainer/>}/>
