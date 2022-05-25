@@ -149,6 +149,14 @@ export const getGroupByTagSequence = (tagSequence) => (dispatch) => {
         });
 }
 
+export const getGroupById = (groupId) => (dispatch) => {
+    groupApi.getGroupById(groupId)
+        .then(response => {
+            dispatch(setIsMember(response.data.isMember));
+            dispatch(setGroup(response.data));
+        });
+}
+
 export const createJoinRequest = (groupId, user, message) => () => {
     let request = {
         message: message,

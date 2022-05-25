@@ -119,7 +119,7 @@ public class GroupServiceImpl implements GroupService {
         var result = joinGroupRequestRepository.save(request);
         var approvers = groupRepository.findAllGroupMembersByPermission(result.getGroup().getId(), GROUP_ADD_MEMBER);
         approvers.forEach(approver ->
-                notificationService.createNotification(creator.getId(), result.getId(),
+                notificationService.createNotification(creator.getId(), result.getGroup().getId(),
                         result.getMessage(), JOIN_GROUP_REQUEST, approver.getId()));
         return result;
     }

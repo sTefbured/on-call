@@ -1,7 +1,8 @@
-import styles from "./notifications.module.css";
+import styles from "../notifications.module.css";
 import {useNavigate} from "react-router-dom";
-import NewMessageNotificationContent from "./notification/NewMessageNotificationContent";
-import ScheduledEventStartNotificationContent from "./notification/ScheduledEventStartNotificationContent";
+import NewMessageNotificationContent from "./NewMessageNotificationContent";
+import ScheduledEventStartNotificationContent from "./ScheduledEventStartNotificationContent";
+import NewJoinGroupRequestNotificationContent from "./NewJoinGroupRequestNotificationContent";
 
 const Notification = (props) => {
     let content;
@@ -10,7 +11,7 @@ const Notification = (props) => {
     switch (props.notification.notificationType.name) {
         case "message": {
             link = "/chats/" + props.notification.sourceObjectId;
-            content = <NewMessageNotificationContent notification={props.notification}/>
+            content = <NewMessageNotificationContent notification={props.notification}/>;
             break;
         }
         case "scheduledEvent": {
@@ -18,8 +19,13 @@ const Notification = (props) => {
             content = <ScheduledEventStartNotificationContent notification={props.notification}/>;
             break;
         }
+        case "joinGroupRequest": {
+            link = "/groups/" + props.notification.sourceObjectId + "?tab=join_requests";
+            content = <NewJoinGroupRequestNotificationContent notification={props.notification}/>;
+            break;
+        }
         default: {
-            content = <></>
+            content = <>{props.notification.message}</>
         }
     }
     return (

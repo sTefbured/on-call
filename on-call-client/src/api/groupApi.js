@@ -34,5 +34,9 @@ export const groupApi = {
 
     approveJoinRequest(request) {
         return axiosInstance.post("/group/join/approve", request);
+    },
+
+    getGroupById(groupId) {
+        return axiosInstance.get("group/" + groupId);
     }
 }

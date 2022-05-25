@@ -44,6 +44,7 @@ public class GroupToMemberViewDtoConverter implements Converter<Group, GroupDTO>
         var creator = userToPreviewDtoConverter.convert(userContext);
         var destination = new GroupDTO();
         destination.setId(source.getId());
+        destination.setIdTag(source.getIdTag());
         destination.setName(source.getName());
         destination.setDescription(source.getDescription());
         destination.setCreationDateTime(source.getCreationDateTime());

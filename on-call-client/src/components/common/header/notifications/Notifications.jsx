@@ -1,6 +1,6 @@
 import styles from "./notifications.module.css";
 import NotificationsButton from "./NotificationsButton";
-import Notification from "./Notification";
+import Notification from "./notification/Notification";
 import {useEffect, useState} from "react";
 
 const Notifications = (props) => {
