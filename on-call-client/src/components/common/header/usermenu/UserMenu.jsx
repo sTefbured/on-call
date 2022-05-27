@@ -31,12 +31,12 @@ class UserMenu extends React.Component {
                 </div>
                 <div className={styles.listWrapper}>
                     <div className={styles.list}>
-                        <NavLink className={styles.listItem} to={"/users/" + this.props.user.id}>My profile</NavLink>
-                        <NavLink className={styles.listItem} to={"/chats"}>My chats</NavLink>
-                        <NavLink className={styles.listItem}
+                        <NavLink end className={styles.listItem} to={"/users/" + this.props.user.id}>My profile</NavLink>
+                        <NavLink end className={styles.listItem} to={"/chats"}>My chats</NavLink>
+                        <NavLink end className={styles.listItem}
                             to={"/users/" + this.props.user.id + "/groups"}>My groups</NavLink>
-                        <NavLink className={styles.listItem} to={"/schedule"}>My schedule</NavLink>
-                        <NavLink className={styles.listItem} to={"/conferences"}>My conference rooms</NavLink>
+                        <NavLink end className={styles.listItem} to={"/schedule"}>My schedule</NavLink>
+                        <NavLink end className={styles.listItem} to={"/conferences"}>My conference rooms</NavLink>
                         <div className={styles.listItem} onClick={this.props.logout}>Log out</div>
                     </div>
                 </div>

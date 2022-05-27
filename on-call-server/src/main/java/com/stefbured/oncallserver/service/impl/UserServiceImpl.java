@@ -146,6 +146,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean userHasAuthorityForChat(Long userId, Long chatId, String authority) {
         var user = getUserById(userId);
         return user.getGrants().stream()

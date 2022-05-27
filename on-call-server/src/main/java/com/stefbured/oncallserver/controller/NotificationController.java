@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 import static com.stefbured.oncallserver.mapper.NotificationModelMapper.NOTIFICATION_MODEL_MAPPER;
@@ -44,6 +45,7 @@ public class NotificationController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         queriedNotification.setIsActive(false);
+        queriedNotification.setStatusChangeDate(LocalDateTime.now());
         var editedNotification = notificationService.editNotification(queriedNotification);
         var result = notificationMapper.map(editedNotification, NotificationDTO.class, NOTIFICATION_TO_FULL_DTO);
         return ResponseEntity.ok(result);
