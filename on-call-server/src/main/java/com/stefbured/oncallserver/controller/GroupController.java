@@ -12,6 +12,7 @@ import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.service.GroupService;
 import com.stefbured.oncallserver.mapper.OnCallModelMapper;
 import com.stefbured.oncallserver.service.UserGrantService;
+import com.stefbured.oncallserver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
@@ -94,6 +95,19 @@ public class GroupController {
         return ResponseEntity
                 .ok()
                 .header(HttpHeaders.CONTENT_RANGE, String.valueOf(totalRequestsCount))
+                .body(result);
+    }
+
+    @GetMapping("all/user/{userId}")
+    @PreAuthorize("authentication.details.equals(#userId)")
+    public ResponseEntity<Collection<GroupDTO>> getAllGroupsForUser(@PathVariable Long userId,
+                                                                    @RequestParam int page,
+                                                                    @RequestParam int pageSize) {
+        var userGrants = userGrantService.getAllGroupUserGrantsForUser(userId, page, pageSize);
+        var groups = userGrants.stream().map(UserGrant::getGroup).toList();
+        var result = groupMapper.mapCollection(groups, GroupDTO.class, GROUP_TO_PREVIEW_DTO);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_RANGE, String.valueOf(userGrants.getTotalElements()))
                 .body(result);
     }
 

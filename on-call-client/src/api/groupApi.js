@@ -38,5 +38,14 @@ export const groupApi = {
 
     getGroupById(groupId) {
         return axiosInstance.get("group/" + groupId);
+    },
+
+    getAllGroupsForUser(userId, page, pageSize) {
+        return axiosInstance.get("group/all/user/" + userId, {
+            params: {
+                page: page,
+                pageSize: pageSize
+            }
+        });
     }
 }

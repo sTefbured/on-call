@@ -149,6 +149,13 @@ export const getGroupByTagSequence = (tagSequence) => (dispatch) => {
         });
 }
 
+export const getAllGroupsForUser = (userId, page, pageSize) => (dispatch) => {
+    groupApi.getAllGroupsForUser(userId, page, pageSize)
+        .then(response => {
+            dispatch(setGroups(response.data, response.headers['content-range']));
+        });
+}
+
 export const getGroupById = (groupId) => (dispatch) => {
     groupApi.getGroupById(groupId)
         .then(response => {

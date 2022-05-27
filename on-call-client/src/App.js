@@ -14,6 +14,7 @@ import Schedule from "./components/pages/schedule/Schedule";
 import UserVideoconferenceRooms from "./components/pages/videoconferencerooms/user/UserVideoconferenceRooms";
 import ChatContainer from "./components/pages/chat/ChatContainer";
 import UserChatsContainer from "./components/pages/chats/UserChatsContainer";
+import UserGroupsContainer from "./components/pages/groups/usergroups/UserGroupsContainer";
 
 const App = () => {
     return (
@@ -30,7 +31,7 @@ const App = () => {
                             <Route path='/conferences/:id' element={<VideoConference/>}/>
                             <Route path='/users' element={<Users/>}/>
                             <Route path='/users/:id' element={<UserProfileContainer/>}/>
-                            {/*<Route path='/users/:id/groups' element={<UserProfileContainer/>}/> //TODO*/}
+                            <Route path='/users/:id/groups' element={<UserGroupsContainer/>}/>
                             <Route path='/groups' element={<Groups/>}/>
                             <Route path='/groups/*' element={<GroupContainer/>}/>
                             <Route path='/chats/:id' element={<ChatContainer/>}/>

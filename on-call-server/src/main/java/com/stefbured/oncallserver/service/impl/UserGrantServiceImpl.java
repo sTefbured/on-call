@@ -5,7 +5,11 @@ import com.stefbured.oncallserver.repository.UserGrantRepository;
 import com.stefbured.oncallserver.service.UserGrantService;
 import com.stefbured.oncallserver.utils.LongPrimaryKeyGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
 
 @Service
 public class UserGrantServiceImpl implements UserGrantService {
@@ -27,6 +31,12 @@ public class UserGrantServiceImpl implements UserGrantService {
     @Override
     public UserGrant getUserGrantById(Long userGrantId) {
         return userGrantRepository.findById(userGrantId).orElseThrow();
+    }
+
+    @Override
+    public Page<UserGrant> getAllGroupUserGrantsForUser(Long userId, int page, int pageSize) {
+        var pageable = Pageable.ofSize(pageSize).withPage(page);
+        return userGrantRepository.findAllByUserIdAndGroupIsNotNull(userId, pageable);
     }
 
     @Override
