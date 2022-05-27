@@ -1,27 +1,45 @@
-import {useParams} from "react-router-dom";
+import styles from "./user.module.css";
+import {useNavigate, useParams} from "react-router-dom";
 import {useEffect} from "react";
+import Button from "../../common/button/Button";
 
 const UserProfile = (props) => {
     let params = useParams();
+    let navigate = useNavigate();
     useEffect(() => props.getUserById(params.id), [params]);
+    useEffect(() => {
+        if (props.navigateToDialog) {
+            navigate("/chats/" + props.chat.id);
+        }
+    }, [props.navigateToDialog])
     return !props.user
         ? <></>
         : (
-        <div>
-            <div>{props.user.id}</div>
-            <div>{props.user.username}</div>
-            <div>{props.user.email}</div>
-            <div>{props.user.firstName}</div>
-            <div>{props.user.lastName}</div>
-            <div>{props.user.birthDate}</div>
-            <div>{props.user.registrationDateTime}</div>
-            <div>{props.user.lastVisitDateTime}</div>
-            <div>{props.user.passwordExpirationDate}</div>
-            <div>{props.user.isBanned}</div>
-            <div>{props.user.isEnabled}</div>
-            <div>{props.user.avatarUrl}</div>
-        </div>
-    )
+            <div className={styles.user}>
+                <div>
+                    <img src={props.user.avatarUrl} alt=""/>
+                    <Button onClick={() => props.loadChat(props.user.id)}>Chat</Button>
+                </div>
+                <div className={styles.userInfo}>
+                    <div className={styles.nameContainer}>
+                        <h1>{props.user.firstName + " " + props.user.lastName}</h1>
+                        <h2>{props.user.username}</h2>
+                    </div>
+                    {
+                        (props.user.email)
+                            ? <div>
+                                <label>Email:</label>
+                                <span>{props.user.email}</span>
+                            </div>
+                            : <></>
+                    }
+                    <div>
+                        <label>Birth date:</label>
+                        <span>{props.user.birthDate}</span>
+                    </div>
+                </div>
+            </div>
+        )
 }
 
 export default UserProfile;

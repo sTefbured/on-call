@@ -12,6 +12,7 @@ public interface ChatService {
     Collection<Chat> getAllForUser(Long userId, int page, int pageSize);
     Collection<Chat> getAllForGroup(Long groupId, int page, int pageSize);
     Collection<Long> getAllChatMembersIds(Chat chat);
+    Chat findPrivateDialog(Long firstUserId, Long secondUserId);
     Chat updateChat(Chat chat);
     void deleteChatById(Long chatId);
     void removeMemberById(Long chatId, Long userId);

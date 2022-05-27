@@ -4,6 +4,8 @@ import com.stefbured.oncallserver.mapper.OnCallModelMapper;
 import com.stefbured.oncallserver.model.dto.chat.ChatDTO;
 import com.stefbured.oncallserver.model.dto.user.UserDTO;
 import com.stefbured.oncallserver.model.entity.chat.Chat;
+import com.stefbured.oncallserver.model.entity.role.Role;
+import com.stefbured.oncallserver.model.entity.role.UserGrant;
 import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.service.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +19,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
 
 import static com.stefbured.oncallserver.OnCallConstants.*;
 import static com.stefbured.oncallserver.config.OnCallPermissionEvaluator.*;
-import static com.stefbured.oncallserver.mapper.ChatModelMapper.CHAT_MODEL_MAPPER;
-import static com.stefbured.oncallserver.mapper.ChatModelMapper.CHAT_TO_VIEW_DTO;
+import static com.stefbured.oncallserver.mapper.ChatModelMapper.*;
 import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_MODEL_MAPPER;
 import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_TO_PREVIEW_DTO;
 
@@ -82,6 +85,35 @@ public class ChatController {
                                                             @RequestParam(defaultValue = "20") int pageSize) {
         var queriedChats = chatService.getAllForUser(userId, page, pageSize);
         var result = chatModelMapper.mapCollection(queriedChats, ChatDTO.class, CHAT_TO_VIEW_DTO);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("user")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ChatDTO> findOrCreateChat(@RequestBody UserDTO targetUser) {
+        var userId = (Long) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        Chat chat;
+        try {
+            chat = chatService.findPrivateDialog(userId, targetUser.getId());
+        } catch (NoSuchElementException exception) {
+            var newChat = new Chat();
+            var user = new User();
+            user.setId(userId);
+            newChat.setCreator(user);
+            var targetUserEntity = new User();
+            targetUserEntity.setId(targetUser.getId());
+            var targetUserGrant = new UserGrant();
+            targetUserGrant.setUser(targetUserEntity);
+            var role = new Role();
+            role.setId(CHAT_MEMBER);
+            targetUserGrant.setRole(role);
+            var grantsSet = new HashSet<UserGrant>();
+            grantsSet.add(targetUserGrant);
+            newChat.setUsersGrants(grantsSet);
+            newChat.setName("Dialog");
+            chat = chatService.createChat(newChat);
+        }
+        var result = chatModelMapper.map(chat, ChatDTO.class, CHAT_TO_ID_DTO);
         return ResponseEntity.ok(result);
     }
 

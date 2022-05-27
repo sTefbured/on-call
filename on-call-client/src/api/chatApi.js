@@ -5,6 +5,10 @@ export const chatApi = {
         return axiosInstance.post("/chat", chat);
     },
 
+    findOrCreateChat(userId) {
+        return axiosInstance.post("/chat/user", {id: userId});
+    },
+
     getAllChatsForUser(userId, page, pageSize) {
         return axiosInstance.get("/chat/user/" + userId, {
             params: {

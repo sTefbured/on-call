@@ -13,6 +13,7 @@ import com.stefbured.oncallserver.utils.LongPrimaryKeyGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -42,6 +43,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Transactional
     public Chat createChat(Chat chat) {
         chat.setId(primaryKeyGenerator.generatePk(Chat.class));
         chat.setCreationDateTime(LocalDateTime.now());
@@ -53,6 +55,11 @@ public class ChatServiceImpl implements ChatService {
         userGrant.setRole(role);
         userGrant.setChat(createdChat);
         userGrantService.createUserGrant(userGrant);
+        var grants = chat.getUsersGrants();
+        grants.forEach(grant -> {
+            grant.setChat(createdChat);
+            userGrantService.createUserGrant(grant);
+        });
         return createdChat;
     }
 
@@ -93,6 +100,19 @@ public class ChatServiceImpl implements ChatService {
         var groupId = chat.getGroup().getId();
         var membersCount = groupService.getGroupMembersCount(groupId);
         return groupService.getGroupMembers(groupId, 0, membersCount.intValue()).stream().map(User::getId).toList(); //FIXME not cool
+    }
+
+    @Override
+    public Chat findPrivateDialog(Long firstUserId, Long secondUserId) {
+        var chats = chatRepository.findAllByUserId(firstUserId, Pageable.unpaged());
+        return chats.stream()
+                .filter(chat -> {
+                    var grants = chat.getUsersGrants();
+                    if (grants.size() != 2) {
+                        return false;
+                    }
+                    return grants.stream().anyMatch(grant -> grant.getUser().getId().equals(secondUserId));
+                }).findFirst().orElseThrow();
     }
 
     @Override

@@ -113,4 +113,11 @@ export const queryChatsForUser = (userId, page, pageSize) => (dispatch) => {
         });
 }
 
+export const findOrCreateChat = (targetUserId) => (dispatch) => {
+    return chatApi.findOrCreateChat(targetUserId)
+        .then(response => {
+            dispatch(setChat(response.data));
+        });
+}
+
 export default chatReducer;
