@@ -16,9 +16,13 @@ const UserProfile = (props) => {
         ? <></>
         : (
             <div className={styles.user}>
-                <div>
+                <div className={styles.avatarPanel}>
                     <img src={props.user.avatarUrl} alt=""/>
-                    <Button onClick={() => props.loadChat(props.user.id)}>Chat</Button>
+                    {
+                        (props.user.id !== props.authorizedUser.id)
+                            ? <Button onClick={() => props.loadChat(props.user.id)}>Chat</Button>
+                            : <></>
+                    }
                 </div>
                 <div className={styles.userInfo}>
                     <div className={styles.nameContainer}>

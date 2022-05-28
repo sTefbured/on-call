@@ -23,6 +23,19 @@
   }
 }
 
+.avatarPanel {
+  display: flex;
+  flex-direction: column;
+
+  img {
+    margin: 0 0 10px 0;
+  }
+
+  button {
+    font-size: 20px;
+  }
+}
+
 .nameContainer {
   margin: 0 0 20px 0;
 }

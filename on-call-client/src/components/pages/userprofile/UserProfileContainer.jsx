@@ -28,7 +28,8 @@ class UserProfileContainer extends React.Component {
 
 let mapStateToProps = (state) => ({
     user: state.userProfilePage.user,
-    chat: state.chat.chat
+    chat: state.chat.chat,
+    authorizedUser: state.auth.user
 })
 
 export default compose(

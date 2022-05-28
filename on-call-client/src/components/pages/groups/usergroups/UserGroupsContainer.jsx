@@ -1,11 +1,9 @@
 import {connect} from "react-redux";
-import CollectionGrid from "../../../common/collectiongrid/CollectionGrid";
-import GroupInfoCard from "../GroupInfoCard";
 import React, {useEffect} from "react";
 import {getAllGroupsForUser, setCurrentPage} from "../../../../redux/reducers/groupsReducer";
+import UserGroups from "./UserGroups";
 
 const UserGroupsContainer = (props) => {
-    let groupComponents = props.groups.map(group => (<div key={group.id}><GroupInfoCard group={group}/></div>));
     let onPageChanged = (pageNumber) => {
         props.setCurrentPage(pageNumber);
         props.getAllGroupsForUser(props.authorizedUser.id, pageNumber, props.pageSize);
@@ -18,12 +16,8 @@ const UserGroupsContainer = (props) => {
     }, [props.isAuthorized]);
 
     return (
-        <CollectionGrid totalCount={props.totalCount}
-                        pageSize={props.pageSize}
-                        currentPage={props.currentPage}
-                        onPageChanged={n => onPageChanged(n)}>
-            {groupComponents}
-        </CollectionGrid>
+        <UserGroups groups={props.groups} totalCount={props.totalCount}
+                    pageSize={props.pageSize} onPageChanged={(n) => onPageChanged(n)}/>
     );
 }
 
