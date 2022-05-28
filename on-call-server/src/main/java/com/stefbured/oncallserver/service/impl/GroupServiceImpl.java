@@ -44,7 +44,11 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Collection<Group> getFirstLevelGroups(int page, int pageSize) {
-        return groupRepository.findAllFirstLevel(Pageable.ofSize(pageSize).withPage(page)).toList();
+        return groupRepository.findAllFirstLevel(Pageable.ofSize(pageSize).withPage(page))
+                .map(group -> {
+                    group.setIdTag("/" + group.getIdTag());
+                    return group;
+                }).toList();
     }
 
     @Override
@@ -154,6 +158,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void deleteJoinRequestsForUserAndGroup(Long userId, Long groupId) {
         joinGroupRequestRepository.deleteAllByUserIdAndGroupId(userId, groupId);
+    }
+
+    @Override
+    public boolean groupExistsByIdTag(String idTag, Long groupId) {
+        return groupRepository.existsByIdTagAndParentGroupId(idTag, groupId);
     }
 
     private Group getGroupCopy(Group group) {

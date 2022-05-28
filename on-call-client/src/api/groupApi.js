@@ -1,6 +1,10 @@
 import {axiosInstance} from "./api";
 
 export const groupApi = {
+    createGroup(group) {
+        return axiosInstance.post("/group", group);
+    },
+
     getUserByIdTag(idTag) {
         return axiosInstance.get("group/seq/" + idTag)
     },

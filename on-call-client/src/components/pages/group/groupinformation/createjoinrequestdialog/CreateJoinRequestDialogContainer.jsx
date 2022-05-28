@@ -18,7 +18,7 @@ class CreateJoinRequestDialogContainer extends React.Component {
                         {this.props.joinGroupRequest.message}
                     </TextArea>
                     <Button onClick={() => {
-                        this.props.createJoinRequest(this.props.groupId,
+                        this.props.createJoinRequest(this.props.group,
                             this.props.authorizedUser, this.props.joinGroupRequest.message);
                         this.props.setIsActive(false);
                         this.props.setJoinRequestMessage('');

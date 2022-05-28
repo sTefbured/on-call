@@ -12,7 +12,6 @@ import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.service.GroupService;
 import com.stefbured.oncallserver.mapper.OnCallModelMapper;
 import com.stefbured.oncallserver.service.UserGrantService;
-import com.stefbured.oncallserver.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
@@ -104,7 +103,9 @@ public class GroupController {
                                                                     @RequestParam int page,
                                                                     @RequestParam int pageSize) {
         var userGrants = userGrantService.getAllGroupUserGrantsForUser(userId, page, pageSize);
-        var groups = userGrants.stream().map(UserGrant::getGroup).toList();
+        var groups = userGrants.stream().map(grant ->
+                groupService.getById(grant.getGroup().getId())
+        ).toList();
         var result = groupMapper.mapCollection(groups, GroupDTO.class, GROUP_TO_PREVIEW_DTO);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_RANGE, String.valueOf(userGrants.getTotalElements()))
@@ -131,6 +132,10 @@ public class GroupController {
             "? hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + GROUP_CREATE + "') " +
             ": hasPermission(#group.parentGroup.id, '" + GROUP_TARGET_TYPE + "', '" + GROUP_CREATE + "')")
     public ResponseEntity<GroupDTO> createGroup(@RequestBody GroupDTO group, HttpServletRequest request) {
+        var parentGroupId = group.getParentGroup() == null ? null : group.getParentGroup().getId();
+        if (groupService.groupExistsByIdTag(group.getIdTag(), parentGroupId)) {
+            return ResponseEntity.badRequest().build();
+        }
         var groupEntity = new Group();
         var userId = (Long) SecurityContextHolder.getContext().getAuthentication().getDetails();
         var user = new User();

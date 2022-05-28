@@ -8,7 +8,7 @@ const GroupInformation = (props) => {
     if (props.group) {
         return (
             <div className={styles.groupInfo}>
-                <CreateJoinRequestDialogContainer groupId={props.group.id}
+                <CreateJoinRequestDialogContainer group={props.group}
                                                   isActive={isCreateJoinRequestDialogActive}
                                                   setIsActive={(isActive) => setIsCreateJoinRequestDialogActive(isActive)}/>
                 <h1>{props.group.name}</h1>

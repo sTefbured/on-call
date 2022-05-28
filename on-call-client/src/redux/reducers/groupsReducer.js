@@ -7,6 +7,9 @@ export const SET_IS_MEMBER = "SET_IS_MEMBER";
 export const SET_JOIN_REQUEST_MESSAGE = "SET_JOIN_REQUEST_MESSAGE";
 export const SET_JOIN_GROUP_REQUESTS = "SET_JOIN_GROUP_REQUESTS";
 export const SET_TOTAL_COUNT = "SET_TOTAL_COUNT";
+export const SET_GROUP_NAME = "SET_GROUP_NAME";
+export const SET_GROUP_ID_TAG = "SET_GROUP_ID_TAG";
+export const SET_GROUP_DESCRIPTION = "SET_GROUP_DESCRIPTION";
 
 let initialState = {
     groups: [],
@@ -18,7 +21,10 @@ let initialState = {
     isMember: false,
     totalCount: 0,
     currentPage: 0,
-    pageSize: 20
+    pageSize: 20,
+    name: "",
+    idTag: "",
+    description: ""
 }
 
 const groupsReducer = (state = initialState, action) => {
@@ -44,11 +50,35 @@ const groupsReducer = (state = initialState, action) => {
         case SET_TOTAL_COUNT: {
             return setTotalCountAction(state, action);
         }
+        case SET_GROUP_NAME: {
+            return setGroupNameAction(state, action);
+        }
+        case SET_GROUP_ID_TAG: {
+            return setGroupIdTagAction(state, action);
+        }
+        case SET_GROUP_DESCRIPTION: {
+            return setGroupDescriptionAction(state, action);
+        }
         default: {
             return state;
         }
     }
 }
+
+const setGroupNameAction = (state, action) => ({
+    ...state,
+    name: action.name
+});
+
+const setGroupIdTagAction = (state, action) => ({
+    ...state,
+    idTag: action.idTag
+});
+
+const setGroupDescriptionAction = (state, action) => ({
+    ...state,
+    description: action.description
+});
 
 const setGroupsAction = (state, action) => {
     return {
@@ -134,6 +164,28 @@ export const setTotalCount = (totalCount) => ({
     totalCount
 });
 
+export const setGroupName = (name) => ({
+    type: SET_GROUP_NAME,
+    name
+})
+
+export const setGroupIdTag = (idTag) => ({
+    type: SET_GROUP_ID_TAG,
+    idTag
+})
+
+export const setGroupDescription = (description) => ({
+    type: SET_GROUP_DESCRIPTION,
+    description
+})
+
+export const createGroup = (group) => (dispatch) => {
+    groupApi.createGroup(group)
+        .then(response => {
+            dispatch(setGroup(response.data));
+        });
+}
+
 export const getAllGroups = (page, pageSize) => (dispatch) => {
     groupApi.getFirstLevelGroups(page, pageSize)
         .then(response => {
@@ -164,13 +216,11 @@ export const getGroupById = (groupId) => (dispatch) => {
         });
 }
 
-export const createJoinRequest = (groupId, user, message) => () => {
+export const createJoinRequest = (group, user, message) => () => {
     let request = {
         message: message,
         user: user,
-        group: {
-            id: groupId
-        }
+        group: group
     }
     groupApi.createJoinRequest(request);
 }

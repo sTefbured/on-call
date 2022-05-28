@@ -1,9 +1,10 @@
 import {connect} from "react-redux";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {getAllGroupsForUser, setCurrentPage} from "../../../../redux/reducers/groupsReducer";
 import UserGroups from "./UserGroups";
 
 const UserGroupsContainer = (props) => {
+    let [isNewGroupDialogOpened, setIsNewGroupDialogOpened] = useState(false);
     let onPageChanged = (pageNumber) => {
         props.setCurrentPage(pageNumber);
         props.getAllGroupsForUser(props.authorizedUser.id, pageNumber, props.pageSize);
@@ -16,8 +17,9 @@ const UserGroupsContainer = (props) => {
     }, [props.isAuthorized]);
 
     return (
-        <UserGroups groups={props.groups} totalCount={props.totalCount}
-                    pageSize={props.pageSize} onPageChanged={(n) => onPageChanged(n)}/>
+        <UserGroups groups={props.groups} totalCount={props.totalCount} pageSize={props.pageSize}
+                    setIsNewGroupDialogOpened={(isOpened) => setIsNewGroupDialogOpened(isOpened)}
+                    isNewGroupDialogOpened={isNewGroupDialogOpened} onPageChanged={(n) => onPageChanged(n)}/>
     );
 }
 

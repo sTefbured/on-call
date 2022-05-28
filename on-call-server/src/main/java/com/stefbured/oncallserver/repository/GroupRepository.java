@@ -30,6 +30,8 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
             "where grant.group.id = ?1 and permission.name = ?2")
     Collection<User> findAllGroupMembersByPermission(Long groupId, String permission);
 
+    boolean existsByIdTagAndParentGroupId(String idTag, Long parentGroupId);
+
 //    @Query(value = "" +
 //            "select id, creation_date_time, description, id_tag, name, creator_id, parent_group_id from ( " +
 //            "    with recursive temp(id, creation_date_time, description, id_tag, name, creator_id, parent_group_id, i) as ( " +

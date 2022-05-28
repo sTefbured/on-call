@@ -2,7 +2,7 @@ import styles from "./groups.module.css"
 import {NavLink} from "react-router-dom";
 
 const GroupLink = (props) => {
-    return <NavLink to={"/groups/" + props.id}>{props.children}</NavLink>
+    return <NavLink to={"/groups" + props.id}>{props.children}</NavLink>
 }
 
 const GroupInfoCard = (props) => {

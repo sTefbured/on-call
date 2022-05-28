@@ -21,4 +21,5 @@ public interface GroupService {
     Group update(Group group);
     void delete(Long groupId);
     void deleteJoinRequestsForUserAndGroup(Long userId, Long groupId);
+    boolean groupExistsByIdTag(String idTag, Long groupId);
 }
