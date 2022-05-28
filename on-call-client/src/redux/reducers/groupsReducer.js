@@ -4,6 +4,7 @@ export const SET_GROUPS = "SET_GROUPS";
 export const SET_GROUP = "SET_GROUP";
 export const SET_CURRENT_PAGE = "SET_CURRENT_PAGE";
 export const SET_IS_MEMBER = "SET_IS_MEMBER";
+export const SET_MEMBERS = "SET_MEMBERS";
 export const SET_JOIN_REQUEST_MESSAGE = "SET_JOIN_REQUEST_MESSAGE";
 export const SET_JOIN_GROUP_REQUESTS = "SET_JOIN_GROUP_REQUESTS";
 export const SET_TOTAL_COUNT = "SET_TOTAL_COUNT";
@@ -18,6 +19,7 @@ let initialState = {
     joinGroupRequest: {
         message: ""
     },
+    members: [],
     isMember: false,
     totalCount: 0,
     currentPage: 0,
@@ -58,6 +60,9 @@ const groupsReducer = (state = initialState, action) => {
         }
         case SET_GROUP_DESCRIPTION: {
             return setGroupDescriptionAction(state, action);
+        }
+        case SET_MEMBERS: {
+            return setMembersAction(state, action);
         }
         default: {
             return state;
@@ -128,6 +133,11 @@ const setTotalCountAction = (state, action) => ({
     totalCount: action.totalCount
 });
 
+const setMembersAction = (state, action) => ({
+    ...state,
+    members: [...action.members]
+});
+
 export const setGroups = (groups, totalCount) => ({
     type: SET_GROUPS,
     groups,
@@ -173,6 +183,11 @@ export const setGroupIdTag = (idTag) => ({
     type: SET_GROUP_ID_TAG,
     idTag
 })
+
+export const setMembers = (members) => ({
+    type: SET_MEMBERS,
+    members
+});
 
 export const setGroupDescription = (description) => ({
     type: SET_GROUP_DESCRIPTION,
@@ -237,6 +252,14 @@ export const approveJoinRequest = (request, currentPage, pageSize) => (dispatch)
     groupApi.approveJoinRequest(request)
         .then(() => {
             dispatch(getAllJoinRequests(request.group.id, currentPage, pageSize));
+        });
+}
+
+export const getGroupMembers = (groupId, page, pageSize) => (dispatch) => {
+    groupApi.getGroupMembers(groupId, page, pageSize)
+        .then(response => {
+            dispatch(setTotalCount(response.headers["content-range"]));
+            dispatch(setMembers(response.data));
         });
 }
 

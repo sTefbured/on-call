@@ -9,6 +9,16 @@ export const groupApi = {
         return axiosInstance.get("group/seq/" + idTag)
     },
 
+    getGroupMembers(groupId, page, pageSize) {
+        return axiosInstance.get("group/members", {
+            params: {
+                groupId,
+                page,
+                pageSize
+            }
+        });
+    },
+
     getFirstLevelGroups(page, pageSize) {
         return axiosInstance.get("group/all", {
             params: {

@@ -113,7 +113,7 @@ public class GroupController {
     }
 
     @GetMapping("members")
-    @PreAuthorize("hasPermission(null, '" + GROUP_TARGET_TYPE + "', '" + GROUP_MEMBER_VIEW + "') " +
+    @PreAuthorize("hasPermission(#groupId, '" + GROUP_TARGET_TYPE + "', '" + GROUP_MEMBER_VIEW + "') " +
             "&& hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + USER_PUBLIC_INFO_VIEW + "')")
     public ResponseEntity<Collection<UserDTO>> getGroupMembers(@RequestParam long groupId,
                                                                @RequestParam int page,

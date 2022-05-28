@@ -7,6 +7,7 @@ import {ADD_MEMBER_PERMISSION, hasUserPermissionForGroup} from "../../../utils/o
 import Group from "./Group";
 import GroupInformationContainer from "./groupinformation/GroupInformationContainer";
 import GroupChatsTabContainer from "./chats/GroupChatsTabContainer";
+import GroupMembersTabContainer from "./members/GroupMembersTabContainer";
 
 const GroupContainer = (props) => {
     let location = useLocation();
@@ -44,6 +45,9 @@ const GroupContainer = (props) => {
         case "chats": {
             content = <GroupChatsTabContainer/>
             break;
+        }
+        case "members": {
+            content = <GroupMembersTabContainer/>
         }
     }
     return (
