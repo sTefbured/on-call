@@ -5,8 +5,12 @@ const TabItem = (props) => {
     let location = useLocation();
     let url = location.pathname + location.search;
     return (
-        <NavLink className={() =>
-             url === props.to ? styles.item + " " + styles.active : styles.item} end to={props.to} >
+        <NavLink className={() => {
+            if (props.exact) {
+                return url === props.to ? styles.item + " " + styles.active : styles.item;
+            }
+            return url.startsWith(props.to) ? styles.item + " " + styles.active : styles.item;
+        }} end to={props.to} >
             <div>
                 {props.children}
             </div>

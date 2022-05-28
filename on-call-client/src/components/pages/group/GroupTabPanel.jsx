@@ -12,12 +12,16 @@ const GroupTabPanel = (props) => {
     }
     return (
         <div className={styles.tabs}>
-            <TabItem to={"/groups" + props.group.idTag}>Group information</TabItem>
-            <TabItem to={"/groups" + props.group.idTag + "?tab=members"}>Members</TabItem>
-            <TabItem to={"/groups" + props.group.idTag + "?tab=subgroups"}>Subgroups</TabItem>
+            <TabItem to={"/groups" + props.group.idTag} exact={true}>Group information</TabItem>
             {
                 hasUserPermissionForGroup(props.authorizedUser, GROUP_MEMBER_VIEW_PERMISSION, props.group.id)
-                    ? <TabItem to={"/groups" + props.group.idTag + "?tab=chats"}>Chats</TabItem>
+                    ? (
+                        <>
+                            <TabItem to={"/groups" + props.group.idTag + "?tab=members"}>Members</TabItem>
+                            <TabItem to={"/groups" + props.group.idTag + "?tab=subgroups"}>Subgroups</TabItem>
+                            <TabItem to={"/groups" + props.group.idTag + "?tab=chats"}>Chats</TabItem>
+                        </>
+                    )
                     : <></>
             }
             {

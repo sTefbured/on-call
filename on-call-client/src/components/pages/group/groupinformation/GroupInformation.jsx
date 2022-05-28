@@ -15,7 +15,11 @@ const GroupInformation = (props) => {
                 <div className={styles.infoItem}>{props.group.description}</div>
                 {
                     (!props.isMember)
-                    && <Button onClick={() => setIsCreateJoinRequestDialogActive(true)}>Join</Button>
+                    && (
+                        <div className={styles.centeredButtonPanel}>
+                            <Button onClick={() => setIsCreateJoinRequestDialogActive(true)}>Join</Button>
+                        </div>
+                    )
                 }
             </>
         );

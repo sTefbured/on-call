@@ -1,7 +1,11 @@
 import React from "react";
 import {connect} from "react-redux";
 import UserVideoconferenceRoomsList from "./UserVideoconferenceRoomsList";
-import {getVideoconferenceRoomsForUser, setPage} from "../../../../../redux/reducers/videoconferenceReducer";
+import {
+    createVideoconferenceRoom,
+    getVideoconferenceRoomsForUser,
+    setPage
+} from "../../../../../redux/reducers/videoconferenceReducer";
 
 class UserVideoconferenceRoomsListContainer extends React.Component {
     componentDidMount() {
@@ -19,7 +23,8 @@ class UserVideoconferenceRoomsListContainer extends React.Component {
 
     render() {
         return (
-            <UserVideoconferenceRoomsList {...this.props}/>
+            <UserVideoconferenceRoomsList {...this.props}
+                                          createVideoconferenceRoom={(o) => this.props.createVideoconferenceRoom(o)}/>
         );
     }
 }
@@ -33,5 +38,6 @@ let mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, {
     getVideoconferenceRoomsForUser,
-    setPage
+    setPage,
+    createVideoconferenceRoom
 })(UserVideoconferenceRoomsListContainer);
