@@ -11,12 +11,14 @@ import com.stefbured.oncallserver.service.UserGrantService;
 import com.stefbured.oncallserver.service.UserService;
 import com.stefbured.oncallserver.utils.LongPrimaryKeyGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static com.stefbured.oncallserver.OnCallConstants.CHAT_ADMINISTRATOR;
 import static com.stefbured.oncallserver.OnCallConstants.CHAT_MEMBER;
@@ -56,10 +58,12 @@ public class ChatServiceImpl implements ChatService {
         userGrant.setChat(createdChat);
         userGrantService.createUserGrant(userGrant);
         var grants = chat.getUsersGrants();
-        grants.forEach(grant -> {
-            grant.setChat(createdChat);
-            userGrantService.createUserGrant(grant);
-        });
+        if (grants != null) {
+            grants.forEach(grant -> {
+                grant.setChat(createdChat);
+                userGrantService.createUserGrant(grant);
+            });
+        }
         return createdChat;
     }
 
@@ -83,13 +87,13 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Collection<Chat> getAllForUser(Long userId, int page, int pageSize) {
-        return chatRepository.findAllByUserId(userId, Pageable.ofSize(pageSize).withPage(page)).toList();
+    public Page<Chat> getAllForUser(Long userId, int page, int pageSize) {
+        return chatRepository.findAllByUserId(userId, Pageable.ofSize(pageSize).withPage(page));
     }
 
     @Override
-    public Collection<Chat> getAllForGroup(Long groupId, int page, int pageSize) {
-        return chatRepository.findAllByGroupId(groupId, Pageable.ofSize(pageSize).withPage(page)).toList();
+    public Page<Chat> getAllForGroup(Long groupId, int page, int pageSize) {
+        return chatRepository.findAllByGroupId(groupId, Pageable.ofSize(pageSize).withPage(page));
     }
 
     @Override
@@ -99,7 +103,9 @@ public class ChatServiceImpl implements ChatService {
         }
         var groupId = chat.getGroup().getId();
         var membersCount = groupService.getGroupMembersCount(groupId);
-        return groupService.getGroupMembers(groupId, 0, membersCount.intValue()).stream().map(User::getId).toList(); //FIXME not cool
+        var groupMembers = groupService.getGroupMembers(groupId, 0, membersCount.intValue());
+        return groupMembers.stream()
+                .map(User::getId).collect(Collectors.toList());
     }
 
     @Override

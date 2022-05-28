@@ -15,7 +15,16 @@ export const chatApi = {
                 page,
                 pageSize
             }
-        })
+        });
+    },
+
+    getAllChatsForGroup(groupId, page, pageSize) {
+        return axiosInstance.get("/chat/group/" + groupId, {
+            params: {
+                page,
+                pageSize
+            }
+        });
     },
 
     getChatById(chatId) {

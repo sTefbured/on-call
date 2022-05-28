@@ -91,7 +91,8 @@ public class GroupServiceImpl implements GroupService {
         if (!groupRepository.existsById(groupId)) {
             throw new GroupNotFoundException();
         }
-        return userRepository.getGroupMembers(groupId, Pageable.ofSize(pageSize).withPage(page)).toSet();
+        var pageable = pageSize == -1 ? Pageable.unpaged() : Pageable.ofSize(pageSize).withPage(page);
+        return userRepository.getGroupMembers(groupId, pageable).toSet();
     }
 
     @Override
@@ -163,6 +164,12 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public boolean groupExistsByIdTag(String idTag, Long groupId) {
         return groupRepository.existsByIdTagAndParentGroupId(idTag, groupId);
+    }
+
+    @Override
+    public boolean isUserMemberOfGroup(Long userId, Long groupId) {
+        return getGroupMembers(groupId, 0, -1).stream()
+                .anyMatch(user -> user.getId().equals(userId));
     }
 
     private Group getGroupCopy(Group group) {

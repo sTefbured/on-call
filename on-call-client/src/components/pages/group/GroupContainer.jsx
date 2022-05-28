@@ -3,10 +3,10 @@ import {useEffect} from "react";
 import {connect} from "react-redux";
 import {getGroupById, getGroupByTagSequence} from "../../../redux/reducers/groupsReducer";
 import JoinRequestsContainer from "./joinrequest/JoinRequestsContainer";
-import {hasUserPermissionForGroup} from "../../../utils/onCallUtils";
+import {ADD_MEMBER_PERMISSION, hasUserPermissionForGroup} from "../../../utils/onCallUtils";
 import Group from "./Group";
-
-const ADD_MEMBER_PERMISSION = 61119559324084;
+import GroupInformationContainer from "./groupinformation/GroupInformationContainer";
+import GroupChatsTabContainer from "./chats/GroupChatsTabContainer";
 
 const GroupContainer = (props) => {
     let location = useLocation();
@@ -31,20 +31,31 @@ const GroupContainer = (props) => {
     }, [props.group, location]);
 
     let [params] = useSearchParams();
-    if (params.get("tab") === "join_requests"
-        && props.group
-        && hasUserPermissionForGroup(props.authorizedUser, ADD_MEMBER_PERMISSION, props.group.id)) {
-        return (
-            <JoinRequestsContainer/>
-        );
+    let content = <GroupInformationContainer/>;
+    switch (params.get("tab")) {
+        case "join_requests": {
+            if (props.group
+                && props.isAuthorized
+                && hasUserPermissionForGroup(props.authorizedUser, ADD_MEMBER_PERMISSION, props.group.id)) {
+                content = <JoinRequestsContainer/>
+            }
+            break;
+        }
+        case "chats": {
+            content = <GroupChatsTabContainer/>
+            break;
+        }
     }
     return (
-        <Group group={props.group}/>
+        <Group authorizedUser={props.authorizedUser} isAuthorized={props.isAuthorized} group={props.group}>
+            {content}
+        </Group>
     );
 }
 
 let mapStateToProps = (state) => ({
     authorizedUser: state.auth.user,
+    isAuthorized: state.auth.isAuthorized,
     group: state.group.group
 });
 

@@ -2,6 +2,7 @@ import {chatApi} from "../../api/chatApi";
 
 export const SET_CHAT = "SET_CHAT";
 export const SET_CHATS = "SET_CHATS";
+export const ADD_CHAT = "ADD_CHAT";
 export const ADD_MESSAGES = "ADD_MESSAGES";
 export const CLEAR_MESSAGES = "CLEAR_MESSAGES";
 export const SET_CURRENT_PAGE = "SET_CURRENT_PAGE";
@@ -11,7 +12,8 @@ let initialState = {
     chat: null,
     chats: [],
     currentPage: 0,
-    defaultPageSize: 20
+    defaultPageSize: 20,
+    totalCount: 0
 }
 
 const chatReducer = (state = initialState, action) => {
@@ -31,11 +33,19 @@ const chatReducer = (state = initialState, action) => {
         case SET_CURRENT_PAGE: {
             return setCurrentPageAction(state, action);
         }
+        case ADD_CHAT: {
+            return addChatAction(state, action);
+        }
         default: {
             return state;
         }
     }
 }
+
+const addChatAction = (state, action) => ({
+    ...state,
+    chats: [...state.chats, action.chat]
+});
 
 const setChatAction = (state, action) => ({
     ...state,
@@ -44,7 +54,8 @@ const setChatAction = (state, action) => ({
 
 const setChatsAction = (state, action) => ({
     ...state,
-    chats: action.chats
+    chats: action.chats,
+    totalCount: action.totalCount
 });
 
 const addMessagesAction = (state, action) => ({
@@ -69,9 +80,10 @@ export const setChat = (chat) => ({
     chat
 });
 
-export const setChats = (chats) => ({
+export const setChats = (chats, totalCount) => ({
     type: SET_CHATS,
-    chats
+    chats,
+    totalCount
 });
 
 export const addMessages = (messages, isAppend) => ({
@@ -87,6 +99,11 @@ export const clearMessages = () => ({
 export const setCurrentPage = (currentPage) => ({
     type: SET_CURRENT_PAGE,
     currentPage
+});
+
+export const addChat = (chat) => ({
+    type: ADD_CHAT,
+    chat
 });
 
 export const requestChatInfo = (chatId) => (dispatch) => {
@@ -109,7 +126,14 @@ export const loadMessages = (chatId, page, pageSize) => (dispatch) => {
 export const queryChatsForUser = (userId, page, pageSize) => (dispatch) => {
     return chatApi.getAllChatsForUser(userId, page, pageSize)
         .then(response => {
-            dispatch(setChats(response.data));
+            dispatch(setChats(response.data, response.headers["content-range"]));
+        });
+}
+
+export const queryChatsForGroup = (groupId, page, pageSize) => (dispatch) => {
+    return chatApi.getAllChatsForGroup(groupId, page, pageSize)
+        .then(response => {
+            dispatch(setChats(response.data, response.headers["content-range"]));
         });
 }
 
@@ -118,6 +142,13 @@ export const findOrCreateChat = (targetUserId) => (dispatch) => {
         .then(response => {
             dispatch(setChat(response.data));
         });
+}
+
+export const createChat = (chat) => (dispatch) => {
+    return chatApi.createChat(chat)
+        .then(response => {
+            dispatch(addChat(response.data));
+        })
 }
 
 export default chatReducer;

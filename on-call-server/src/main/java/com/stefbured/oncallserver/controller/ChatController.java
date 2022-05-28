@@ -1,5 +1,6 @@
 package com.stefbured.oncallserver.controller;
 
+import com.stefbured.oncallserver.config.OnCallPermissionEvaluator;
 import com.stefbured.oncallserver.mapper.OnCallModelMapper;
 import com.stefbured.oncallserver.model.dto.chat.ChatDTO;
 import com.stefbured.oncallserver.model.dto.user.UserDTO;
@@ -8,9 +9,13 @@ import com.stefbured.oncallserver.model.entity.role.Role;
 import com.stefbured.oncallserver.model.entity.role.UserGrant;
 import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.service.ChatService;
+import com.stefbured.oncallserver.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -32,14 +37,17 @@ import static com.stefbured.oncallserver.mapper.UserModelMapper.USER_TO_PREVIEW_
 @RequestMapping("api/v1/chat")
 public class ChatController {
     private final ChatService chatService;
+    private final GroupService groupService;
     private final OnCallModelMapper chatModelMapper;
     private final OnCallModelMapper userModelMapper;
 
     @Autowired
     public ChatController(ChatService chatService,
+                          GroupService groupService,
                           @Qualifier(CHAT_MODEL_MAPPER) OnCallModelMapper chatModelMapper,
                           @Qualifier(USER_MODEL_MAPPER) OnCallModelMapper userModelMapper) {
         this.chatService = chatService;
+        this.groupService = groupService;
         this.chatModelMapper = chatModelMapper;
         this.userModelMapper = userModelMapper;
     }
@@ -70,12 +78,16 @@ public class ChatController {
     }
 
     @GetMapping("{chatId}")
-    @PreAuthorize("hasPermission(#chatId, '" + CHAT_TARGET_TYPE + "', '" + CHAT_VIEW + "') " +
-            "|| hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + CHAT_VIEW + "')")
     public ResponseEntity<ChatDTO> getChatById(@PathVariable Long chatId) {
         var queriedChat = chatService.getChatById(chatId);
-        var result = chatModelMapper.map(queriedChat, ChatDTO.class, CHAT_TO_VIEW_DTO);
-        return ResponseEntity.ok(result);
+        var userId = (Long) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        if ((queriedChat.getGroup() != null && groupService.isUserMemberOfGroup(userId, queriedChat.getGroup().getId()))
+                || OnCallPermissionEvaluator.hasPermission(chatId, CHAT_TARGET_TYPE, CHAT_VIEW)
+                || OnCallPermissionEvaluator.hasPermission((Long) null, GLOBAL_TARGET_TYPE, CHAT_VIEW)) {
+            var result = chatModelMapper.map(queriedChat, ChatDTO.class, CHAT_TO_VIEW_DTO);
+            return ResponseEntity.ok(result);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @GetMapping("user/{userId}")
@@ -84,8 +96,24 @@ public class ChatController {
                                                             @RequestParam(defaultValue = "0") int page,
                                                             @RequestParam(defaultValue = "20") int pageSize) {
         var queriedChats = chatService.getAllForUser(userId, page, pageSize);
-        var result = chatModelMapper.mapCollection(queriedChats, ChatDTO.class, CHAT_TO_VIEW_DTO);
-        return ResponseEntity.ok(result);
+        var chatsList = queriedChats.toList();
+        var result = chatModelMapper.mapCollection(chatsList, ChatDTO.class, CHAT_TO_VIEW_DTO);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_RANGE, String.valueOf(queriedChats.getTotalElements()))
+                .body(result);
+    }
+
+    @GetMapping("group/{groupId}")
+    @PreAuthorize("hasPermission(#groupId, '" + GROUP_TARGET_TYPE + "', '" + GROUP_MEMBER_VIEW + "')")
+    public ResponseEntity<Collection<ChatDTO>> getGroupChats(@PathVariable Long groupId,
+                                                             @RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "20") int pageSize) {
+        var queriedChats = chatService.getAllForGroup(groupId, page, pageSize);
+        var chatsList = queriedChats.toList();
+        var result = chatModelMapper.mapCollection(chatsList, ChatDTO.class, CHAT_TO_VIEW_DTO);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_RANGE, String.valueOf(queriedChats.getTotalElements()))
+                .body(result);
     }
 
     @PostMapping("user")

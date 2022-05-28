@@ -12,9 +12,12 @@ import React, {useEffect, useState} from "react";
 import {initializeStompClient} from "../../../redux/reducers/stompReducer";
 
 const ChatContainer = ({isAuthorized, messages, authorizedUser, currentPage, pageSize, chat, requestChatInfo, addMessages,
-                           clearMessages, stompClient, initializeStompClient, setCurrentPage, loadMessages}) => {
+                           clearMessages, chatId, stompClient, initializeStompClient, setCurrentPage, loadMessages}) => {
     let [messageText, setMessageText] = useState("");
-    let {id: chatId} = useParams();
+    let {id} = useParams();
+    if (!chatId) {
+        chatId = id;
+    }
     useEffect(() => {
         if (isAuthorized) {
             requestChatInfo(chatId);

@@ -1,5 +1,6 @@
 package com.stefbured.oncallserver.controller;
 
+import com.stefbured.oncallserver.config.OnCallPermissionEvaluator;
 import com.stefbured.oncallserver.exception.EmptyMessageException;
 import com.stefbured.oncallserver.mapper.OnCallModelMapper;
 import com.stefbured.oncallserver.model.dto.chat.MessageDTO;
@@ -7,6 +8,7 @@ import com.stefbured.oncallserver.model.dto.validation.ViolationDTO;
 import com.stefbured.oncallserver.model.entity.chat.Message;
 import com.stefbured.oncallserver.model.entity.user.User;
 import com.stefbured.oncallserver.service.ChatService;
+import com.stefbured.oncallserver.service.GroupService;
 import com.stefbured.oncallserver.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,16 +37,19 @@ import static com.stefbured.oncallserver.mapper.MessageModelMapper.MESSAGE_TO_FU
 public class MessageController {
     private final MessageService messageService;
     private final ChatService chatService;
+    private final GroupService groupService;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final OnCallModelMapper messageMapper;
 
     @Autowired
     public MessageController(MessageService messageService,
                              ChatService chatService,
+                             GroupService groupService,
                              SimpMessagingTemplate simpMessagingTemplate,
                              @Qualifier(MESSAGE_MODEL_MAPPER) OnCallModelMapper messageMapper) {
         this.messageService = messageService;
         this.chatService = chatService;
+        this.groupService = groupService;
         this.simpMessagingTemplate = simpMessagingTemplate;
         this.messageMapper = messageMapper;
     }
@@ -72,11 +77,17 @@ public class MessageController {
     }
 
     @GetMapping("all")
-    @PreAuthorize("hasPermission(#chatId, '" + CHAT_TARGET_TYPE + "', '" + MESSAGE_VIEW + "')")
     public ResponseEntity<Collection<MessageDTO>> getMessages(@RequestParam Long chatId,
                                                               @RequestParam int page,
                                                               @RequestParam int pageSize) {
         Collection<Message> messages;
+        if (!OnCallPermissionEvaluator.hasPermission(chatId, CHAT_TARGET_TYPE, MESSAGE_VIEW)) {
+            var group = chatService.getChatById(chatId).getGroup();
+            var userId = (Long) SecurityContextHolder.getContext().getAuthentication().getDetails();
+            if (group == null || !groupService.isUserMemberOfGroup(userId, group.getId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
         try {
             messages = messageService.getMessages(chatId, page, pageSize);
         } catch (LimitExceededException exception) {

@@ -22,4 +22,5 @@ public interface GroupService {
     void delete(Long groupId);
     void deleteJoinRequestsForUserAndGroup(Long userId, Long groupId);
     boolean groupExistsByIdTag(String idTag, Long groupId);
+    boolean isUserMemberOfGroup(Long userId, Long groupId);
 }

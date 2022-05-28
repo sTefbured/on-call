@@ -1,12 +1,11 @@
 import styles from "./group.module.css";
-import GroupInformationContainer from "./groupinformation/GroupInformationContainer";
 import GroupTabPanel from "./GroupTabPanel";
 
 const Group = (props) => {
     return (
         <div className={styles.group}>
-            <GroupTabPanel group={props.group}/>
-            <div className={styles.groupInfo}><GroupInformationContainer/></div>
+            <GroupTabPanel authorizedUser={props.authorizedUser} isAuthorized={props.isAuthorized} group={props.group}/>
+            <div className={styles.groupInfo}>{props.children}</div>
         </div>
     );
 }

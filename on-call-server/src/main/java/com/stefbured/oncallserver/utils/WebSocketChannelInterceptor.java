@@ -11,7 +11,9 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -26,6 +28,7 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
     private UserService userService;
 
     @Override
+    @Transactional
     public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
         var headerAccessor = StompHeaderAccessor.wrap(message);
         switch (Objects.requireNonNull(headerAccessor.getCommand())) {
@@ -65,7 +68,6 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
         return true;
     }
 
-    @SneakyThrows
     private boolean isSendOperationAccessible(StompHeaderAccessor headerAccessor, Message<?> message) {
         var destination = headerAccessor.getDestination();
         if (destination == null) {
@@ -73,13 +75,22 @@ public class WebSocketChannelInterceptor implements ChannelInterceptor {
         }
         var user = headerAccessor.getUser();
         if (SEND_CHAT_MESSAGE_DESTINATION.equals(destination)) {
-            var userId = userService.getUserIdByUsername(Objects.requireNonNull(user).getName());
-            var mapper = new ObjectMapper();
-            var payload = new String((byte[]) message.getPayload());
-            var chatId = mapper.readTree(payload).findValue("chat").findValue("id").asLong();
-            return userService.userHasAuthorityForChat(userId, chatId, MESSAGE_SEND);
+            return isUserAbleToSendMessageToChat(user, message);
         }
         return true;
+    }
+
+    @SneakyThrows
+    public boolean isUserAbleToSendMessageToChat(Principal user, Message<?> message) {
+        var userId = userService.getUserIdByUsername(Objects.requireNonNull(user).getName());
+        var mapper = new ObjectMapper();
+        var payload = new String((byte[]) message.getPayload());
+        var chatId = mapper.readTree(payload).findValue("chat").findValue("id").asLong();
+        var chat = OnCallUtils.getChatService().getChatById(chatId);
+        if (chat.getGroup() != null) {
+            return OnCallUtils.getGroupService().isUserMemberOfGroup(userId, chat.getGroup().getId());
+        }
+        return userService.userHasAuthorityForChat(userId, chatId, MESSAGE_SEND);
     }
 
     @Autowired
