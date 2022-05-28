@@ -7,7 +7,7 @@ const GroupInformation = (props) => {
     const [isCreateJoinRequestDialogActive, setIsCreateJoinRequestDialogActive] = useState(false);
     if (props.group) {
         return (
-            <div className={styles.groupInfo}>
+            <>
                 <CreateJoinRequestDialogContainer group={props.group}
                                                   isActive={isCreateJoinRequestDialogActive}
                                                   setIsActive={(isActive) => setIsCreateJoinRequestDialogActive(isActive)}/>
@@ -17,7 +17,7 @@ const GroupInformation = (props) => {
                     (!props.isMember)
                     && <Button onClick={() => setIsCreateJoinRequestDialogActive(true)}>Join</Button>
                 }
-            </div>
+            </>
         );
     }
     return <></>

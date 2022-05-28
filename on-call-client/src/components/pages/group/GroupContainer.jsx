@@ -1,10 +1,10 @@
-import GroupInformationContainer from "./groupinformation/GroupInformationContainer";
 import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
 import {useEffect} from "react";
 import {connect} from "react-redux";
 import {getGroupById, getGroupByTagSequence} from "../../../redux/reducers/groupsReducer";
 import JoinRequestsContainer from "./joinrequest/JoinRequestsContainer";
 import {hasUserPermissionForGroup} from "../../../utils/onCallUtils";
+import Group from "./Group";
 
 const ADD_MEMBER_PERMISSION = 61119559324084;
 
@@ -39,7 +39,7 @@ const GroupContainer = (props) => {
         );
     }
     return (
-        <GroupInformationContainer/>
+        <Group group={props.group}/>
     );
 }
 
