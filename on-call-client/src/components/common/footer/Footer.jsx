@@ -6,18 +6,7 @@ const Footer = () => {
         <footer className={styles.footer}>
             <div className={globalStyles.container}>
                 <div className={styles.footer__row}>
-                    <div>
-                        Blah
-                    </div>
-                    <div>
-                        Blah
-                    </div>
-                    <div>
-                        Blah
-                    </div>
-                    <div>
-                        Blah
-                    </div>
+
                 </div>
             </div>
         </footer>

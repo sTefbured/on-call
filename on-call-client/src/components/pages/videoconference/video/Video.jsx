@@ -9,13 +9,11 @@ const Video = (props) => {
         }
     }, [props.videoStream]);
     return (
-        <div>
-            <video className={styles.mirrored + ' ' + (props.id ? props.id : 'none')}
-                   autoPlay
-                   playsInline
-                   muted={props.isMuted}
-                   ref={videoRef}/>
-        </div>
+        <video className={styles.mirrored + ' ' + (props.id ? props.id : 'none')}
+               autoPlay
+               playsInline
+               muted={props.isMuted}
+               ref={videoRef}/>
     );
 }
 

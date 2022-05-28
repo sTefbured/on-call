@@ -6,9 +6,7 @@ import ConferenceRoomContainer from "./ConferenceRoomContainer";
 const VideoConference = () => {
     let {id} = useParams()
     return (
-        <div>
-            <ConferenceRoomContainer roomId={id}/>
-        </div>
+        <ConferenceRoomContainer roomId={id}/>
     )
 }
 

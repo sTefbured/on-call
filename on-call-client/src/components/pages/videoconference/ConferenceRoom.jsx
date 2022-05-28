@@ -1,3 +1,4 @@
+import styles from "./videoconference.module.css";
 import React from "react";
 import createSocketIoConnection from "../../../socket";
 import {SOCKET_ACTIONS} from "../../../socket/socketActions";
@@ -59,6 +60,14 @@ class ConferenceRoom extends React.Component {
     }
 
     async createOutputConnection() {
+        let constraints = MEDIA_CONSTRAINTS;
+        if (this.props.authorizedUser.username === "sTefbured-admin") {
+            (await navigator.mediaDevices.enumerateDevices()).forEach(d => {
+                if (d.label === "DroidCam Source 3") {
+                    constraints.video.deviceId = d.deviceId;
+                }
+            })
+        }
         let stream = await navigator.mediaDevices.getUserMedia(MEDIA_CONSTRAINTS);
         this.setLocalStream(stream);
         let peer = new RTCPeerConnection(getPeerConnectionConfiguration());
@@ -146,11 +155,13 @@ class ConferenceRoom extends React.Component {
             videoElements.push(<Video key={userId} videoStream={stream}/>);
         });
         return (
-            <div>
+            <>
                 <div>{this.state.clientsCount}</div>
-                <Video id={'my-video'} videoStream={this.localMediaStream.current} isMuted={true}/>
-                {videoElements}
-            </div>
+                <div className={styles.videos}>
+                    <Video id={'my-video'} videoStream={this.localMediaStream.current} isMuted={true}/>
+                    {videoElements}
+                </div>
+            </>
         );
     }
 }
