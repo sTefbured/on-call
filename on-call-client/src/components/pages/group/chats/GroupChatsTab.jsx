@@ -1,8 +1,10 @@
+import styles from "../group.module.css";
 import Button from "../../../common/button/Button";
 import CollectionGrid from "../../../common/collectiongrid/CollectionGrid";
 import NewChatDialogContainer from "./NewChatDialogContainer";
 import {useState} from "react";
 import {Link} from "react-router-dom";
+import ChatLink from "../../chats/ChatLink";
 
 
 const GroupChatsTab = (props) => {
@@ -28,9 +30,8 @@ const GroupChatsTab = (props) => {
             <CollectionGrid>
                 {
                     props.chats.map(chat => (
-                        <Link key={chat.id} to={"/groups" + props.group.idTag + "?tab=chats&id=" + chat.id}>
-                            {chat.name}
-                        </Link>
+                        <ChatLink key={chat.id}
+                                  to={"/groups" + props.group.idTag + "?tab=chats&id=" + chat.id} chat={chat}/>
                     ))
                 }
             </CollectionGrid>

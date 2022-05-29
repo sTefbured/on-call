@@ -3,8 +3,16 @@
   flex-direction: column;
   align-items: center;
 
+  div {
+    padding: 10px;
+  }
+
   textarea {
     width: 100%;
+  }
+
+  input {
+    margin-left: 10px;
   }
 
   button {

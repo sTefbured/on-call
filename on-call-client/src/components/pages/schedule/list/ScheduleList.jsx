@@ -21,7 +21,14 @@ const ScheduleList = (props) => {
         let dayName = currentDate.toLocaleDateString('en-US', {weekday: "long"});
         let day = {
             number: currentDate.getDay(),
-            representation: <h4>{dayName}</h4>,
+            representation: (
+                <h4>
+                    {
+                        currentDate.getDate() + " "
+                        + currentDate.toLocaleDateString("en-US", {month: "long"}) + " " + dayName
+                    }
+                </h4>
+            ),
             eventRepresentations: []
         };
         currentDate.setDate(currentDate.getDate() + 1);

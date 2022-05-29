@@ -18,7 +18,11 @@
 }
 
 .dialog {
-  input {
-    margin-left: 20px;
+  div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
   }
+  text-align: center;
 }

@@ -15,19 +15,21 @@ const UserVideoconferenceRoomsList = (props) => {
 
     return (
         <div>
-            <DialogPopup title="Create conference room" className={styles.dialog} isActive={isDialogActive}
+            <DialogPopup title="Create conference room" isActive={isDialogActive}
                          setIsActive={(isActive) => setIsDialogActive(isActive)}>
-                <div>
-                    <label>Name</label>
-                    <TextInput value={name} onChange={e => setName(e.target.value)}/>
+                <div className={styles.dialog}>
+                    <div>
+                        <label>Name</label>
+                        <TextInput value={name} onChange={e => setName(e.target.value)}/>
+                    </div>
+                    <div>
+                        <label>Access code</label>
+                        <TextInput type="password" value={accessCode} onChange={e => setAccessCode(e.target.value)}/>
+                    </div>
+                    <Button onClick={() => {
+                        props.createVideoconferenceRoom({name, accessCode})
+                    }}>Create</Button>
                 </div>
-                <div>
-                    <label>Access code</label>
-                    <TextInput value={accessCode} onChange={e => setAccessCode(e.target.value)}/>
-                </div>
-                <Button onClick={() => {
-                    props.createVideoconferenceRoom({name, accessCode})
-                }}>Create</Button>
             </DialogPopup>
             <Button onClick={() => setIsDialogActive(true)}>Create new room</Button>
             <div className={styles.roomsContainer}>

@@ -1,10 +1,11 @@
 import styles from "./schedulelist.module.css";
 
 const DaySubList = (props) => {
+    let day = props.day.representation;
     return (
         <div>
             <div className={styles.dayOfWeek}>
-                {props.day.representation}
+                {day}
             </div>
             <div>
                 {props.day.eventRepresentations}

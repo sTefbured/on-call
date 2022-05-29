@@ -1,0 +1,25 @@
+.chatLinksContainer {
+  background-color: #B5B5B5;
+  padding: 10px;
+}
+
+.chatLink {
+  display: flex;
+  padding: 20px;
+  font-size: 20px;
+  background-color: #B5B5B5;
+  color: #000000;
+  border-radius: 20px;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #000000;
+
+  img {
+    height: 50px;
+    border-radius: 50%;
+  }
+
+  &:hover {
+    background-color: #ffffff;
+  }
+}

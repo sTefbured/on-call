@@ -91,7 +91,7 @@ class ConferenceRoom extends React.Component {
             await peer.setLocalDescription(offer);
             socket.emit(SOCKET_ACTIONS.SEND_LOCAL__JOIN_ROOM, offer, this.props.roomId, this.props.authorizedUser.id);
         }
-        await this.addInputHandlers(); //TODO: maybe move upper
+        await this.addInputHandlers();
     }
 
     async addInputHandlers() {

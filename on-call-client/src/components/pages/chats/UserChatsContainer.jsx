@@ -1,18 +1,21 @@
+import styles from "./chats.module.css";
 import {connect} from "react-redux";
 import {queryChatsForUser, setCurrentPage} from "../../../redux/reducers/chatReducer";
 import {useEffect} from "react";
-import {Link} from "react-router-dom";
+import ChatLink from "./ChatLink";
 
-// FIXME: temporary solution with raw links
 const UserChatsContainer = (props) => {
     useEffect(() => {
         if (props.isAuthorized) {
             props.queryChatsForUser(props.authorizedUser.id, props.currentPage, props.pageSize);
         }
     }, [props.isAuthorized]);
-    let chatLinks = props.chats.map(chat => <Link key={chat.id} to={"/chats/" + chat.id}>{chat.name}</Link>);
+    let chatLinks = props.chats.map(chat => {
+            return <ChatLink key={chat.id} to={"/chats/" + chat.id} chat={chat}/>
+        }
+    );
     return (
-        <div>{chatLinks}</div>
+        <div className={styles.chatLinksContainer}>{chatLinks}</div>
     );
 }
 
