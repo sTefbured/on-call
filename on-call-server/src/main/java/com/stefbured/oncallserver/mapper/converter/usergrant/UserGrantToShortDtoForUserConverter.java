@@ -3,6 +3,7 @@ package com.stefbured.oncallserver.mapper.converter.usergrant;
 import com.stefbured.oncallserver.mapper.util.OnCallMappingContext;
 import com.stefbured.oncallserver.model.dto.chat.ChatDTO;
 import com.stefbured.oncallserver.model.dto.group.GroupDTO;
+import com.stefbured.oncallserver.model.dto.role.PermissionDTO;
 import com.stefbured.oncallserver.model.dto.role.UserGrantDTO;
 import com.stefbured.oncallserver.model.entity.chat.Chat;
 import com.stefbured.oncallserver.model.entity.group.Group;
@@ -35,10 +36,12 @@ public class UserGrantToShortDtoForUserConverter implements Converter<UserGrant,
             var chatContext = new OnCallMappingContext<Chat, ChatDTO>(source.getChat());
             destination.setChat(chatToIdDtoConverter.convert(chatContext));
         }
-
-//                    TODO: add role mapping after its implementation
-//                    var roleMapper = roleMapper.getTypeMap(Role.class, RoleDTO.class, USER_TO_PREVIEW_DTO);
-//                    destination.setRole(roleMapper.map(source.getRole()));
+        destination.setPermissions(source.getRole().getPermissions().stream().map(permission -> {
+            var permissionDto = new PermissionDTO();
+            permissionDto.setId(permission.getId());
+            permissionDto.setName(permission.getName());
+            return permissionDto;
+        }).toList());
         return destination;
     }
 

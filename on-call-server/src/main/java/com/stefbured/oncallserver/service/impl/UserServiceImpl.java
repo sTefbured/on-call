@@ -146,6 +146,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean userHasAuthorityForChat(Long userId, Long chatId, String authority) {
         var user = getUserById(userId);
         return user.getGrants().stream()
@@ -166,5 +167,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long getUserIdByUsername(String username) {
         return userRepository.getUserIdByUsername(username);
+    }
+
+    @Override
+    public boolean isUserExists(Long userId) {
+        return userRepository.existsById(userId);
     }
 }

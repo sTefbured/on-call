@@ -1,5 +1,6 @@
 package com.stefbured.oncallserver.mapper.converter.group;
 
+import com.stefbured.oncallserver.mapper.util.OnCallMappingContext;
 import com.stefbured.oncallserver.model.dto.group.GroupDTO;
 import com.stefbured.oncallserver.model.entity.group.Group;
 import org.modelmapper.Converter;
@@ -18,6 +19,14 @@ public class GroupToPreviewDtoConverter implements Converter<Group, GroupDTO> {
         destination.setIdTag(source.getIdTag());
         destination.setName(source.getName());
         destination.setDescription(source.getDescription());
+        destination.setMediumAvatarUrl(source.getMediumAvatarUrl());
+        destination.setAvatarThumbnailUrl(source.getAvatarThumbnailUrl());
+        GroupDTO parentGroup = null;
+        if (source.getParentGroup() != null) {
+            var previewContext = new OnCallMappingContext<Group, GroupDTO>(source.getParentGroup());
+            parentGroup = convert(previewContext);
+        }
+        destination.setParentGroup(parentGroup);
         return destination;
     }
 }

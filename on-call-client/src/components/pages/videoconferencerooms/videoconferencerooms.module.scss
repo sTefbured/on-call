@@ -1,0 +1,28 @@
+.roomsContainer {
+  border-radius: 10px;
+  background-color: #B5B5B5;
+  padding: 30px;
+  margin: 20px 0 0 0;
+}
+
+.listRow {
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  padding: 10px;
+  color: #000000;
+
+  &:hover {
+    background-color: #3aebca;
+  }
+}
+
+.dialog {
+  div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+  }
+  text-align: center;
+}

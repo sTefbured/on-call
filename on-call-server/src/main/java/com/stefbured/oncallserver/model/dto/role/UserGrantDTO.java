@@ -6,6 +6,8 @@ import com.stefbured.oncallserver.model.dto.group.GroupDTO;
 import com.stefbured.oncallserver.model.dto.user.UserDTO;
 import lombok.Data;
 
+import java.util.Collection;
+
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserGrantDTO {
@@ -18,4 +20,6 @@ public class UserGrantDTO {
     private GroupDTO group;
 
     private ChatDTO chat;
+
+    private Collection<PermissionDTO> permissions;
 }

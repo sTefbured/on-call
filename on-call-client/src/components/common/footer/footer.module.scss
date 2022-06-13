@@ -1,0 +1,13 @@
+.footer {
+  background-color: #B5B5B5;
+}
+
+.footer__row {
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  div {
+    margin: 0 5px;
+  }
+}

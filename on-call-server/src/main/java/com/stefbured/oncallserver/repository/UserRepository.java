@@ -17,7 +17,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsernameOrEmail(String username, String email);
 
     @Query(value = "select u.id, u.username, u.email, u.first_name, u.last_name, u.birth_date, u.registration_date_time," +
-            "   u.last_visit_date_time, u.password_expiration_date, u.is_banned, u.is_enabled " +
+            "   u.last_visit_date_time, u.password_expiration_date, u.is_banned, u.is_enabled, u.avatar_thumbnail_url," +
+            "   u.avatar_url, u.medium_avatar_url, u.delete_avatar_url, u.password " +
             "from users u " +
             "join user_grants ug on ug.user_id = u.id " +
             "join groups g on g.id = ug.group_id " +

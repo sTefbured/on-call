@@ -1,0 +1,20 @@
+.videoPlayer {
+
+}
+
+.videos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+
+  video {
+    max-height: 60%;
+    flex-grow: 1;
+  }
+}
+
+.mirrored {
+  transform: rotateY(180deg);
+}

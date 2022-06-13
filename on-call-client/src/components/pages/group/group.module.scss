@@ -1,0 +1,67 @@
+.groupInfo {
+  width: 100%;
+  height: 650px;
+  margin: 0 auto;
+  h1 {
+    text-align: center;
+  }
+
+  .infoItem {
+    margin: 20px 0;
+    text-align: center;
+  }
+}
+
+.centeredButtonPanel {
+  text-align: center;
+}
+
+.group {
+  display: flex;
+}
+
+.tabs {
+  background-color: #B5B5B5;
+  width: 250px;
+  height: fit-content;
+  border-radius: 20px;
+  border: 1px solid #000000;
+
+  .item {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    padding: 10px;
+    height: 50px;
+    font-size: 20px;
+    color: black;
+    font-weight: bold;
+
+    &:first-child {
+      border-radius: 20px 20px 0 0;
+    }
+
+    &:last-child {
+      border-radius: 0 0 20px 20px;
+    }
+
+    &:hover {
+      background-color: #ffffff;
+    }
+  }
+}
+
+.active {
+  background-color: #ffffff;
+}
+
+.dialogRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 20px 0;
+}
+
+.dialog {
+  text-align: center;
+}

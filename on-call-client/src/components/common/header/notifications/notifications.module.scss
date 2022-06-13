@@ -1,0 +1,112 @@
+.notifications {
+  height: 100%;
+}
+
+.textLink {
+  color: #bbbbbb;
+  font-weight: bold;
+
+  &:hover {
+    text-decoration-line: underline;
+  }
+}
+
+.notificationContent {
+  display: flex;
+  flex-direction: column;
+  padding: 5px 10px;
+  justify-content: flex-start;
+}
+
+.notificationText {
+  padding: 5px 0 0 0;
+  width: 100%;
+}
+
+.avatarWrapper {
+  display: block;
+  height: 100%;
+}
+
+.avatar {
+  border-radius: 50%;
+  max-height: 58px;
+}
+
+.notification {
+  display: flex;
+  width: 100%;
+  min-height: 70px;
+  max-height: 70px;
+  color: #ffffff;
+  border: 1px solid #000000;
+  padding: 5px;
+  cursor: pointer;
+
+  span {
+    margin: 0 5px 0 0;
+    font-weight: bold;
+  }
+}
+
+.active {
+  .notificationsListWrapper {
+    visibility: visible;
+  }
+}
+
+.notificationsListWrapper {
+  position: relative;
+  visibility: hidden;
+}
+
+.notificationsList {
+  position: absolute;
+  z-index: 11;
+  top: 100%;
+  right: 100%;
+  width: 400px;
+  min-height: 300px;
+  max-height: 300px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background-color: rgba(63, 63, 63, 1);
+  justify-content: normal;
+}
+
+.notificationCircle {
+  position: absolute;
+  border-radius: 50%;
+  min-width: 10px;
+  max-height: 10px;
+  bottom: 15px;
+  right: 15px;
+  background-color: #ff0000;
+}
+
+.notificationsButton {
+  height: 100%;
+  width: 60px;
+  transition: background-color 0.5s;
+  cursor: pointer;
+  position: relative;
+
+  .notificationsIcon {
+    height: 50%;
+    margin: 0 auto;
+
+    path {
+      fill: #ffffff;
+      transition: fill 0.5s;
+    }
+  }
+
+  &:hover {
+    background-color: #ffffff;
+
+    path {
+      fill: #000000;
+    }
+  }
+}

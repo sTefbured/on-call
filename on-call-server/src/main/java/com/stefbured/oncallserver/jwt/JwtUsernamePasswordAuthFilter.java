@@ -24,7 +24,7 @@ import java.util.Date;
 import static com.stefbured.oncallserver.jwt.JwtConstants.AUTH_COOKIE_NAME;
 
 public class JwtUsernamePasswordAuthFilter extends UsernamePasswordAuthenticationFilter {
-    private static final RequestMatcher AUTH_REQUEST_MATCHER = new AntPathRequestMatcher("/api/v1/login", "POST");
+    private static final RequestMatcher AUTH_REQUEST_MATCHER = new AntPathRequestMatcher("/api/v1/user/login", "POST");
 
     private final AuthenticationManager authenticationManager;
     private final JwtConfiguration jwtConfiguration;
@@ -62,6 +62,9 @@ public class JwtUsernamePasswordAuthFilter extends UsernamePasswordAuthenticatio
                 .withExpiresAt(java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfiguration.getTokenExpirationAfterDays())))
                 .sign(jwtConfiguration.getAlgorithm());
         response.addHeader(jwtConfiguration.getAuthorizationHeader(), jwtConfiguration.getTokenPrefix() + ' ' + token);
-        response.addCookie(new Cookie(AUTH_COOKIE_NAME, token));
+        var cookie = new Cookie(AUTH_COOKIE_NAME, token);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 }

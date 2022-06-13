@@ -35,6 +35,18 @@ public class Group {
     @Column(name = "creation_date_time", nullable = false)
     private LocalDateTime creationDateTime;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    @Column(name = "avatar_thumbnail_url")
+    private String avatarThumbnailUrl;
+
+    @Column(name = "medium_avatar_url")
+    private String mediumAvatarUrl;
+
+    @Column(name = "delete_avatar_url")
+    private String deleteAvatarUrl;
+
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)

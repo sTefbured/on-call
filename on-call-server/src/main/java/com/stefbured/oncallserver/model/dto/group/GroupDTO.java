@@ -31,9 +31,19 @@ public class GroupDTO {
     @PastOrPresent(message = CREATION_DATE_TIME_VALIDATION_ERROR_MESSAGE)
     private LocalDateTime creationDateTime;
 
+    private String avatarUrl;
+
+    private String avatarThumbnailUrl;
+
+    private String mediumAvatarUrl;
+
+    private String deleteAvatarUrl;
+
     private UserDTO creator;
 
     private GroupDTO parentGroup;
+
+    private Boolean isMember = null;
 
     private Set<UserGrantDTO> userGrants;
 

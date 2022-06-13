@@ -1,14 +1,36 @@
 package com.stefbured.oncallserver.repository;
 
 import com.stefbured.oncallserver.model.entity.group.Group;
+import com.stefbured.oncallserver.model.entity.user.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Long> {
     Optional<Group> findByParentGroupAndIdTag(Group parentGroup, String idTag);
+
+    @Query(value = "select * from groups where parent_group_id is NULL", nativeQuery = true)
+    Page<Group> findAllFirstLevel(Pageable pageable);
+
+    @Query(value = "select count(*) from groups where parent_group_id is NULL", nativeQuery = true)
+    long findAllFirstLevelCount();
+
+    @Query(value = "" +
+            "select user " +
+            "from User user " +
+            "join user.grants grant " +
+            "join grant.role role " +
+            "join role.permissions permission " +
+            "where grant.group.id = ?1 and permission.name = ?2")
+    Collection<User> findAllGroupMembersByPermission(Long groupId, String permission);
+
+    boolean existsByIdTagAndParentGroupId(String idTag, Long parentGroupId);
 
 //    @Query(value = "" +
 //            "select id, creation_date_time, description, id_tag, name, creator_id, parent_group_id from ( " +

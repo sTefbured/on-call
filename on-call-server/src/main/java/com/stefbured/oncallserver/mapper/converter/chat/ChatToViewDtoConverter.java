@@ -3,6 +3,7 @@ package com.stefbured.oncallserver.mapper.converter.chat;
 import com.stefbured.oncallserver.mapper.util.OnCallMappingContext;
 import com.stefbured.oncallserver.model.dto.chat.ChatDTO;
 import com.stefbured.oncallserver.model.dto.group.GroupDTO;
+import com.stefbured.oncallserver.model.dto.role.UserGrantDTO;
 import com.stefbured.oncallserver.model.dto.user.UserDTO;
 import com.stefbured.oncallserver.model.entity.chat.Chat;
 import com.stefbured.oncallserver.model.entity.group.Group;
@@ -12,6 +13,8 @@ import org.modelmapper.spi.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 import static com.stefbured.oncallserver.mapper.ChatModelMapper.CHAT_TO_VIEW_DTO;
 import static com.stefbured.oncallserver.mapper.GroupModelMapper.GROUP_TO_PREVIEW_DTO;
@@ -34,6 +37,19 @@ public class ChatToViewDtoConverter implements Converter<Chat, ChatDTO> {
         if (source.getGroup() != null) {
             var groupContext = new OnCallMappingContext<Group, GroupDTO>(source.getGroup());
             destination.setGroup(groupToPreviewDtoConverter.convert(groupContext));
+        }
+        if (source.getUsersGrants() != null) {
+            var userGrants = source.getUsersGrants().stream()
+                    .map(grant -> {
+                        var grantDto = new UserGrantDTO();
+                        var user = new UserDTO();
+                        user.setId(grant.getUser().getId());
+                        user.setAvatarThumbnailUrl(grant.getUser().getAvatarThumbnailUrl());
+                        grantDto.setUser(user);
+                        return grantDto;
+                    })
+                    .collect(Collectors.toSet());
+            destination.setUsersGrants(userGrants);
         }
         return destination;
     }

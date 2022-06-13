@@ -1,0 +1,28 @@
+.joinRequest {
+  max-width: 280px;
+  min-width: 280px;
+  border-radius: 10px;
+  border: 1px solid #000000;
+  background-color: #b4b4b4;
+  padding: 10px;
+  text-align: center;
+
+  .userInfo {
+    font-weight: bold;
+  }
+
+  img {
+    display: block;
+    margin: 0 auto 10px auto;
+    border-radius: 50%;
+    height: 80px;
+  }
+}
+
+.message {
+  margin: 10px 0 0 0;
+}
+
+.button {
+  margin: 10px 0 0 0;
+}

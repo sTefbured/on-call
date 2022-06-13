@@ -1,0 +1,39 @@
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 295px;
+  margin: auto;
+
+  & > div {
+    margin: 0 0 20px 0;
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  label {
+    float: left;
+    font-size: 16px;
+  }
+
+  input {
+    float: right;
+    margin: 0 0 0 20px;
+    &:focus {
+      margin: 0 0 0 16px;
+    }
+  }
+
+  button {
+    border: 1px solid black;
+    border-radius: 5px;
+    width: 80px;
+    height: 30px;
+    font-size: 16px;
+  }
+}

@@ -1,0 +1,11 @@
+1. Make sure on-call.web.mvc.allowedOriginsCombined includes both http://** and https://** patterns or
+only one of them will be used, otherwise some requests will end up with 403 status.
+
+2. private.properties or config vars should include:
+    - imgbb.api.key from imgbb.com to use api for storing images
+    - on-call.datasource.url, on-call.datasource.username, call.datasource.password for database access (on heroku
+it is not necessary, there is DATABASE_URL instead)
+    - on-call.jwt.secretKey which is a string of random characters used for encryption
+    - on-call.jwt.tokenPrefix used for Authorization header
+    - on-call.jwt.tokenExpirationAfterDays to define how long JWT token lives
+    - on-call.web.mvc.allowedOriginsCombined to define allowed origins for CORS

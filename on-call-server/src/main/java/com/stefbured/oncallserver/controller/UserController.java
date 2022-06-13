@@ -21,11 +21,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collection;
 
 import static com.stefbured.oncallserver.OnCallConstants.*;
@@ -74,8 +74,7 @@ public class UserController {
     }
 
     @GetMapping("all")
-    @PreAuthorize("hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + USER_PUBLIC_INFO_VIEW + "') " +
-            "|| hasPermission(null , '" + GLOBAL_TARGET_TYPE + "', '" + USER_PRIVATE_INFO_VIEW + "')")
+    @PreAuthorize("hasPermission(null, '" + GLOBAL_TARGET_TYPE + "', '" + USER_PUBLIC_INFO_VIEW + "')")
     public ResponseEntity<Collection<UserDTO>> getUsersList(@RequestParam int page, @RequestParam int pageSize) {
         var users = userService.getUsers(page, pageSize);
         var result = modelMapper.mapCollection(users, UserDTO.class, USER_TO_PREVIEW_DTO);
@@ -135,18 +134,28 @@ public class UserController {
 
     @GetMapping("me")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<Void> me() {
+    public ResponseEntity<UserDTO> me() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.ok().build();
+        var queriedUser = userService.getUserById((Long) authentication.getDetails());
+        var userDto = modelMapper.map(queriedUser, UserDTO.class, USER_TO_PRIVATE_INFORMATION_DTO);
+        return ResponseEntity.ok(userDto);
     }
 
     @PostMapping("logout")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
-        response.addCookie(new Cookie(AUTH_COOKIE_NAME, ""));
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        var cookies = Arrays.stream(request.getCookies())
+                .filter(cookie -> AUTH_COOKIE_NAME.equals(cookie.getName()))
+                .toList();
+        cookies.forEach(cookie -> {
+            cookie.setMaxAge(0);
+            cookie.setPath("/");
+            cookie.setSecure(true);
+            response.addCookie(cookie);
+        });
         return ResponseEntity.ok().build();
     }
 }
