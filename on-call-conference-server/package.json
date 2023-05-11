@@ -16,6 +16,6 @@
     "wrtc": "^0.4.7"
   },
   "devDependencies": {
-    "nodemon": "^2.0.16"
+    "nodemon": "^2.0.22"
   }
 }
